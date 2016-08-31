@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="AppLogin">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="JobNo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="loginPwd" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="authorCode" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AppLoginResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AppLoginResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBaseInfoByBarCode">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="barCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBaseInfoByBarCodeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetBaseInfoByBarCodeResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetInstrumentDetailByBarCode">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="barCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetInstrumentDetailByBarCodeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetInstrumentDetailByBarCodeResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetInstrumentList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="instrumentName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="specification" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="serialNo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetInstrumentListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetInstrumentListResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="InstrumentCheck">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="barCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="operatorJobNo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="InstrumentCheckResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="InstrumentCheckResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddInstrument">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="instrumentName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="sOperator" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="specification" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="manufacturer" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="serialNo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="planId" type="xs:int" />
+        <xs:element minOccurs="0" name="remark" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddInstrumentResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddInstrumentResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCirculationRecordList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="barCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCirculationRecordListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCirculationRecordListResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddCirculationRecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="barCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="sOperator" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="currentPosition" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="reason" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddCirculationRecordResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddCirculationRecordResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCheckingPlanBaseInfoList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="jobNo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCheckingPlanBaseInfoListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCheckingPlanBaseInfoListResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPlanLsit">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="jobNo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPlanLsitResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPlanLsitResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCetificationList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="barCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCetificationListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCetificationListResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SendOrder">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="instrumentIds" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="orderJson" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="BelongDepart" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="UserName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="UserId" type="xs:int" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SendOrderResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="SendOrderResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetInstrumentListByKeyWorks">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="keyworks" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetInstrumentListByKeyWorksResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetInstrumentListByKeyWorksResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllInstrument">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="instrumentForm" type="xs:int" />
+        <xs:element minOccurs="0" name="jobNo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllInstrumentResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAllInstrumentResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMyShoppingCart">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="jobNo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMyShoppingCartResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetMyShoppingCartResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddToShoppingCart">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="jobNo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="barCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddToShoppingCartResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddToShoppingCartResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteFromShoppingCart">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="jobNo" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="barCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="accessToKen" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteFromShoppingCartResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteFromShoppingCartResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

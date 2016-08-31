@@ -1,0 +1,62 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnCheckVersion").click(function () {
+            $.post("/Login/CheckVersion", function (data) {
+                if (data.Msg == "OK") {
+                    window.open(data.URL);
+                }
+                else ymPrompt.alert(data.Msg);
+            });
+        })
+    });
+</script>
+<table class="form_table">
+    <tr>
+        <th  width="150px">
+            版本号
+        </th>
+        <td >@ViewBag.Version
+        </td>
+    </tr>
+    <tr>
+        <th>
+            发布日期
+        </th>
+        <td>
+            @ViewBag.PublishDate
+        </td>
+    </tr>
+    <tr>
+      <th>
+            备注
+        </th>
+        <td>
+            使用该软件过程中出现问题或者您需要对部分功能进行定制开发，可以发邮件到SoftwareDevelopment@grgtest.com联系我们，感谢您的支持。
+        </td>
+    </tr>
+</table>
+<br />
+<table style="width:100%">
+    <tr>
+        <td style="width: 35%;">
+           
+        </td> <td>
+            <input type=button value="版本检查" class="submit_btn" id="btnCheckVersion" />
+        </td>
+    </tr>
+    </table>
+@*@if (ViewBag.Url != null)
+{<table style="width:100%">
+    <tr>
+        <td style="width: 35%;">
+           
+        </td> <td>
+            <a href="@ViewBag.Url">最新版本 @ViewBag.VersionCode 下载 </a>
+        </td>
+    </tr>
+    </table>
+  
+}*@

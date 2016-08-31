@@ -1,0 +1,239 @@
+﻿@model Instrument.Common.Models.KnowledgesModel
+@{
+    ViewBag.Title = "本地知识库";
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+    var OtherTable;
+    $(function () {
+        $("#tabs").tabs({ cache: true });
+        fnShowTab2();
+
+        $('#form1').validate({
+            rules: {
+                Title: { required: true, maxGBKlength: 200, specialCharValidate: true },
+                Abstract: { required: true, maxGBKlength: 1000, specialCharValidate: true },
+                PDFFile: { extension: "pdf" }
+            },
+            messages: {
+                PDFFile: "请上传.pdf后缀的文件"
+            }
+        });
+        if ($("#KnowledgeId").val() == "0") {
+            $("#span_PDF").show();
+            $("#PDFFile").rules("add", { required: true });
+        }
+        $('#otherForm').validate({
+            rules: {
+                fileOther: { required: true }
+            }
+        });
+        $("#KType").val(@Model.KType);
+        OtherTable = fnGetBusinessAttachmentList($("#AttachmentBusinessType").val(), OtherTable, "OtherList");
+    });
+
+    //获取业务附件列表
+    function fnGetBusinessAttachmentList(attachmentType, oTable, table) {
+        if (oTable != null) oTable.fnDestroy();
+        oTable = WrapTables4Ajax(table, "/BusinessAttachment/GetBusinessAttachmentList?attachmentType=" + attachmentType + "&bkId=" + $("#bkId").val(), "800px", true, "auto");
+        return oTable;
+    }
+
+    function fnShowTab2() {
+        if ($("#KnowledgeId").val()!=0) {
+            $("#liTab2").show();
+        }
+        else
+            $("#liTab2").hide();
+    }
+
+    //上传业务附件
+    function fnUploadData() {
+        if (!$("#otherForm").valid())
+            return;
+        fnUploadBusinessAttachment($("#AttachmentBusinessType").val(), $("#bkId").val(), "", "otherForm", fnShowOtherResponse);
+    }
+
+    function fnUploadBusinessAttachment(businessType, businessKeyId, businessNumber, form, fnResponse) {
+        form = "#" + form;
+        var url = "/BusinessAttachment/UploadBusinessAttachment?businessType=" + businessType + "&businessKeyId=" + businessKeyId + "&businessNumber=" + businessNumber + "&ajax=true";
+
+        var options = {
+            success: fnResponse,
+            url: url
+        };
+        if ($(form).valid()) {
+            $(form).ajaxSubmit(options);
+            return false;
+        }
+    }
+
+    //批量删除业务附件
+    function fnDeleteBusinessAttachment(chkName, oTable) {
+        var ids = fnGetAllCheckedValue(chkName);
+        if ("" == ids) {
+            ymPrompt.alert("请选择要删除的附件");
+            return;
+        }
+        ymPrompt.confirmInfo({ message: "确定要删除？", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                $.post("/BusinessAttachment/DeleteBusinessAttachment?ids=" + ids, function (data) {
+                    if (data == "OK") {
+                        oTable.api().ajax.reload(function () {
+                            ymPrompt.alert("删除成功！");
+                        }, false);
+                    }
+                    else {
+                        ymPrompt.alert(data);
+                    }
+                });
+            }
+        }
+        });
+    }
+
+    //更新其它附件列表
+    function fnShowOtherResponse(responseText, statusText) {
+        if (responseText.indexOf("OK") != -1) {
+            fnGetBusinessAttachmentList($("#AttachmentBusinessType").val(), OtherTable, "OtherList");
+        }
+        else ymPrompt.alert(responseText);
+    }
+
+
+    function fnSave() {
+        if (!$("#form1").valid())
+            return;
+        var options = {
+            success: fnShowResponse
+        };
+        $("#form1").ajaxSubmit(options);
+    }
+
+    function fnShowResponse(data) {
+        if (data.Msg != "OK") {
+            ymPrompt.alert(data.Msg);
+            return;
+        }
+         if ($("#KnowledgeId").val()==0) {
+            $("#liTab2").show();
+        }
+        if(window.opener.oTable)
+            window.opener.oTable.api().ajax.reload();
+        $("#KnowledgeId").val(data.KnowledgeId);
+        $("#bkId").val(data.bkId);
+        window.location.href = "/CustKnowledge/Edit?knowledgeId=" + data.bkId;
+        ymPrompt.alert("保存成功");
+    }
+
+    function fnClose() {
+        window.close();
+    }
+
+    //设置全选、反选
+    function fnSetCheckbox(obj) {
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk' + $("#AttachmentBusinessType").val(), isChecked);
+    }
+
+    //下载业务附件
+    function fnDownLoad(obj){
+         var fileId = $(obj).attr("data-id");
+         window.open("/CustKnowledge/DownLoad?fileId="+fileId);
+         return false;
+    }
+</script>
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">本地知识</a></li>
+        <li id="liTab2" style="display:none"><a href="#tabs-2">附件</a></li>
+    </ul>
+    <div id="tabs-1">
+        <form id="form1" class="cmxform" method="post" action="/CustKnowledge/Save" enctype="multipart/form-data">
+        <input type="hidden" id="KnowledgeId" name="KnowledgeId" value="@Model.KnowledgeId" />
+        <input type="hidden" id="State" name="State" value="@Model.State" />
+        <input type="hidden" id="FileId" name="FileId" value="@Model.FileId" />
+        <input type="hidden" id="bkId" name="bkId" value="@GRGTCommonUtils.UtilsHelper.Encrypt(Model.KnowledgeId.ToString())" />
+        <table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+            <tr>
+                <th width="35%">
+                    <span class="ico_must">内容标题</span>
+                </th>
+                <td>
+                    <input type="text" id="Title" name="Title" value="@Model.Title" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    内容类型
+                </th>
+                <td>
+                    @Html.DropDownList("KType", new SelectList(ViewBag.KType, "Value", "Text", Model.KType),
+                        new { @class = "fix_width", @style = "width:160px" })
+                </td>
+            </tr>
+            <tr>
+                <th width="90px">
+                    <span class="ico_must" /> 内容摘要
+                </th>
+                <td>
+                    <textarea rows="8" cols="50" id="Abstract" name="Abstract">@Model.Abstract</textarea>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                  <span class="ico_must" id="span_PDF" style="display:none"></span>内容PDF
+                </th>
+                <td>
+                    <input type="file" id="PDFFile" name="PDFFile" />
+                    <div>
+                        @{if (Model.FileId != 0)
+                          {<span>已传附件：</span>
+                            <a target='_blank' href="#" onclick="fnDownLoad(this);" data-id="@GRGTCommonUtils.UtilsHelper.Encrypt(Model.FileId.ToString())">
+                           @ViewBag.FileName</a>
+                          } 
+                        }
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="submit_btn_div">
+                <!--Authorization operate="/CustKnowledge/Save"-->
+            <input id="btnSave" type="button" class="submit_btn" value=" 保 存" onclick="fnSave()" />
+                <!--/Authorization-->
+            <input id="btnClose" type="button" class="submit_btn" value="关 闭" onclick="fnClose()" />
+        </div>
+        </form>
+    </div>
+    <div id="tabs-2">
+        <input type="hidden" name="AttachmentBusinessType" id="AttachmentBusinessType" value="@Instrument.Common.Constants.AttachmentBusinessType.本地知识库.GetHashCode()" />
+        <div id="divOther">
+            <form id="otherForm" name="otherForm" enctype="multipart/form-data" method="post">
+            <div style="float: left;" id="DivUploadOther">
+                <!--Authorization operate="/BusinessAttachment/UploadBusinessAttachment"-->
+                <input id="fileOther" name="fileOther" type="file" />
+                <input id="btnUploadOther" type="button" class="submit_btn" value="新增文件" onclick="fnUploadData()" />
+                <!--/Authorization-->
+                <!--Authorization operate="/BusinessAttachment/DeleteBusinessAttachment"-->
+                <input id="btnDeleteOther" type="button" class="submit_btn" value="批量删除" onclick="fnDeleteBusinessAttachment('chk'+$('#AttachmentBusinessType').val(),OtherTable)" />
+                <!--/Authorization-->
+            </div>
+            </form>
+            <table id="OtherList">
+                <thead>
+                    <tr>
+                        <th width="30px">
+                            <input type="checkbox" id="chkAll_Other" name="chkAll_Other" onclick='fnSetCheckbox(this)' />
+                        </th>
+                        <th>
+                            序号
+                        </th>
+                        <th>
+                            文件名称
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,75 @@
+﻿@using System.Collections;
+@using Instrument.Common.Models
+@{
+    ViewBag.Title = "查看器具";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    IList<MeasureOrderModel> orderBillList = ViewBag.OrderBillList as IList<MeasureOrderModel>;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        oTable = WrapTables4Ajax("orderlist", "/Order/GetOrderListJsonData", "100%");
+//        var oTable = WrapTables4Dom("orderlist");
+//        $("#btnSearch").click(function () {
+//            oTable.fnDestroy();
+//            oTable = WrapTables4Ajax("orderlist", "/Order/GetOrderListJsonData", "100%");
+//        });
+
+//        $("#btnSearch").click();
+    }
+    );
+
+    //查看器具
+    function fnCheckInstrument(obj) {
+        window.open("/Order/ViewInstrumentDetails?orderNumber=" + $(obj).attr("OrderNumber"), "_blank");
+    }
+
+    function fnBatchDownloadCert(obj) {
+        var orderNumber = $(obj).attr("orderNumber");
+        window.open("/Order/BatchDownloadCert?orderNumber=" + orderNumber);
+    }
+
+</script>
+<form id="form1" method="post" action="/Order/OrderList">
+<!--<div style="float: right; margin: 2px 0px;" id="SearchDiv">
+    <span>开单日期：</span> <span>
+        <input type="text" id="orderDateStart" name="orderDateStart" value="@ViewBag.ServiceStartDate" class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true,maxDate:'#F{$dp.$D(\'orderDateEnd\',{d:-1})}'})" /></span>
+    <span>至</span>
+        <span>
+            <input id="orderDateEnd" name="orderDateEnd" type="text" value="@ViewBag.ServiceEndDate" class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true,minDate:'#F{$dp.$D(\'orderDateStart\',{d:+1})}'})" /></span>
+    <span>
+        <input type="button" id="btnSearch" class="submit_btn" value="查   询" /></span>
+</div>-->
+</form>
+<table id="orderlist">
+    <thead>
+        <tr>
+            <th>
+                操作
+            </th>
+            <th>
+                订单编号
+            </th>
+            <th>
+                开单日期
+            </th>
+            <th>
+                业务员
+            </th>
+            <th>
+                器具数量
+            </th>
+            <th>
+                器具完工
+            </th>
+            <th>
+                证书完工
+            </th>
+          @*   <th>
+                是否开票
+            </th>
+             <th>
+                是否付款
+            </th>*@
+        </tr>
+    </thead>
+</table>

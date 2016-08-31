@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BAE20448-D715-4DC8-A728-349E06ED2564}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Instrument.Business</RootNamespace>
+    <AssemblyName>Instrument.Business</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>GRGT.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="IBatisNet.Common, Version=1.6.1.0, Culture=neutral, PublicKeyToken=ed781d9fc396c6ca, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Libs\IBatisNet.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="IBatisNet.DataMapper, Version=1.6.1.0, Culture=neutral, PublicKeyToken=ed781d9fc396c6ca, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Libs\IBatisNet.DataMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Libs\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Libs\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ToolsLib">
+      <HintPath>..\..\..\Libs\ToolsLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessAttachmentServiceImpl.cs" />
+    <Compile Include="ContactServiceImpl.cs" />
+    <Compile Include="CraftServiceImpl.cs" />
+    <Compile Include="EmployeeServiceImpl.cs" />
+    <Compile Include="InstrumentCheckLogServiceImpl.cs" />
+    <Compile Include="InstrumentFlowServiceImpl.cs" />
+    <Compile Include="InstrumentInnerCheckServiceImpl.cs" />
+    <Compile Include="InstrumentRepairPlanServiceImpl.cs" />
+    <Compile Include="InstrumentServiceImpl.cs" />
+    <Compile Include="InstrumentUsingPlanServiceImpl.cs" />
+    <Compile Include="KnowledgesServiceImpl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceProvider.cs" />
+    <Compile Include="OrderSendInstrumentServiceImpl.cs" />
+    <Compile Include="OrderServiceImpl.cs" />
+    <Compile Include="InstrumentCertificationServiceImpl.cs" />
+    <Compile Include="DocumentServiceImpl.cs" />
+    <Compile Include="InstrumentWaitSendServiceImpl.cs" />
+    <Compile Include="InstrumentPeriodcheckServiceImpl.cs" />
+    <Compile Include="AssetCheckPlanServiceImpl.cs" />
+    <Compile Include="AssetCheckPlanDetailServiceImpl.cs" />
+    <Compile Include="AssetCheckOperatorServiceImpl.cs" />
+    <Compile Include="WCF\InstrumentWCFServices.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Instrument-Service.config">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\GRGTCommonUtils\GRGTCommonUtils.csproj">
+      <Project>{16200F4A-D7F9-4593-9A94-9A6F9FF5FA9E}</Project>
+      <Name>GRGTCommonUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Global\Global.Business\Global.Business.csproj">
+      <Project>{C4C22823-2B70-4BE4-93B6-77FB563198F7}</Project>
+      <Name>Global.Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Global\Global.Common\Global.Common.csproj">
+      <Project>{01227158-91C5-40F8-9A67-639C846F525E}</Project>
+      <Name>Global.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Instrument.Common\Instrument.Common.csproj">
+      <Project>{B519C804-483D-47B9-BF79-E9FB7C46F27E}</Project>
+      <Name>Instrument.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Instrument.DataAccess\Instrument.DataAccess.csproj">
+      <Project>{A903918D-EB81-433B-8EB7-F0D04E3EFA04}</Project>
+      <Name>Instrument.DataAccess</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GRGT.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

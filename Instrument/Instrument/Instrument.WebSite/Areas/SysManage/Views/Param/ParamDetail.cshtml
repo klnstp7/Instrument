@@ -1,0 +1,76 @@
+﻿@model Global.Common.Models.ParamModel
+@{
+    ViewBag.Title = "ParamDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var exitedParamCode = false;
+    $(document).ready(function () {
+        $("#btnSave").click(function () {
+            if (exitedParamCode) {
+                return false;
+            }
+            if ($("#form1").valid()) {
+                $.post("/SysManage/Param/Save", $("#form1").serialize(), function (data) {
+                    if (data == "OK") {
+                        window.parent.document.location.href = window.parent.document.location.href;
+                        //                        window.parent.frames('leftFrame').location.reload();
+                    }
+                    else alert(data);
+                    //window.parent.ymPrompt.close();
+                });
+            }
+        });
+
+        $("#btnClose").click(function () {
+            window.parent.ymPrompt.close();
+        });
+    });
+
+    //判断是否存在相同参数编号
+    function JudgeCode() {
+        $.ajax({
+            type: 'GET',
+            url: '/SysManage/Param/JudgeParamCode?paramId=' + $("#ParamId").val() + '&paramCode=' + $("#ParamCode").val(),
+            success: function (data) {
+                if (data == "True") {
+                    exitedParamCode = true;
+                    $("#showResultCode").show();
+                }
+                else {
+                    exitedParamCode = false;
+                    $("#showResultCode").hide();
+                }
+            }
+        });
+    }
+</script>
+<form id="form1" class="cmxform">
+<input type="hidden" id="ParamId" name="ParamId" value="@Model.ParamId" />
+<h3 class="form_module_title">
+    系统参数编辑</h3>
+<table class="form_table">
+    <tr>
+        <th style="width: 20%;">
+            <span class="ico_must">参数名称</span>
+        </th>
+        <td style="width: 80%;">
+            <input id="ParamName" name="ParamName" type="text" value="@Model.ParamName" required  />
+            <span class="info_block" id="showResult" style="color: Red; display: none;"></span>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">参数编码</span>
+        </th>
+        <td>
+            <input id="ParamCode" name="ParamCode" type="text"  value="@Model.ParamCode" required onkeyup="JudgeCode();"/>
+            <span class="info_block" id="showResultCode" style="color: Red; display: none;">已存在该参数编码</span>
+        </td>
+    </tr>
+</table>
+<div class="submit_btn_div">
+    <input id="btnSave" type="button" class="submit_btn" value=" 保 存 " />
+    <input id="btnClose" type="button" class="submit_btn" value="关闭窗口" />
+</div>
+</form>

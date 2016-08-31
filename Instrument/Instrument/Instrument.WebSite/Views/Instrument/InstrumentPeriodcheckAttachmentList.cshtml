@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "期间核查附件";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/InstrumentJs.js")" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+    var oTable = null;
+    $(document).ready(function () {
+        fnGetOther();
+        $('#otherForm').validate({
+            rules: {
+                fileOther: { required: true }
+            },
+            messages: { fileOther: "请选择文件上传" }
+        });
+    });
+    function fnGetOther() {
+        if (oTable != null)
+            oTable.api().ajax.reload();
+        else {
+            oTable = fnGetBusinessAttachmentList($("#AttachmentBusinessType").val(), $("#PeriodcheckId").val(), oTable, "OtherList");
+        }
+    }
+    function fnUploadData() {
+        fnUploadBusinessAttachment($("#AttachmentBusinessType").val(), $("#PeriodcheckId").val(), "", "otherForm", fnShowOtherResponse);
+    }
+    //更新其它附件列表
+    function fnShowOtherResponse(responseText, statusText) {
+        if (responseText.indexOf("OK") != -1) {
+            oTable.api().ajax.reload();
+        }
+        else ymPrompt.alert(responseText);
+    }
+    //设置全选、反选
+    function fnSetCheckbox(obj) {
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk' + $("#AttachmentBusinessType").val(), isChecked);
+    }
+</script>
+<input type="hidden"  name="AttachmentBusinessType" id="AttachmentBusinessType" value="@Instrument.Common.Constants.AttachmentBusinessType.期间核查.GetHashCode()"/>
+<input type="hidden"  name="PeriodcheckId" id="PeriodcheckId" value="@GRGTCommonUtils.UtilsHelper.Encrypt(Request["PeriodcheckId"])"/>
+<div id="divOther">
+            <form id="otherForm" name="otherForm" enctype="multipart/form-data" method="post">
+            <div style="float: left;" id="DivUploadOther">
+                <input id="fileOther" name="fileOther" type="file" />
+                <input id="btnUploadOther" type="button" class="submit_btn" value="上传" onclick="fnUploadData()" />
+                <!--Authorization operate="维修记录-删除附件"-->
+                <input id="btnDeleteOther" type="button" class="submit_btn" value="批量删除" onclick="fnDeleteBusinessAttachment('chk'+$('#AttachmentBusinessType').val(),oTable)" />
+                <!--/Authorization-->
+            </div>
+            </form>
+            <table id="OtherList">
+                <thead>
+                    <tr>
+                        <th width="30px">
+                            <input type="checkbox" id="chkAll_Other" name="chkAll_Other" onclick='fnSetCheckbox(this)' />
+                        </th>
+                        <th>
+                            序号
+                        </th>
+                        <th>
+                            文件名称
+                        </th>
+                        <th>
+                            备注
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+ </div>

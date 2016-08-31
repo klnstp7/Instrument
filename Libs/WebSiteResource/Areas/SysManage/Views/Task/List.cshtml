@@ -1,0 +1,114 @@
+﻿@{
+    ViewBag.Title = "执行任务管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(function () {
+        var columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'TaskType', sType: 'date', sTitle: '任务类型',
+                searchDataSource: [
+//                    { sTitle: '全部', sValue: '', selected: true },
+//                    { sTitle: '创建正式证书任务', sValue: '1', selected: false },
+//                    { sTitle: '证书打印任务', sValue: '2', selected: false },
+//                    { sTitle: '创建临时证书任务', sValue: '3', selected: false }
+                      @Html.Raw( ViewBag.TaskType)
+
+                ]
+            },
+            { sName: 'RecordState', sType: 'string', sTitle: '任务状态',
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '未开始', sValue: '0', selected: true },
+                    { sTitle: '执行中', sValue: '1', selected: false },
+                    { sTitle: '完成', sValue: '2', selected: false },
+                    { sTitle: '失败', sValue: '99', selected: false }
+                ]
+            },
+            { sName: 'PriorityLevel', sType: 'string', sTitle: '优先级',
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonPriorityLevel)
+                ]
+            },
+            { sName: 'UserName', sType: 'string', sTitle: '创建人' },
+            { sName: 'CreateDate', sType: 'date', sTitle: '创建时间' },
+            { sName: 'StartDate', sType: 'date', sTitle: '开始时间' },
+            { sName: 'CompleteDate', sType: 'date', sTitle: '完成时间' },
+            { sName: 'Remark', sType: 'string', sTitle: '备注' },
+            { sName: 'TaskLog', sType: 'string', sTitle: '日志' }
+        ];  
+
+            oTable = GetJsondataFromServ("taskList", "/SysManage/Task/GetTaskListJsonData", "100%", columnInfo);
+        //oTable = GetJsondataFromServ("taskList", "/SysManage/Task/GetTaskListJsonData");
+
+
+    });
+
+    function fnUpdatePriority(obj) {
+        var taskId = $(obj).attr("TaskId");
+        fnNewWindow('@Url.Content("~/SysManage/Task/PriorityList?taskIdList=")' + taskId, "更改任务优先级");
+    }
+
+    function fnCancelTask(obj) {
+        var taskId = $(obj).parent().attr("TaskId");
+        fnConfirmWithF5('确定要取消任务吗？', '@Url.Content("~/SysManage/Task/CancelTask?taskId=")' + taskId);
+        return false;
+    }
+
+    function fnRestartTask(obj) {
+        var taskId = $(obj).parent().attr("TaskId");
+        fnConfirmWithF5('确定要重新执行任务吗？', '@Url.Content("~/SysManage/Task/RestartTask?taskId=")' + taskId);
+        return false;
+    }
+
+
+    function fnDeleteTask(obj) {
+        var taskId = $(obj).parent().attr("TaskId");
+        fnConfirmWithF5('确定要删除任务吗？', '@Url.Content("~/SysManage/Task/DeleteTask?taskId=")' + taskId);
+        return false;
+    }
+
+    function fnNewWindow(url,title) {
+        ymPrompt.win({ message: url, width: 400, height: 200, title: title, handler: null, iframe: true });
+    }
+
+</script>
+
+<table cellpadding="0" cellspacing="0" border="0" class="list_table"  id="taskList">
+    <thead>
+        <tr>
+            <th width="240px;">
+                操作
+            </th>
+            <th width="100px;">
+                任务类型
+            </th>
+            <th width="80px;">
+                任务状态
+            </th>
+            <th width="80px;">
+                优先级
+            </th>
+            <th width="80px;">
+                创建人
+            </th>
+            <th width="80px;">
+                创建时间
+            </th>
+            <th width="80px;">
+                开始时间
+            </th>
+            <th width="80px;">
+                完成时间
+            </th>
+            <th>
+                备注
+            </th>
+            <th>
+                日志
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>

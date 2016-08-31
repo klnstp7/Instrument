@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "盘盈信息";
+}
+<script type="text/javascript" language="javascript">
+    $(function () {
+        tbUserList = WrapTables4Ajax("tbOverageList", "/Assets/GetAssetsOverageList?planId=@Request["planId"]", "10px");
+    });
+
+    function fnAddToInstrument(obj){
+        var planDetailId=$(obj).parent().attr("planDetailId");
+        window.open("/Instrument/Add?instrumentId=0&planDetailId="+planDetailId);
+    }
+
+
+    function fnAddToAssets(obj){
+        var planDetailId=$(obj).parent().attr("planDetailId");
+        window.open("/Assets/Edit?instrumentId=0&planDetailId="+planDetailId);
+    }
+    
+    function fnCancelOverage(obj){
+        var planDetailId=$(obj).parent().attr("planDetailId");
+        fnConfirmWithF5WithOTable("确定取消该盘盈记录？", "/Assets/CancelOverage?planDetailId="+planDetailId, tbUserList);
+    }
+    function fnExcelOverage(obj){
+        var url = "/Assets/ExportForOverAge?planId=@Request["planId"]";
+        window.open(url, "盘点计划");
+        return false;
+    }
+
+
+</script>
+<!--Authorization operate="/Assets/ExportForOverAge"-->
+<input id="ExcelOverage" name="ExcelOverage" type="button" value="导出Excel" onclick="fnExcelOverage()" class="submit_btn"/>
+<!--/Authorization-->
+<table id="tbOverageList">
+    <thead>
+        <tr>
+            <th>
+                操作
+            </th>
+            <th>
+                盘点计划
+            </th>
+            <th>
+                仪器名称
+            </th>
+            <th>
+                仪器型号
+            </th>
+            <th>
+                生产厂家
+            </th>
+            <th>
+                出厂编号
+            </th>
+            <th>
+                备注
+            </th>
+            <th>
+                创建人
+            </th>
+            <th>
+                创建日期
+            </th>
+        </tr>
+    </thead>
+</table>

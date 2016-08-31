@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "RoleOwnPermission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="@Url.Content("~/Content/themes/webcss/formstyle.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+            iniTree();
+            function iniTree() { 
+                tree = new dhtmlXTreeObject("treeboxbox_tree", "100%", "100%", 0);
+                tree.setImagePath("@Url.Content("~/Content/themes/base/images/csh_scbrblue/")");
+                tree.enableThreeStateCheckboxes(1);
+                tree.enableCheckBoxes(true);
+                //tree.setOnClickHandler(func_click);
+                //tree.setXMLAutoLoading("/Organization/LoadOrg4dhtmlxTree");
+                //tree.enableSmartXMLParsing(true);
+                tree.loadXML("@Url.Content("~/SysManage/Permission/LoadPermission4dhtmlxTree?ajax=true")&roleId=@Request["roleId"]");
+            }
+
+            $("#btnSave").click(function(){
+                $.post("@Url.Content("/SysManage/Role/SaveRolePermissions")",
+                    {permissionId : tree.getAllCheckedBranches(), roleId : "@Request["RoleId"]"}
+                ); 
+
+                window.parent.ymPrompt.close();
+            });
+        });
+</script>
+<div class="submit_btn_div">
+    <input type="button" class="submit_btn" id="btnSave" value="保存" />
+</div>
+<div id="treeboxbox_tree" style="width: 250; height: 218; background-color: #f5f5f5;
+    border: 1px solid Silver; overflow: auto;" />
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $.get("/SysManage/Permission/LoadJavascript", { roleId: "@Request["RoleId"]" }, "script");
+    });
+</script>

@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "联系人信息填写";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(function () {
+        //基本信息(表单验证)
+        $('#form1').validate({
+            rules: {
+                CertCompany: { required: true, maxGBKlength: 100, specialCharValidate: true },
+                CertAddress: { required: true, maxGBKlength: 100, specialCharValidate: true },
+                Contactor: { required: true, specialCharValidate: true },
+                Mobile: { mobile: true, required: true },
+                SendAddress: { required: true, maxGBKlength: 10, specialCharValidate: true },
+                Remark: { specialCharValidate: true, maxGBKlength: 100 }
+            }
+        });
+    });
+
+    //保存(基本信息)
+    function fnSend() {
+        //表单验证(默认)
+        if (!$("#form1").valid()) {
+            return false;
+        }
+        var instrumentIds = window.parent.fnSendInstrument();
+        //alert("fdf");
+        ///ymPrompt.alert(instrumentIds); 
+        ymPrompt.confirmInfo({ message: "确定送检？", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                $.post("/SendInstrument/SendInstrument?instrumentIds=" + instrumentIds, $("#form1").serialize(), function (data) {
+                    if (data == "OK") {
+                        //刷新父页面
+                        window.parent.fnReloadTable();
+                        window.parent.ymPrompt.close();
+                        window.parent.ymPrompt.alert("保存成功");
+
+                    }
+                    else ymPrompt.alert(data);
+                });
+
+            }
+        }
+        });
+    }
+
+    function fnClose() {
+        window.parent.ymPrompt.close();
+    }
+</script>
+<form id="form1">
+<table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+    <tr>
+        <th>
+            <span class="ico_must">证书单位</span>
+        </th>
+        <td>
+            <input id="CertCompany" class="fix_width" name="CertCompany" type="text" value="@ViewBag.CompanyName" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">证书单位地址</span>
+        </th>
+        <td>
+            <input id="CertAddress" class="fix_width" name="CertAddress" type="text" value="" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">联系人</span>
+        </th>
+        <td>
+            <input id="Contactor" class="fix_width" name="Contactor" type="text" value="@GRGTCommonUtils.LoginHelper.LoginUser.UserName" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">手机号码</span>
+        </th>
+        <td>
+            <input id="Mobile" class="fix_width" name="Mobile" type="text" value="@GRGTCommonUtils.LoginHelper.LoginUser.Mobile1" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            固话
+        </th>
+        <td>
+            <input id="Tel" class="fix_width" name="Tel" type="text" value="" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            传真
+        </th>
+        <td>
+            <input id="Fax" class="fix_width" name="Fax" type="text" value="" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">仪器地点</span>
+        </th>
+        <td>
+            <input id="SendAddress" class="fix_width" name="SendAddress" type="text" value="" />(如：广州)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td>
+            <textarea  id="Remark" class="fix_width" name="Remark" style=" height:35px;"></textarea>
+        </td>
+    </tr>
+</table>
+<div class="submit_btn_div">
+    <input id="btnSave" type="button" class="submit_btn" onclick="fnSend()" value="送 检" />
+    <input id="btnClose" class="submit_btn" type="button" onclick="fnClose()" value="关 闭" />
+</div>
+</form>

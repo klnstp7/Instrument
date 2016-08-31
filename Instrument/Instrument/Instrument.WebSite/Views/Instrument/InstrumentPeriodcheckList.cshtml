@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "期间核查";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var oTable = null;
+    $(document).ready(function () {
+        oTable = WrapTables4Ajax("tbPeriodcheckList", "/Instrument/GetInstrumentPeriodcheckList?instrumentId=@ViewBag.InstrumentId&dataType=@ViewBag.DataType", "100%", true, "auto");
+        if ("0" == "@ViewBag.DataType") {
+//            oTable.fnSetColumnVis(0, false);    //隐藏"操作"列
+            $("#btnPeriodAdd")[0].style.display = "none";   //隐藏"新增"按钮
+        }
+    });
+
+    function fnPeriodAdd() {
+        var url = "/Instrument/InstrumentPeriodcheckEdit?periodcheckId=0&instrumentId=@ViewBag.InstrumentId";
+        ymPrompt.win({ message: url, width: 750, height: 350, title: "期间核查",
+            handler: function (data) {
+                if ("OK" == data) {
+                    if (null != oTable) {
+                        oTable.api().ajax.reload();
+                    }
+                }
+            }, iframe: true
+        });
+    }
+
+    function fnPeriodcheckEdit(periodcheckId) {
+        var url = "/Instrument/InstrumentPeriodcheckEdit?periodcheckId="+periodcheckId;
+        ymPrompt.win({ message: url, width: 750, height: 350, title: "期间核查",
+            handler: function (data) {
+                if ("OK" == data) {
+                    if (null != oTable) {
+                        oTable.api().ajax.reload();
+                    }
+                }
+            }, iframe: true
+        });
+    }
+
+    //详细
+    function fnPeriodcheckDetail(obj) {
+        var id = $(obj).attr("id");
+        fnNewWindow("/Instrument/InstrumentPeriodcheckDetail?periodcheckId=" + id, "650", "365", "期间核查详细");
+    }
+
+    //删除
+    function fnPeriodcheckDelete(periodcheckId) {
+        fnConfirmWithF5WithOTable('确定删除该条记录？', '@Url.Content("~/Instrument/DeleteInstrumentPeriodcheck?periodcheckId=")' + periodcheckId, oTable);
+    }
+
+    //上传附件
+    function fnUploadPeriodcheckAttachment(PeriodcheckId) {
+        var url = "/Instrument/InstrumentPeriodcheckAttachmentList?PeriodcheckId=" + PeriodcheckId;
+        fnPeriodNewWindow(url, "期间核查附件", 800, 365);
+    }
+
+    function fnPeriodNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+    
+</script>
+<!--Authorization operate="/Instrument/InstrumentPeriodcheckEdit"-->
+<input id="btnPeriodAdd" type="button" onclick="fnPeriodAdd()" class="submit_btn" value="新增" />&nbsp;
+<!--/Authorization-->
+<table id="tbPeriodcheckList">
+    <thead>
+        <tr>
+            <th style="width: 100px;">
+                操作
+            </th>
+            <th>
+                频次
+            </th>
+            <th>
+                计划日期
+            </th>
+            <th>
+                完成日期
+            </th>
+            <th>
+                负责人
+            </th>
+            <th>
+                结论
+            </th>
+        </tr>
+    </thead>
+</table>

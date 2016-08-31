@@ -1,0 +1,198 @@
+﻿@using ToolsLib.Utility
+@using System.Web.UI.WebControls
+@using Instrument.Common.Models;
+@using Global.Common;
+@model Instrument.Common.Models.InstrumentModel
+@{
+    ViewBag.Title = "资产编辑";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    //初始化
+    $(document).ready(function () {
+        //基本信息(表单验证)
+        $('#formInstrument').validate({
+            rules: {
+                InstrumentName: { required: true, maxGBKlength: 160, specialCharValidate: true },  //仪器名称
+//                AssetsNo: { required: true, maxGBKlength: 120, specialCharValidate: true },   //资产编号
+                Specification: { required: true, maxGBKlength: 140, specialCharValidate: true },   //仪器型号
+//                Number: { required: true, digits: true },
+                Manufacturer: { maxGBKlength: 180, specialCharValidate: true },
+                ManufactureContactor: { maxGBKlength: 180, specialCharValidate: true },
+                SerialNo: { maxGBKlength: 120, specialCharValidate: true },
+                ManageNo: { maxGBKlength: 120, specialCharValidate: true },
+                LeaderName: { maxGBKlength: 20, specialCharValidate: true },
+//                BuyDate: { required: true },
+                StorePalce: { maxGBKlength: 60, specialCharValidate: true },
+                BelongDepart: { required: true },   //所属科室
+                RecordState: { required: true },   //器具状态
+                LastCheckUser: { maxGBKlength: 20, specialCharValidate: true },
+                Price: { number: true },    //购置金额
+                Remark: { maxGBKlength: 500, specialCharValidate: true }
+            }
+        });
+
+        $("#OrgName").chosen({ search_contains: true });
+    });
+
+    //保存(基本信息)
+    function fnSaveInstrument() {
+        //表单验证(默认)
+        if (!$("#formInstrument").valid()) {
+            return false;
+        }
+        $.post("/Assets/Save", $("#formInstrument").serialize(), function (result) {
+            if (result == "OK") {
+                if (window.opener.fnReloadInstrument) {
+                    window.opener.fnReloadInstrument();
+                    window.opener = null;
+                }
+                window.close();
+            }
+            else {
+                alert(result)
+            }
+        });
+    }
+
+    //关闭
+    function fnClose() {
+        window.opener = null;
+        window.close();
+    }
+
+    //重新加载
+    function fnReloadInstrument() {
+        //刷新
+        oTable.reloadData();
+    }
+
+
+</script>
+<div id="tabs-1">
+    <div class="submit_btn_div">
+        <input id="btnSave" type="button" class="submit_btn" onclick="fnSaveInstrument()"
+            value="保 存" />
+        <input id="btnClose" class="submit_btn" type="button" onclick="fnClose()" value="关 闭" />
+    </div>
+    <form id="formInstrument" class="cmxform">
+    <input type="hidden" id="InstrumentId" name="InstrumentId" value="@Model.InstrumentId" />
+    @Html.Hidden("InstrumentForm", Instrument.Common.Constants.InstrumentForm.固定资产.GetHashCode())
+    <table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+        <tr>
+            <th>
+                <span class="ico_must">所属部门</span>
+            </th>
+            <td>
+                @Html.DropDownListTree("OrgName", ViewBag.BelongDepartList as IList<Global.Common.Models.OrgModel>, "OrgCode", "OrgName", Model.BelongDepart, "OrgId", "ParentOrgId", "0", new { @class = "fix_width" })
+            </td>
+            <th style="width: 15%;">
+                <span class="ico_must">资产属性</span>
+            </th>
+            <td>
+                @Html.DropDownList("CalibrationType", new SelectList(ViewBag.CalibrationTypeList, "Value", "Text", Model.CalibrationType),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 15%;">
+                <span class="ico_must">资产名称</span>
+            </th>
+            <td style="width: 35%;">
+                @Html.TextBox("InstrumentName", Model.InstrumentName, new { @class = "fix_width" })
+            </td>
+            <th>
+                <span class="ico_must">型号规格</span>
+            </th>
+            <td>
+                @Html.TextBox("Specification", Model.Specification, new { @class = "fix_width" })
+                <p id="spec_info" class="info_block" style="display: none; color: Red;">
+                    缺少型号</p>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                出厂编号
+            </th>
+            <td>
+                @Html.TextBox("SerialNo", Model.SerialNo, new { @class = "fix_width" })
+            </td>
+            <th>
+                管理编号
+            </th>
+            <td>
+                @Html.TextBox("ManageNo", Model.ManageNo, new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                购置日期
+            </th>
+            <td>
+                <input id="BuyDate" name="BuyDate" type="text" value="@(string.Format("{0:yyyy-MM-dd}", Model.BuyDate))" class="Wdate" 
+                        onfocus="WdatePicker({isShowClear:true,readOnly:true,dateFmt:'yyyy-MM-dd'})" style="width: 302px" />
+            </td>
+            <th>
+                购置金额
+            </th>
+            <td>
+                @Html.TextBox("Price", string.Format("{0:F2}",Model.Price), new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                生产厂家
+            </th>
+            <td>
+                @Html.TextBox("Manufacturer", Model.Manufacturer, new { @class = "fix_width" })
+            </td>
+            <th>
+                厂家联系信息
+            </th>
+            <td>
+                @Html.TextBox("ManufactureContactor", Model.ManufactureContactor, new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                资产编号
+            </th>
+            <td>
+                @Html.TextBox("AssetsNo", Model.AssetsNo, new { @class = "fix_width" })
+            </td>
+            <th>
+                状态
+            </th>
+            <td>
+                @Html.DropDownList("RecordState", new SelectList(ViewBag.InstrumentRecordStateList, "Value", "Text", Model.RecordState),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                存放地点
+            </th>
+            <td>
+                @Html.TextBox("StorePalce", Model.StorePalce, new { @class = "fix_width" })
+            </td>
+            <th>
+                保管人
+            </th>
+            <td>
+                @Html.TextBox("LeaderName", Model.LeaderName, new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+        </tr>
+        <tr>
+            <th>
+                备注
+            </th>
+            <td colspan="3">
+                <textarea id="Remark" name="Remark" rows="2" cols="60">@Model.Remark</textarea>
+            </td>
+        </tr>
+    </table>
+    </form>
+</div>

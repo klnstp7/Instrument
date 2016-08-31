@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "内部核查";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var oTable = null;
+    $(document).ready(function () {
+        oTable = WrapTables4Ajax("tbInnercheckList", "/Instrument/GetInstrumentInnerCheckList?instrumentId=@ViewBag.InstrumentId&dataType=@ViewBag.DataType", "100%", true, "auto");
+        if ("0" == "@ViewBag.DataType") {
+//            oTable.fnSetColumnVis(0, false);    //隐藏"操作"列
+            $("#btnInnerAdd")[0].style.display = "none";   //隐藏"新增"按钮
+        }
+    });
+    //增加
+    function fnInnerAdd() {
+        var url = "/Instrument/InstrumentInnerCheckEdit?innerCheckId=0&instrumentId=@ViewBag.InstrumentId";
+        ymPrompt.win({ message: url, width: 750, height: 350, title: "内部核查",
+            handler: function (data) {
+                if ("OK" == data) {
+                    if (null != oTable) {
+                        oTable.api().ajax.reload();
+                    }
+                }
+            }, iframe: true
+        });
+    }
+    //修改
+    function fnInnerEdit(innerCheckId) {
+        var url = "/Instrument/InstrumentInnerCheckEdit?innerCheckId=" + innerCheckId;
+        ymPrompt.win({ message: url, width: 750, height: 350, title: "内部核查",
+            handler: function (data) {
+                if ("OK" == data) {
+                    if (null != oTable) {
+                        oTable.api().ajax.reload();
+                    }
+                }
+            }, iframe: true
+        });
+    }
+    //详细
+    function fnInnerDetail(obj) {
+        var id = $(obj).attr("id");
+        fnNewWindow("/Instrument/InstrumentInnerCheckDetail?innerCheckId=" + id, "650", "365", "内部核查详细");
+    }
+    //删除
+    function fnInnerDelete(innerCheckId) {
+        fnConfirmWithF5WithOTable('确定删除该条记录？', '@Url.Content("~/Instrument/DeleteInstrumentInnerCheck?innerCheckId=")' + innerCheckId, oTable);
+    }
+
+    //上传附件
+    function fnUploadInnerCheckAttachment(innerCheck) {
+        var url = "/Instrument/InstrumentInnerCheckAttachmentList?innerCheck=" + innerCheck;
+        fnInnerNewWindow(url, "内部核查附件", 800, 365);
+    }
+
+    function fnInnerNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+    
+</script>
+<!--Authorization operate="/Instrument/InstrumentInnerCheck"-->
+<input id="btnInnerAdd" type="button" onclick="fnInnerAdd()" class="submit_btn" value="新增" />&nbsp;
+<!--/Authorization-->
+<table id="tbInnercheckList">
+    <thead>
+        <tr>
+            <th style="width: 100px;">
+                操作
+            </th>
+            <th>
+                检查日期
+            </th>
+            <th>
+                有效日期
+            </th>
+            <th>
+                结论
+            </th>
+            <th>
+                负责人
+            </th>
+            <th>
+                创建日期
+            </th>
+            <th>
+                创建人
+            </th>
+            <th>
+                备注
+            </th>
+            
+            
+        </tr>
+    </thead>
+</table>

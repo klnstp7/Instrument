@@ -1,0 +1,36 @@
+﻿<script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+            iniTree();
+           
+            function iniTree() { 
+                tree = new dhtmlXTreeObject("treeboxbox_tree", "100%", "100%", 0);
+                tree.setImagePath("@Url.Content("~/Content/themes/base/images/csh_scbrblue/")");
+                tree.setOnClickHandler(func_click);
+                //tree.setXMLAutoLoading("/Organization/LoadOrg4dhtmlxTree");
+                tree.enableSmartXMLParsing(true);
+                tree.loadXML("/Organization/LoadOrg4dhtmlxTree?ajax=true");
+            }
+
+            function func_click() {
+                var param = "?orgId=" + tree.getSelectedItemId() + "&orgName=" + encodeURI(tree.getSelectedItemText());
+                url = "/Organization/OrgListPage";
+                var referUrl = window.parent.document.location.href;
+                 if(referUrl.indexOf("SysManage/User") != -1){
+                    url = "/SysManage/User/UserList";
+                }
+                else if (referUrl.indexOf("Organization/OrgListPage") != -1)  {                  
+                     url = "/Organization/OrgListPage";
+                     }               
+                else if(referUrl.indexOf("SysManage/User") != -1)
+                    url = "/SysManage/User/UserList";
+                else if (referUrl.indexOf("SysManage/Duty") != -1)
+                     url = "/SysManage/Duty/DutyList";
+
+                window.parent.frames["mainFrame"].document.location.href = url + param;
+            }   
+
+        });
+</script>
+<div id="treeboxbox_tree" style="width: 250; height: 218; background-color: #f5f5f5;
+    border: 1px solid Silver; overflow: auto;">
+</div>

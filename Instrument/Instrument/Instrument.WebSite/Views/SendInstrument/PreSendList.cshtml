@@ -1,0 +1,127 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "待送检仪器";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var oTable;
+    $(document).ready(function () {
+        $('#form1').validate({
+            rules: {
+                Remark: { required: true, maxGBKlength: 200, specialCharValidate: true }
+            },
+            messages: { Remark: "请输入备注信息！" }
+        });
+        oTable = WrapTables4Ajax("Instrument", "/SendInstrument/GetPreSendOrderJsonData", "1000px", false, "auto", true);
+
+    });
+
+    //全选
+    function fnSetCheckbox(obj) {
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk', isChecked);
+    }
+
+    function fnDeleteByIds() {
+        var instrumentIds = fnGetAllCheckedValue("chk");
+        if (instrumentIds.length < 1) { ymPrompt.alert("请选择要移除的项目"); return; }
+        fnConfirmWithF5WithOTable("确定从待送清单中移除？", "/SendInstrument/DeleteFromSendList?instrumentIds=" + instrumentIds, oTable);
+        return false;
+    }
+
+
+    function fnSendList() {
+        var instrumentIds = fnGetAllCheckedValue("chk");
+        if (instrumentIds.length < 1) { ymPrompt.alert("请选择要送检的项目"); return; }
+        fnAddContractInfo();
+        return false;
+    }
+
+    function fnSendInstrument() {
+        var instrumentIds = fnGetAllCheckedValue("chk");
+        return instrumentIds;
+        //        if (instrumentIds.length < 1) { ymPrompt.alert("请选择要送检的项目"); return; }
+        //        fnConfirmWithF5WithOTable("确定送检？", "/SendInstrument/SendInstrument?instrumentIds=" + instrumentIds + "&contractInfo=" + contractInfo, oTable);
+    }
+
+    //刷新列表
+    function fnReloadTable() {
+        if (null != oTable) {
+            oTable.api().ajax.reload();
+        }
+    }
+    function fnExport() {
+        var url = "/SendInstrument/ExportPreSendList";
+        ymPrompt.confirmInfo({ message: "是否要导出当前仪器?", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                window.open(url, "_blank");
+            }
+        }
+        });
+    }
+    //备注
+    function fnRemark() {
+        if ($("#form1").valid()) {
+            var instrumentIds = fnGetAllCheckedValue("chk");
+            if (instrumentIds.length < 1) { ymPrompt.alert("请选择要备注的项目"); return; }
+            fnConfirmWithF5WithOTable("确定备注选中的仪器？", "/SendInstrument/RemarkFromSendList?instrumentIds=" + instrumentIds + "&Remark=" + $("#Remark").val(), oTable);
+        } 
+        return false;
+    }
+
+    function fnAddContractInfo() {
+        fnNewWindow("/SendInstrument/AddContractInfo", "填写联系信息", 580, 350);
+    }
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+</script>
+<div>
+    <form id="form1">
+    <!--Authorization operate="/SendInstrument/AddToSendList"-->
+    <input type="button" id="btnSend" class="submit_btn8" onclick="fnSendList()" value="广电计量送检" />
+    <!--/Authorization-->
+    <!--Authorization operate="/SendInstrument/DeleteFromSendList"-->
+    <input type="button" id="btnDelete" class="submit_btn8" onclick="fnDeleteByIds()"
+        value="从待送清单中移除" />
+    <!--/Authorization-->
+    <!--Authorization operate="/SendInstrument/ExportPreSendList"-->
+    <input type="button" id="btnExport" class="submit_btn" onclick="fnExport()" value="导 出" />
+    <!--/Authorization-->
+    <!--Authorization operate="/SendInstrument/RemarkFromSendList"-->
+    备注：<input type="text" id="Remark" name="Remark" />
+    <input type="button" id="btnRemark" class="submit_btn" onclick="fnRemark()" value="添加备注" />
+    </form>
+    <!--/Authorization-->
+    <table id="Instrument">
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" onclick="fnSetCheckbox(this)" />
+                </th>
+                <th>
+                    证书超期
+                </th>
+                <th>
+                    仪器名称
+                </th>
+                <th>
+                    管理编号
+                </th>
+                <th>
+                    仪器型号
+                </th>
+                <th>
+                    有效日期
+                </th>
+                <th>
+                    所属部门
+                </th>
+                <th>
+                    备注
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>

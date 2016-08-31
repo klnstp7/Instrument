@@ -1,0 +1,94 @@
+﻿@{
+    ViewBag.Title = "排期调度";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" language="javascript">
+
+    //初始化
+    var oTableUsingPlan = null;
+    $(document).ready(function () {
+        oTableUsingPlan = WrapTables4Ajax("tableInstrumentUsingPlan",
+            "/Instrument/GetInstrumentUsingPlanList?instrumentId=@ViewBag.InstrumentId", "100%", true, "auto");
+        if ("0" == "@ViewBag.DataType") {
+            oTableUsingPlan.fnSetColumnVis(0, false);    //隐藏"操作"列
+            $("#btnAddInstrumentUsingPlan")[0].style.display = "none";   //隐藏"新增"按钮
+        }
+    });
+
+    //新增
+    function fnAddInstrumentUsingPlan() {
+        var url = "/Instrument/EditInstrumentUsingPlan?planId=0&instrumentId=@ViewBag.InstrumentId";
+        ymPrompt.win({ message: url, width: 600, height: 400, title: "排期调度",
+            handler: function (data) {
+                if ("OK" == data) {
+                    if (null != oTableUsingPlan) {
+                        oTableUsingPlan.api().ajax.reload();
+                    }
+                }
+            }, iframe: true
+        });
+    }
+
+    //修改
+    function fnUpdateInstrumentUsingPlan(planId) {
+        var url = "/Instrument/EditInstrumentUsingPlan?planId=" + planId + "&instrumentId=@ViewBag.InstrumentId";
+        ymPrompt.win({ message: url, width: 600, height: 400, title: "排期调度",
+            handler: function (data) {
+                if ("OK" == data) {
+                    if (null != oTableUsingPlan) {
+                        oTableUsingPlan.api().ajax.reload();
+                    }
+                }
+            }, iframe: true
+        });
+    }
+
+    //删除
+    function fnDeleteInstrumentUsingPlan(planId) {
+        var url = "/Instrument/DeleteInstrumentUsingPlan?planId=" + planId;
+        ymPrompt.confirmInfo({ message: "是否删除当前排期调度", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                $.get(url, function (data) {
+                    if (data == "OK") {
+                        if (null != oTableUsingPlan) {
+                            oTableUsingPlan.api().ajax.reload();
+                        }
+                    }
+                });
+            }
+        } 
+        });
+    }
+     
+</script>
+<!--Authorization operate="基础配置管理-标准器具库-编辑-排期调度-新增"-->
+<input id="btnAddInstrumentUsingPlan" type="button" onclick="fnAddInstrumentUsingPlan()" class="submit_btn" value="新增" />&nbsp;
+<!--/Authorization-->
+<table id="tableInstrumentUsingPlan">
+    <thead>
+        <tr>
+            <th>
+                操作
+            </th>
+             <th>
+                订单/项目编号
+            </th>
+            <th>
+                工程师
+            </th>
+            <th>
+                开始时间
+            </th>
+            <th>
+                结束时间
+            </th>
+            <th>
+                备注
+            </th>
+        </tr>
+    </thead>
+</table>
+
+
+

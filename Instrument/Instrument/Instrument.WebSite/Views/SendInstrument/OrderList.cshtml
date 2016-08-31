@@ -1,0 +1,116 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "已送检批次";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'OrderNumber', sType: 'string', sTitle: '送检单号'},
+            { sName: 'QuotationNumber', sType: 'string', sTitle: 'GRGT报价单号' },
+            { sName: 'ReceivedState', sType: 'string', sTitle: '受理状态',
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '未受理', sValue: '0', selected: false },
+                    { sTitle: '已受理', sValue: '1', selected: false }
+                ]
+            },
+             { sName: 'ReceivedDate', sType: 'date', sTitle: '受理时间' },
+            { sName: 'InstrumentCount', sType: 'int', sTitle: '仪器数量' },
+            { sName: '', sType: 'int', sTitle: '已同步数量' },
+            { sName: 'SendUser', sType: 'string', sTitle: '送检人' },
+            {sName: 'SendDate', sType: 'date', sTitle: '送检时间' }
+        ];
+            oTable = GetJsondataFromServ("Instrument", "/SendInstrument/GetOrderListJsonData", "1000px", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+
+         //导出
+        $("#btnExport").click(function () {
+            var fieldCondition = oTable.fnGetAdvCondition(columnInfo);
+            var url = "/SendInstrument/ExportDataBySearchCondition?" + fieldCondition ;
+            ymPrompt.confirmInfo({ message: "是否要导出当前仪器?", title: '确认对话框', handler: function (tp) {
+                if (tp == 'ok') {
+                    window.open(url, "_blank");
+                }
+            }
+            });
+        });
+    });
+
+    //查看进度
+    function fnOrderSchedule(obj) {
+        var orderId = $(obj).parent().attr("orderId");
+        window.open("/SendInstrument/OrderScheduleList?orderId=" + orderId);
+    }
+
+    //下载证书
+    function fnDownloadCert(obj) {
+        var orderId = $(obj).parent().attr("orderId");
+        window.open("/SendInstrument/DownloadCertification?orderId=" + orderId );
+    }
+
+    //更新状态
+    function fnUpdateState(obj) {
+        var orderId = $(obj).parent().attr("orderId");
+        $.post("/SendInstrument/UpdateOrderState?orderId=" + orderId, function (data) {
+            if (data == "OK") {
+                oTable.api().ajax.reload();
+                ymPrompt.alert("更新状态成功");
+            }
+            else ymPrompt.alert(data);
+        });
+    }
+
+    //撤销
+    function RemoveOrder(obj) {
+        var orderId = $(obj).parent().attr("orderId");
+        $.post("/SendInstrument/RemoveOrder?orderId=" + orderId, function (data) {
+            if (data == "OK") {
+                oTable.api().ajax.reload();
+                ymPrompt.alert("撤销成功");
+            }
+            else {
+                oTable.api().ajax.reload();
+                ymPrompt.alert(data);
+            }
+        });
+    }
+
+    function fnSynCertState(obj) {
+        var orderId = $(obj).parent().attr("orderId");
+        $.post("/SendInstrument/SynSendInstrumentCompleteState?orderId=" + orderId, function (data) {
+            if (data.Msg == "OK") {
+                oTable.api().ajax.reload();
+                // ymPrompt.alert("同步成功," + data.Data);
+                fnNewWindow("/SendInstrument/SynSendInstrumentLog?OrderId=" + orderId + "&&Currcount=" + data.Data, " 周期校准记录 ", 800, 380)
+            }
+            else ymPrompt.alert(data.Msg);
+        });
+    }
+    
+
+    //在线支付
+    function fnPayOrder(obj) {
+    }
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+</script>
+    <div>
+    <!--Authorization operate="AddToSendList"-->
+    <input type="button" id="btnExport" class="submit_btn8" onclick="fnExport()" value="导 出" />
+    <!--/Authorization-->
+<table id="Instrument">
+</table>
+</div>
+

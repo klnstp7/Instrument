@@ -1,0 +1,112 @@
+﻿@{
+    ViewBag.Title = "维修列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+    var oTable;
+    var columnInfo;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'InstrumentName', sType: 'string', sTitle: '仪器名称', CustomParam: 'InstrumentParam' },
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号', CustomParam: 'InstrumentParam' },
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号', CustomParam: 'InstrumentParam' },
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号', CustomParam: 'InstrumentParam' },
+            { sName: 'InstrumentCate', sType: 'string', sTitle: '分类' ,CustomParam: 'InstrumentParam',
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentCate)
+                ]},
+            { sName: 'BelongDepart', sType: 'string', sTitle: '所属部门', CustomParam: 'OrgName'},
+            { sName: 'RepairCompany', sType: 'string', sTitle: '维修公司' },
+            { sName: 'Repairer', sType: 'string', sTitle: '维修人' },
+            { sName: 'Mobile', sType: 'string', sTitle: '联系电话' },
+//            { sName: 'RepairMoney', sType: 'string', sTitle: '维修金额' },
+            { sName: 'Leader', sType: 'string', sTitle: '保修人' },
+            { sName: 'ReportCode', sType: 'string', sTitle: '报告编号' },
+            { sName: 'DueStartDate', sType: 'date', sTitle: '报修日期' },
+            { sName: 'DueEndDate', sType: 'date', sTitle: '修复日期' }
+//            { sName: '', sType: 'string', sTitle: '故障原因' },
+//            { sName: '', sType: 'string', sTitle: '保修期限' },
+//            { sName: '', sType: 'string', sTitle: '故障描述' }
+        ];
+        var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+        oTable = GetJsondataFromServ("Instrument", "/Instrument/GetInstrumentRepairPlanJson", "1800px", columnInfo, queryColInfo, "auto", false, false, true, true);
+
+        $("#searchBelongDepart").click( function (){
+            fnNewWindow("/Organization/BelongOrgTree",300,450,"组织架构");
+        });
+
+        $('#form1').validate({
+            rules: {
+            ExcelFile: { required:true,extension: "xlsx|xls" }
+            },
+            messages: {
+                ExcelFile:"请上传.xlsx或.xls后缀的文件"
+            }
+            });
+        
+    });
+    function fnExport() {
+        var fieldCondition = oTable.fnGetAdvCondition(columnInfo);
+        var url = "/Instrument/ExportRepairDataBySearchCondition?" + fieldCondition;
+        ymPrompt.confirmInfo({ message: "是否要导出维修记录?", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                window.open(url, "_blank");
+            }
+        }
+        });
+   }
+   function fnGetDetails(obj) {
+       var PlanId = $(obj).parent().attr("PlanId");
+       fnNewWindow("/Instrument/GetInstrumentRepairPlanDetail?planId=" + PlanId, 750, 400, "详细信息");
+   }
+
+    function BatchImportRepairPlan(){
+        var options = {
+            success: fnCallback,
+            url: "/Instrument/BatchImportRepairPlan"
+        };
+        if ($("#form1").valid()) {
+        $('#form1').ajaxSubmit(options);
+        return false;
+        }
+    }
+
+    function fnCallback(responseText){
+        var jsonObj = eval("(" + responseText + ")");
+        if(jsonObj.sMsg==""){
+            ymPrompt.alert("操作成功,"+jsonObj.Result);
+            }
+            else
+                alert(jsonObj.Result+"\r\n"+jsonObj.sMsg);
+            oTable.api().ajax.reload();
+    }
+
+    function fnGetSelectOrgName(orgName){
+        $("#searchBelongDepart").val(orgName);
+    }
+
+    //下载维修模板
+    function DownloadRepairTemplate(){
+        fnAjaxDownloadFile("/Instrument/DownloadRepairTemplate");
+    }
+
+</script>
+<div>
+    <form id="form1" method="post" action="/Instrument/BatchImportRepairPlan" enctype="multipart/form-data">
+       <!--Authorization operate="/Instrument/DownloadRepairTemplate"-->
+        <input type="button" id="btnExport" class="submit_btn" onclick="fnExport()" value="导出" />
+        <input id="btnDownloadRepairTemplate" onclick="DownloadRepairTemplate()" type="button" class="submit_btn" value="下载模板" />
+        <!--/Authorization-->
+        <!--Authorization operate="Maintain-Import"-->
+        <input type="file" id="ExcelFile" name="ExcelFile" />
+        <input type="button" id="btnImport" class="submit_btn" onclick="BatchImportRepairPlan()"
+            value="批量新增" />
+            <!--/Authorization-->
+        </form>
+    <table id="Instrument">
+    </table>
+</div>

@@ -1,0 +1,81 @@
+﻿@using ToolsLib.Utility
+@using System.Web.UI.WebControls
+@using Instrument.Common.Models;
+@using GRGTCommonUtils;
+@model Instrument.Common.Models.DocumentModel
+@{
+    ViewBag.Title = "体系文件关联的仪器";
+}
+<script type="text/javascript" language="javascript">
+    var oTable;
+    
+    $(document).ready(function () {
+        var data = @Html.Raw(ViewBag.instrumentData);
+        oTable = WrapTables4JsArray("instrument",data);
+    });
+
+     function fnReloadTable() {
+        oTable.api().ajax.reload();    
+    }
+        //关联仪器
+    function fnRelateDocument() {
+//         ymPrompt.win({ message: '@Url.Content("/Document/InstrumentList")?documentId=' + @ViewBag.DocumentId, width: 1500, height: 600, title: '关联仪器', handler: null, iframe: true });
+                window.open("/Document/InstrumentList?documentId=" + @ViewBag.DocumentId);
+    }
+
+            //删除仪器
+            function fnDelete(documentId,instrumentId) {
+        fnConfirmWithF5("确定删除关联！", '@Url.Content("/Document/DeleteDocumentOwnInstrument")?documentId='+documentId+'&instrumentId='+instrumentId);
+    }
+    
+</script>
+<form id="form1" class="form1">
+<input name="DocumentId" id="DocumentId" type="hidden" value="@ViewBag.DocumentId" />
+<input type="button" id="btRelateDocument" class="submit_btn" value="关联仪器" onclick="fnRelateDocument()" />
+</form>
+<table cellpadding="0" cellspacing="0" border="0" class="display" id="instrument">
+    <thead>
+        <tr>
+            <th width="140px">
+                操作
+            </th>
+            <th>
+                仪器名称
+            </th>
+            <th>
+                管理编号
+            </th>
+            <th>
+                仪器型号
+            </th>
+            <th>
+                分类
+            </th>
+            <th>
+                生产厂家
+            </th>
+            <th>
+                出厂编号
+            </th>
+            <th>
+                出厂日期
+            </th>
+            <th>
+                检验日期
+            </th>
+            <th>
+                有效日期
+            </th>
+            <th>
+                所属部门
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="10">
+                数据正在加载中...
+            </td>
+        </tr>
+    </tbody>
+</table>

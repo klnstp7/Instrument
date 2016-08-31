@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "创建工单";
+}
+<style type="text/css">
+    table tr
+    {
+        text-align: center;
+    }
+    a
+    {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+</style>
+<script type="text/javascript">
+    //表单验证
+    $("#form1").validate({
+        rules: {
+            ContentText: {
+                required: true,
+                maxlength: 2000
+            }
+        }
+    })
+        //提交
+    function fnCreateFlow(){
+        if ($("#form1").valid()) {
+            //$.post("../AuditWorkflow/CreateFlow")     
+        };
+        
+         
+    }
+</script>
+
+<form id="form1" name="form1" method="post">
+    <input type="button" onclick="fnCreateFlow();" class="submit_btn" value="申请" />
+   <span class="ico_must">申请原因：</span><textarea rows="1" cols="20" name="ContentText" id="ContentText"></textarea>
+</form>
+

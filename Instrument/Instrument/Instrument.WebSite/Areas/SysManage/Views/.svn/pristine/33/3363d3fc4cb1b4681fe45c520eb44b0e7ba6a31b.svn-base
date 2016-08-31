@@ -1,0 +1,60 @@
+﻿@model IList<Global.Common.Models.RoleModel>
+
+@{
+    ViewBag.Title = "角色管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <script type="text/javascript" language="javascript" >
+        $(document).ready(function () {
+            WrapTables4Dom("example");           
+
+            $("#btnAddNew").click(function () {
+                fnNewWindow('@Url.Content("~/SysManage/Role/Details")?roleId=0');
+            });
+        });
+
+
+        function fnNewWindow(url)
+        {
+            ymPrompt.win({ message: url, width: 500, height: 300, title: '角色信息维护', handler: null, iframe: true });
+        }
+
+    </script> 
+
+
+<input type="button" class="submit_btn" value="新增角色" id="btnAddNew" /><br />
+<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+	<thead>
+		<tr>
+			<th width="8%">序号</th>
+			<th>角色名称</th>
+			<th>是否禁用</th>
+            <th>备注</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+	<tbody>
+    @{
+        int count = 1;
+        foreach (var m in Model)
+        {
+            <tr class="GradeA">
+            <td>@(count++)</td>
+            <td>@m.RoleName</td>
+            <td>@(m.IsEnabled ? Html.Raw("否") : Html.Raw("是"))</td>
+            <td>@m.Remark</td>
+            <td>
+            <a href="#" onclick="fnNewWindow('@Url.Content("~/SysManage/Menu/RoleOwnMenu")?roleId=@m.RoleId');return false;">设置菜单</a>&nbsp;&nbsp;&nbsp;
+            <a href='#' onclick="fnNewWindow('@Url.Content("~/SysManage/Permission/RoleOwnPermission")?roleId=@m.RoleId');return false;">设置权限点</a>&nbsp;&nbsp;&nbsp;
+            <a href="#" onclick="fnConfirmWithF5('确定要禁用角色：@m.RoleName','@Url.Content("~/SysManage/Role/DisableRole?roleId=")@m.RoleId');return false;">禁用角色</a>&nbsp;&nbsp;&nbsp;
+            <a href="#" onclick="fnConfirmWithF5('确定要启用角色：@m.RoleName','@Url.Content("~/SysManage/Role/EnableRole?roleId=")@m.RoleId');return false;">启用角色</a>&nbsp;&nbsp;&nbsp;
+            <a href="#" onclick="fnNewWindow('@Url.Content("~/SysManage/Role/Details")?roleId=@m.RoleId');return false;">修改</a>&nbsp;&nbsp;&nbsp;
+            <a href='#' onclick="fnConfirmWithF5('确定要删除【@m.RoleName】角色？','@Url.Content("~/SysManage/Role/Delete?roleId=")@m.RoleId');return false;">删除</a>
+            </td>
+            </tr>
+        }
+     }
+	</tbody>
+
+</table>
+

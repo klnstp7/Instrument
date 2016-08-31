@@ -1,0 +1,90 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "证书查询";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+    queryColInfo.ColNum = 1;
+    queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            {sName: '', sType: 'string', sTitle: '操 作' ,width:'80px'},
+            { sName: 'RecordState', sType: 'string', sTitle: '周检状态',
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '周检中', sValue: 0, selected: false },
+                    { sTitle: '周检完成', sValue: 1, selected: false }
+                ]
+            },
+            { sName: 'IsOverTime', sType: 'string', sTitle: '是否过期', CustomParam: 'OverTime',
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '已超期', sValue: '1', selected: false },
+                    { sTitle: '未超期', sValue: '0', selected: false }
+                ]
+            },
+            { sName: 'IsUpdateReport', sType: 'string', sTitle: '报告上传', CustomParam: 'UpdateReport',bVisible:false,
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '是', sValue: '1', selected: false },
+                    { sTitle: '否', sValue: '0', selected: false }
+                ]
+            },
+            { sName: 'EndDate', sType: 'date', sTitle: '有效日期'},
+            { sName: 'CertificationCode', sType: 'string', sTitle: '证书编号' },
+            { sName: '', sType: 'string', sTitle: '费用' },
+            { sName: 'InstrumentName', sType: 'string', sTitle: '仪器名称', CustomParam: 'InstrumentParam' },
+                        { sName: 'InstrumentCate', sType: 'string', sTitle: '分类' ,CustomParam: 'InstrumentParam',
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentCate)
+                ]},
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号', CustomParam: 'InstrumentParam' },
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号', CustomParam: 'InstrumentParam' },
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号', CustomParam: 'InstrumentParam' },
+            { sName: '', sType: 'date', sTitle: '检验日期' },
+            { sName: '', sType: 'string', sTitle: '检测结果' },
+            { sName: '', sType: 'string', sTitle: '误 差' },
+            { sName: 'CreateDate', sType: 'date', sTitle:'创建日期'},
+            { sName: 'CreateUser', sType: 'string', sTitle:'创建人'}
+            ];
+            oTable = GetJsondataFromServ("Certification", "/Certification/GetAllCertificationJsonData", "1800px", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+        $("#btnExport").click(function () {
+            var fieldCondition = oTable.fnGetAdvCondition(columnInfo);
+            var url = "/Certification/Export?" + fieldCondition; //+ "&keyWord=" + keyWord;"
+            ymPrompt.confirmInfo({ message: "是否要导出?", title: '确认对话框', handler: function (tp) {
+                if (tp == 'ok') {
+                    window.open(url, "_blank");
+                }
+            }
+            });
+        });
+
+    });
+
+    //全选
+    function fnSetCheckbox(obj) {
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk', isChecked);
+    }
+
+    //详细
+    function fnDetails(logId) {
+        fnNewWindow("/Certification/GetInstrumentCertificationDetail?logId=" + logId, 750, 300, "详细信息");
+    }
+    //下载
+    function fnDownFile(fileId) {
+
+        fnAjaxDownloadFile("/SysManage/Attachment/DownLoad?fileId=" + fileId);
+    }
+</script>
+<div>
+    <input type="button" id="btnExport" class="submit_btn" onclick="fnExport()" value="导出" />
+    <table id="Certification">
+    </table>
+</div>

@@ -1,0 +1,84 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "固定资产";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            
+            { sName: 'RecordState', sType: 'string', sTitle: '状态'  ,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentState)
+                ]},
+            { sName: 'InstrumentName', sType: 'string', sTitle: '资产名称' },
+            { sName: 'AssetsNo', sType: 'string', sTitle: '资产编号' },
+            { sName: 'Specification', sType: 'string', sTitle: '型号规格' },
+            { sName: 'BarCode', sType: 'string', sTitle: '条码' },
+             { sName: 'CalibrationType', sType: 'string', sTitle: '资产属性' ,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonCalibrationType)
+                ]},
+            { sName: 'BelongDepart', sType: 'string', sTitle: '所属部门', CustomParam: 'OrgName'},
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号' },
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号' },
+            { sName: 'BuyDate', sType: 'date', sTitle: '购置日期' },
+            { sName: 'Price', sType: 'int', sTitle: '购置金额' },
+            { sName: 'Manufacturer', sType: 'string', sTitle: '生产厂家' },
+            { sName: 'ManufactureContactor', sType: 'string', sTitle: '厂家联系信息' },
+            { sName: 'LeaderName', sType: 'string', sTitle: '保管人' },
+            { sName: 'StorePalce', sType: 'date', sTitle: '存放地点'},
+            { sName: 'LastCheckDate', sType: 'date', sTitle: '最近盘点时间'},
+            { sName: 'LastCheckUser', sType: 'string', sTitle: '最近盘点人'}
+        ];
+        oTable = GetJsondataFromServ("Instrument", "/Assets/GetAllAssetsJsonData?type=Search", "2000px", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+        $("#searchBelongDepart").click( function (){
+            fnNewWindow("/Organization/BelongOrgTree","组织架构",300,450);
+        });
+    });
+
+
+    //详细
+    function fnInstrumentDetail(obj){
+        var instrumentId = $(obj).parent().attr("instrumentId");
+        window.open("/Assets/Details?instrumentId="+instrumentId);
+    }
+
+    function fnExport(){
+        var fieldCondition = oTable.fnGetAdvCondition(columnInfo);
+        var url = "/Assets/ExportDataBySearchCondition?" + fieldCondition ;
+        ymPrompt.confirmInfo({ message: "是否要导出当前仪器?", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                       window.open(url,"_blank");
+                    }
+                }
+            });
+    }
+
+    function fnGetSelectOrgName(orgName){
+        $("#searchBelongDepart").val(orgName);
+    }
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+</script>
+    <div>
+      <!--Authorization operate="/Assets/ExportDataBySearchCondition"-->
+    <input type="button" id="btnExport" onclick="fnExport()" class="submit_btn"
+        value="导 出" />
+    <!--/Authorization-->
+<table id="Instrument">
+</table>
+</div>
+

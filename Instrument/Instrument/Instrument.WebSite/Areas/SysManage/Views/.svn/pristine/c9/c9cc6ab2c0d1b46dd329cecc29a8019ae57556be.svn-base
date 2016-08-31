@@ -1,0 +1,16 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>
+    </title>  
+</head>
+<frameset cols="22%, *" frameborder="no" border="0" framespacing="0">
+  <frame src="@Url.Content("~/Organization/OrgTreePage")" name="leftFrame" scrolling="auto" noresize id="leftFrame" />
+  <frame src="@Url.Content("~/SysManage/User/UserList")?orgId=@ViewBag.OrgId&orgName=广电计量检测股份有限公司" name="mainFrame" scrolling="auto" noresize id="mainFrame" />
+</frameset>
+</html>

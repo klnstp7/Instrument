@@ -1,0 +1,59 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/InstrumentJs.js")" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+    var tableOriginalData;
+    $(document).ready(function () {
+        //表单验证
+        $("#formInstrumentCert").validate({
+            rules: {
+                fileOriginalData: {
+                    required: true,
+                    extension: "zip"
+                }
+            },
+            messages: {
+                fileOriginalData: "请选择.zip附件"
+            }
+
+        });
+    });
+    //上传数据
+    function fnUploadData() {
+        var options = {
+            success: fnShowProjectResponse,
+            url: "/Instrument/UploadCerts?ajax=true"
+        };
+        if ($("#formInstrumentCert").valid()) {
+            $("#formInstrumentCert").ajaxSubmit(options);
+            return false;
+        }
+    }
+    function fnShowProjectResponse(responseText) {
+        if (responseText.MSG == "OK") {
+            ymPrompt.alert("导入成功！");
+        } else {
+            ymPrompt.alert(responseText.MSG);
+        }
+        var url = "/Instrument/ExportLogFiled?FiledName=" + responseText.Data; 
+        window.open(url, "_blank");
+       
+    }
+</script>
+<form id="formInstrumentCert" name="formInstrumentCert" enctype="multipart/form-data" method="post">
+<div style="width: 98%; float: left; margin-top: 5px; border-bottom: 1px solid #dddddd"
+    id="DivUploadSample">
+    <input id="fileOriginalData" name="fileOriginalData" type="file" />
+    <input id="btnUploadSample" type="button" class="submit_btn" value="上传" onclick="fnUploadData()" />
+</div >
+<div style="width: 98%; float: left; margin-top: 5px; border: 1px solid #dddddd; font-size:13px;">
+ 1、压缩包内电子证书文件名请采用证书编号；
+  <br/>
+ 2、请上传zip压缩包，压缩方法示意如下：
+  <br/>
+ <img  src="../../Content/themes/webcss/img/bg_zip_opreate.png"  width="300px" height="270px"/>
+</div>
+</form>
+

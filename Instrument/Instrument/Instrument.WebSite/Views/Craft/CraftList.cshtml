@@ -1,0 +1,74 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "工艺流程";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+    queryColInfo.ColNum = 1;
+    queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'CraftCode', sType: 'string', sTitle: '工艺过程代码' },
+            { sName: 'CraftName', sType: 'string', sTitle: '工艺过程名称' },
+            { sName: 'InstrumentNo', sType: 'string', sTitle: '工艺过程位号' },
+            { sName: 'UsePlace', sType: 'string', sTitle: '使用地点' },
+            { sName: 'CreateUser', sType: 'string', sTitle: '创建人' },
+            { sName: 'CreateDate', sType: 'date', sTitle: '创建时间' }
+            ];
+        oTable = GetJsondataFromServ("Craft", "/Craft/GetAllCraftJsonData?type=CraftList", "900px", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+    });
+
+    //删除
+    function fnDeleteCraft(craftId) {
+        var url = "/Craft/IsHasInstrument?craftId=" + craftId;
+        $.get(url, function (data) {
+            if (data == "NO") {
+                ymPrompt.confirmInfo({ message: "有仪器在使用该工艺过程，确定要删除？", title: '确认对话框', handler: function (tp) {
+                    if (tp == 'ok') {
+                        fnConfirmWithF5("确定删除工艺流程！", '@Url.Content("/Craft/Delete")?craftId=' + craftId);
+                    }
+                }
+                });
+        }
+        else fnConfirmWithF5WithOTable("确定删除工艺流程！", '@Url.Content("/Craft/Delete")?craftId=' + craftId,oTable);
+        });
+    }
+
+    //编辑
+    function fnEditCraft(craftId) {
+        ymPrompt.win({ message: '@Url.Content("/Craft/Edit")?craftId=' + craftId, width: 800, height: 400, title: '编辑工艺流程', handler: null, iframe: true });
+    }
+
+    //    function fnNewWindow(url, title, width, height) {
+    //        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    //    }
+
+    //增加
+    function fnbtnAddCraft() {
+        ymPrompt.win({ message: '@Url.Content("/Craft/Edit")?craftId=0', width: 800, height: 400, title: '新增工艺流程', handler: null, iframe: true });
+    }
+
+    //        //重新加载
+    //    function fnReloadInstrument()
+    //    {
+    //        //刷新
+    //        oTable.reloadData();
+    //    }
+
+
+</script>
+<div>
+    <!--Authorization operate="/Craft/Edit"-->
+    <input type="button" id="btnAddCraft" onclick="fnbtnAddCraft()" class="submit_btn"
+        value="新 增" />
+    <!--/Authorization-->
+    <table id="Craft">
+    </table>
+</div>

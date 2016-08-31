@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = ViewBag.Title;
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'Title', sType: 'string', sTitle: '内容标题' },
+            { sName: 'Abstract', sType: 'string', sTitle: '内容摘要',sWidth:'400px'},
+            { sName: 'CreatDate', sType: 'date', sTitle: '创建日期' }
+        ];
+        oTable = GetJsondataFromServ("tbknowledge", "/Knowledge/GetKnowledgesJsonData?kType=" + $("#type").val(), "100%", columnInfo, queryColInfo, tableHigth, false);
+
+    });
+
+    //详细
+    function fnDetail(obj){
+        var knowledgeId = $(obj).attr("id");
+        window.open("/Knowledge/Details?knowledgeId="+knowledgeId);
+    }
+
+    //重新加载
+    function fnReloadInstrument(){
+        oTable.reloadData();
+    }
+
+</script>
+<input type="hidden" id="type" value="@ViewBag.KType" />
+<div style="float: left;">
+    <table id="tbknowledge">
+</table>
+</div>
+
+
+

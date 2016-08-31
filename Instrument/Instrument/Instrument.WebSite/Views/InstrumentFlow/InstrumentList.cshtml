@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "流转明细查询";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+    queryColInfo.ColNum = 1;
+    queryColInfo.IsRLType = true;
+    $(function () { 
+      columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'InstrumentName', sType: 'string', sTitle: '仪器名称' },
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号' },
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号' },
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号' },
+            { sName: 'CertificateNo', sType: 'string', sTitle: '证书编号' },
+            { sName: 'InstrumentCate', sType: 'string', sTitle: '分类' ,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentCate)
+                ]},
+            { sName: 'BelongDepart', sType: 'string', sTitle: '所属部门', CustomParam: 'OrgName'},
+            { sName: 'DueStartDate', sType: 'date', sTitle: '校准日期' },
+            { sName: 'LeaderName', sType: 'string', sTitle: '保管人' },
+            { sName: 'CreateUser', sType: 'string', sTitle: '创建人' }
+        ];
+        oTable = GetJsondataFromServ("instrument", "/InstrumentFlow/GetAllInstrumentJsonData", "120%", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+       
+        $("#searchBelongDepart").click( function (){
+            fnNewWindow("/Organization/BelongOrgTree","组织架构",300,450);
+        });
+    
+    });
+
+    function fnGetSelectOrgName(orgName)
+    {
+    $("#searchBelongDepart").val(orgName);
+    }
+
+    function fnInstrumentFlowDetail(obj)
+    {
+        var instrumentId=$(obj).parent().attr("instrumentId");debugger
+        fnNewWindow("/InstrumentFlow/FlowDetails?instrumentId="+instrumentId,"流转明细",700,350);
+    }
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+</script>
+<div>
+    <table id="instrument">
+    </table>
+</div>

@@ -1,0 +1,137 @@
+﻿@using ToolsLib.Utility
+@using Instrument.Common
+@using System.Web.UI.WebControls
+@{
+    ViewBag.Title = "打印标签";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var oTable;
+    $(document).ready(function () {
+          var param = "-1";
+        var tableHigth = "auto";
+        var columnInfo = null;
+        var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '<input type="checkbox" id="chk_all" onclick=\'fnSetCheckbox(this)\' />' },
+            
+            { sName: 'RecordState', sType: 'string', sTitle: '状态' ,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentState)
+                ]},
+            { sName: 'InstrumentName', sType: 'string', sTitle: '名称' },
+            { sName: 'AssetsNo', sType: 'string', sTitle: '资产编号' },
+            { sName: 'Specification', sType: 'string', sTitle: '型号规格' },
+            { sName: 'Manufacturer', sType: 'string', sTitle: '生产厂家' },
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号' },
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号' },
+            { sName: 'BarCode', sType: 'string', sTitle: '条码' },
+            { sName: 'BelongDepart', sType: 'string', sTitle: '所属部门', CustomParam: 'OrgName'},
+            { sName: 'LeaderName', sType: 'string', sTitle: '保管人' }
+        ];
+        oTable = GetJsondataFromServ("Instrument", "/Assets/GetAllInstrumentList?InstrumentForm=@ViewBag.InstrumentForm", "1400px", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+        $("#btnPrint").click(function () {
+            var sampleIds = fnGetAllCheckedValue('chk');
+            if ("" == sampleIds) {
+                ymPrompt.alert("请选择要打印的项目");
+                return;
+            }
+            var TSCObj ;
+            try{
+                TSCObj = new ActiveXObject("TSCActiveX.TSCLIB");
+             }catch(e){
+                ymPrompt.alert("请安装条码打印工具！");
+                return;
+            }
+            var result=TSCObj.ActiveXopenport("TSC  TTP-243E Pro");
+            if(result==0){
+                return;
+            }
+            $("input[name='chk']").each(function () {
+                if ($(this).is(":checked") == true) {
+                    var td = $(this).parent().parent().find("td");
+                    var BarCode = $(td).eq(8).text();    //条码
+                    var InstrumentName = $.trim($(td).eq(2).text());    //仪器名称
+                    var AssetsNo = $(td).eq(3).text();    //资产编号
+                    var Specification = $.trim($(td).eq(4).text());    //仪器型号
+                    var Factory = $.trim($(td).eq(5).text());    //生产厂家
+                    var SerialNo = $.trim($(td).eq(6).text());    //出厂编号
+                    var ManageNo = $.trim($(td).eq(7).text());    //管理编号
+
+                    TSCObj.ActiveXclearbuffer();
+                    TSCObj.ActiveXbarcode("280", "5", "128", "65", "1", "0", "2", "2", BarCode);
+                    TSCObj.ActiveXwindowsfont(200, 135, 23, 0, 2, 0, "宋体", "名称:" + InstrumentName);
+                    TSCObj.ActiveXwindowsfont(200, 165, 23, 0, 2, 0, "宋体", "仪器型号:" + Specification);
+                    TSCObj.ActiveXwindowsfont(200, 195, 23, 0, 2, 0, "宋体", "资产编号:" + AssetsNo);
+                    TSCObj.ActiveXwindowsfont(200, 225, 23, 0, 2, 0, "宋体", "出厂编号:" + SerialNo);
+                    TSCObj.ActiveXwindowsfont(200, 260, 25, 0, 2, 0, "宋体", "管理编号:" + ManageNo);
+                    TSCObj.ActiveXprintlabel("1", "1");
+                }
+            });
+            TSCObj.ActiveXcloseport(); 
+        });
+
+        $("#searchBelongDepart").click( function (){
+            fnNewWindow("/Organization/BelongOrgTree","组织架构",300,450);
+        });
+    });
+    //详细
+    function fnInstrumentDetail(obj){
+        var instrumentId = $(obj).attr("InstrumentId");
+        var instrumentForm = $(obj).attr("InstrumentForm");
+        if (instrumentForm==@Constants.InstrumentForm.固定资产.GetHashCode())
+            window.open("/Assets/Details?instrumentId="+instrumentId);
+        else
+            window.open("/Instrument/InstrumentDetail?instrumentId="+instrumentId);
+    }
+
+     function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+    function fnGetSelectOrgName(orgName){
+        $("#searchBelongDepart").val(orgName);
+    }
+
+    //设置全选、反选
+    function fnSetCheckbox(obj) {
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk', isChecked);
+    }
+    //打印标签
+    function PrintQR() {
+        var InstrumentIds = fnGetAllCheckedValue('chk');
+        if ("" == InstrumentIds) {
+            ymPrompt.alert("请选择要打印的仪器");
+            return;
+        }
+        ymPrompt.confirmInfo({ message: "确定要打印选中的仪器？", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                $.post("/Assets/PrintQR?InstrumentIds=" + InstrumentIds, function (data) {
+                    if (data == "OK") {
+                            ymPrompt.alert("打印成功！");
+                    }
+                    else ymPrompt.alert(data);
+                });
+            }
+        }
+        });
+    }
+    function fnDownloadFile(){
+        fnAjaxDownloadFile("/Assets/DownloadFiles");
+    }
+</script>
+<div id="rightDiv">
+    <div>
+        <!--Authorization operate="标签打印-打印标签"-->
+        &nbsp;&nbsp;<input id="btnPrint" type="button" class="submit_btn" value="打印标签" />
+        <!--/Authorization-->
+        &nbsp;&nbsp; <a href="../../FrameLayout/条码打印工具.zip">条码打印工具</a>
+        &nbsp;&nbsp; <a href="../../FrameLayout/网页打印配置说明.zip">网页打印配置说明</a>
+    </div>
+    <table id="Instrument">
+    </table>
+</div>

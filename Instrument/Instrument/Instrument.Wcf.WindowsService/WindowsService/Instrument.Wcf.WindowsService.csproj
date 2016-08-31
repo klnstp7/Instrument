@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{48706A59-E3F9-4C40-AF02-E1227D665C68}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Instrument.Wcf.WindowsService</RootNamespace>
+    <AssemblyName>Instrument.Wcf.WindowsService</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\..\Libs\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Aop">
+      <HintPath>..\..\..\..\Libs\Spring.Aop.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Core">
+      <HintPath>..\..\..\..\Libs\Spring.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Data">
+      <HintPath>..\..\..\..\Libs\Spring.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Web">
+      <HintPath>..\..\..\..\Libs\Spring.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ToolsLib">
+      <HintPath>..\..\..\..\Libs\ToolsLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="InstrumentService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="InstrumentService.Designer.cs">
+      <DependentUpon>InstrumentService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="GRGTInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GRGTInstaller.Designer.cs">
+      <DependentUpon>GRGTInstaller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="app.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="properties.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlMap_Instrument.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\GRGTCommonUtils\GRGTCommonUtils.csproj">
+      <Project>{16200F4A-D7F9-4593-9A94-9A6F9FF5FA9E}</Project>
+      <Name>GRGTCommonUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Global\Global.Business\Global.Business.csproj">
+      <Project>{C4C22823-2B70-4BE4-93B6-77FB563198F7}</Project>
+      <Name>Global.Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Global\Global.Common\Global.Common.csproj">
+      <Project>{01227158-91C5-40F8-9A67-639C846F525E}</Project>
+      <Name>Global.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Global\Global.DataAccess\Global.DataAccess.csproj">
+      <Project>{B15A2E98-8A52-455A-82BA-1AC865EE3B21}</Project>
+      <Name>Global.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Instrument.Business\Instrument.Business.csproj">
+      <Project>{BAE20448-D715-4DC8-A728-349E06ED2564}</Project>
+      <Name>Instrument.Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Instrument.Common\Instrument.Common.csproj">
+      <Project>{B519C804-483D-47B9-BF79-E9FB7C46F27E}</Project>
+      <Name>Instrument.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Instrument.DataAccess\Instrument.DataAccess.csproj">
+      <Project>{A903918D-EB81-433B-8EB7-F0D04E3EFA04}</Project>
+      <Name>Instrument.DataAccess</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="InstrumentService.resx">
+      <DependentUpon>InstrumentService.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GRGTInstaller.resx">
+      <DependentUpon>GRGTInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

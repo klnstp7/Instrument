@@ -1,0 +1,142 @@
+﻿@model Global.Common.Models.OrgModel
+@{
+    ViewBag.Title = "ViewPage1";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    
+}
+<link href="@Url.Content("~/Content/themes/webcss/formstyle.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $("#btnSave").click(function () {
+            if ($("#showResult").html() != "") {
+                return;
+            }
+            if ($("#form1").valid()) {
+                $.post("/Organization/Save", $("#form1").serialize(), function (data) {
+                    if (data == "OK") window.parent.document.location.href = window.parent.document.location.href;
+                    else alert(data);
+                    window.parent.ymPrompt.close();
+                });
+            }
+        });
+
+        $("#btnClose").click(function () {
+            window.parent.ymPrompt.close();
+        });
+
+        $('input:radio[name="IsEnabled"][value="@(Model.IsEnabled)"]').attr("checked", "checked");
+
+        $("#OrgLeaderName").autocomplete({
+            minLength: 1,
+            source: "/User/SearchByNameJobNumb",
+            select: function (event, ui) {
+                var arr = ui.item.label.split(",");
+                $("#OrgLeaderName").val(arr[0]);
+                $("#OrgLeader").val(ui.item.value);
+
+                return false;
+            }
+        });
+
+        $("#OrgCode").change(function () {
+            $("#showResult").html("");
+            var parentOrgCode = $("#ParentOrgCode").val();
+            var currentOrgCode = $(this).val();
+            var c = currentOrgCode.indexOf(parentOrgCode);
+
+            //仅仅当c为0时当前组织编码以上级组织编码开头
+            if (c != 0) {
+                $("#showResult").html("必需以上级编号开头！");
+                $("#showResult").show();
+
+                return false;
+            }
+
+            JudgeOrgCode();
+        });
+
+    });
+
+    //判断是否存在相同的组织编号
+    function JudgeOrgCode() {
+        $.ajax({
+            type: 'GET',
+            url: '/Organization/JudgeOrgCode?orgId=' + $("#OrgId").val() + '&orgCode=' + $("#OrgCode").val(),
+            success: function (data) {
+                if (data == "True") {
+                    $("#showResult").html("已存在该组织编号！");
+                    $("#showResult").show();
+                }
+                else {
+                    $("#showResult").html("");
+                    $("#showResult").hide();
+                }
+            }
+        });
+    }
+
+</script>
+<form id="form1">
+<input id="OrgId" name="OrgId" type="hidden" value="@Model.OrgId" />
+<table class="form_table">
+    <tr>
+        <th style="width: 100px;">
+            上级组织
+        </th>
+        <td>
+            <input id="ParentOrgName" type="text" disabled="disabled" class="long_width" value="@ViewBag.ParentOrg.OrgName" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            上级编号
+        </th>
+        <td>
+            <input id="ParentOrgId" name="ParentOrgId" type="hidden" value="@ViewBag.ParentOrg.OrgId" />
+            <input id="ParentOrgCode" type="text" disabled="disabled" class="long_width" value="@ViewBag.ParentOrg.OrgCode"/>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">组织名称</span>
+        </th>
+        <td>
+            <input name="OrgName" type="text" maxlength="16" class="long_width" required value="@Model.OrgName" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">组织编号</span>
+        </th>
+        <td>
+            <input id="OrgCode"  name="OrgCode" type="hidden" value="@Model.OrgCode"/>
+            <input id="OrgCodeDisplay" name="OrgCodeDisplay" type="text" minlength="4" class="long_width" disabled="disabled" maxlength="16" required value="@Model.OrgCode" />
+            <span id="showResult" class="info_block" style="display: none;color:Red;"></span>
+        </td>
+    </tr>
+    
+    <tr>
+        <th>
+            排列顺序
+        </th>
+        <td>
+            <input name="ShowOrder" type="digits" class="long_width" required value="@Model.ShowOrder" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            是否禁用
+        </th>
+        <td>
+            <input name="IsEnabled" type="radio" value="True" />否
+            <input name="IsEnabled" type="radio" value="False" />是
+        </td>
+    </tr>   
+    
+</table>
+<div class="submit_btn_div">
+    <input id="btnSave" type="button" class="submit_btn" value=" 保 存 " />
+    <input id="btnClose" type="button" class="submit_btn" value="关闭窗口" />
+</div>
+</form>

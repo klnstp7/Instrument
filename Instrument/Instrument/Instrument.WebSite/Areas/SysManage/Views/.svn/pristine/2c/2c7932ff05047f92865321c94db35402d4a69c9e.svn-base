@@ -1,0 +1,98 @@
+﻿@{
+    ViewBag.Title = "UserList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+var oTable;
+    $(document).ready(function () {
+//        var data = @Html.Raw(ViewBag.UserData);
+//        var oTable = WrapTables4JsArray("user",data);
+        //        oTable.fnSetColumnVis(10, false);
+        oTable = WrapTables4Ajax("user", "/SysManage/User/GetUserList?orgId=@(Request["orgId"])", "100%", true);
+        oTable.fnSort( [ [2,'asc'],[3,'asc'], [1,'asc'] ] );
+
+
+    });
+
+    function fnNewWindow(id) {//设置角色
+        ymPrompt.win({ message: '@Url.Content("~/SysManage/Role/RoleTree")?userId='+id, width: 360, height: 400, title: '用户角色设置', handler: null, iframe: true });
+    }
+
+            function fnUpdateUser(id) {//编辑资料
+         ymPrompt.win({ message: '@Url.Content("~/SysManage/User/EditUser")?userId=' + id + '&orgId=@(Request["orgId"])', width: 500, height: 380, title: '员工信息维护', handler: null, iframe: true });
+    }
+
+        function fnResetPWD(id) {//重置密码
+//        fnConfirmWithF5("确定重置密码！", "~/SysManage/User/ResetPWD?userId="+id);
+        fnConfirmWithF5("确定重置密码！", '@Url.Content("~/SysManage/User/ResetPWD")?userId='+id);
+    }
+        function fnOpenCloseUser(id) {//禁用/启用账号
+        fnConfirmWithF5("确定启用/禁用账号！", '@Url.Content("~/SysManage/User/OpenCloseUser")?userId='+id);
+    }
+
+        function fnDeleteUser(id) {//删除用户
+        fnConfirmWithF5("确定删除用户！", '@Url.Content("~/SysManage/User/DeleteUser")?userId='+id);
+    }
+        function fnSaleManageDeptWindow(id)
+    {
+        ymPrompt.win({ message: '@Url.Content("~/SysManage/User/UserManageDepart")?userId='+id, width: 400, height: 400, title: '设置管理部门', handler: null, iframe: true });
+    }
+
+//        function fnTestLogin(id) {//登录验证
+//        fnConfirmWithF5("登录验证！", '@Url.Content("~/SysManage/User/TestLogin")?userId='+id);
+//    }
+    function fnAddUser(){
+    ymPrompt.win({ message: '@Url.Content("~/SysManage/User/EditUser")?userId=' + 0 + '&orgId=@(Request["orgId"])', width: 500, height: 380, title: '员工信息维护', handler: null, iframe: true });
+    }
+
+        //重新加载
+    function fnReload() {
+        if (null != oTable) {
+            oTable.api().ajax.reload();
+        }
+    }
+</script>
+<!--Authorization operate="User-AddUser"-->
+<input type="button" value="新增员工" class="submit_btn" id="btnAddNew" onclick="fnAddUser()" />
+ <!--/Authorization-->
+<table cellpadding="0" cellspacing="0" border="0" class="display" id="user">
+    <thead>
+        <tr>
+            <th width="70px">
+                操作
+            </th>
+            <th width="50px">
+                姓名
+            </th>
+@*            <th>
+                性别
+            </th>*@
+            <th>
+                账号
+            </th>
+            <th>
+                所在部门
+            </th>
+            <th>
+                职位
+            </th>
+@*            <th>
+                账号状态
+            </th>*@
+@*            <th>
+                员工状态
+            </th>*@
+            <th width="100px">
+                用户角色
+            </th>
+            @*            <th>部门编码</th>*@
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="10">
+                数据正在加载中...
+            </td>
+        </tr>
+    </tbody>
+</table>

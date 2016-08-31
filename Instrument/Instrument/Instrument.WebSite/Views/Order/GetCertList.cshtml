@@ -1,0 +1,49 @@
+﻿@using System.Collections;
+@{
+    ViewBag.Title = "证书列表查询";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var oTable;
+    var columnInfo;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'OrderNumber', sType: 'string', sTitle: '委托单号', CustomParam: 'OrderParam' },
+            { sName: 'CertificateNumber', sType: 'string', sTitle: '证书编号' },
+            { sName: 'MadeNumber', sType: 'string', sTitle: '出厂编号' },
+            { sName: 'InstrumentName', sType: 'string', sTitle: '器具名称' },
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号' },
+            { sName: 'ManageNumber', sType: 'string', sTitle: '管理编号' },
+            { sName: 'IsComplete', sType: 'string', sTitle: '器具完工', "bSortable": false, searchDataSource: [
+                     { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '是', sValue: '1', selected: false },
+                    { sTitle: '否', sValue: '0', selected: false }
+                ]
+            },
+            { sName: 'IsCertComplete', sType: 'string', sTitle: '证书完工', "bSortable": false, searchDataSource: [
+                     { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '是', sValue: '1', selected: false },
+                    { sTitle: '否', sValue: '0', selected: false }
+                ]
+            },
+            { sName: '', sType: 'string', sTitle: '业务员' },
+            { sName: '', sType: 'string', sTitle: '开单日期' }
+        ];
+        queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+        oTable = GetJsondataFromServ("CertList", "/Order/GetCertListForJsonData", "100px", columnInfo, queryColInfo, "auto", false);
+    });
+
+    function fnDownloadPDF(obj) {
+        var id = $(obj).attr("id");
+        var certificateNumber = $(obj).attr("CertificateNumber");
+        window.open("/Order/Download?fileId=" + id + "&certificateNumber=" + certificateNumber);
+    }
+</script>
+<div>
+    <table id="CertList">
+    </table>
+</div>
+

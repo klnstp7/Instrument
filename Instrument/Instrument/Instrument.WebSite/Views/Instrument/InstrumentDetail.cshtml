@@ -1,0 +1,393 @@
+﻿@using Instrument.Common.Models;
+@using Global.Common.Models;
+@using GRGTCommonUtils;
+@model Instrument.Common.Models.InstrumentModel
+@{
+    ViewBag.Title = "仪器详细信息";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    CraftModel mCraft = ViewBag.CraftModel as CraftModel;
+}
+<script language="javascript" type="text/javascript">
+
+    //初始化
+    $(document).ready(function () {
+        //页面缓存
+        $("#tabs").tabs({ cache: true });
+    });
+
+    //关闭
+    function fnClose() {
+        window.opener = null;
+        window.close();
+    }
+    //显示仪器大图片
+    function fnInstrumentPic() {
+        window.open("/Instrument/InstrumentPic?picSrc=@ViewBag.PicPath");
+    }
+
+</script>
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">基本信息</a></li>
+        <!--Authorization operate="/Instrument/InstrumentCertificationList"-->
+        <li><a href="/Instrument/InstrumentCertificationList?instrumentId=@Request["instrumentId"]&dataType=0">周期校准记录</a></li>
+        <!--/Authorization-->
+        <!--Authorization operate="/Instrument/InstrumentRepairPlanList"-->
+        <li><a href="/Instrument/InstrumentRepairPlanList?instrumentId=@Request["instrumentId"]&dataType=0">维修记录</a></li>
+        <!--/Authorization-->
+        <!--Authorization operate="仪器详细-工艺过程"-->
+        <li><a href="#tabs-3">工艺过程</a></li>
+        <!--/Authorization-->
+        <!--Authorization operate="/Instrument/InstrumentOwnDocumentList"-->
+        <li><a href="/Instrument/InstrumentOwnDocumentList?instrumentId=@Request["instrumentId"]&dataType=0">作业指导书</a></li>
+        <!--/Authorization-->
+        <!--Authorization operate="仪器详细-设备档案"-->
+        <li><a href="#tabs-4">设备说明书</a></li>
+        <!--/Authorization-->
+        <!--Authorization operate="/Instrument/InstrumentPeriodcheckList"-->
+        <li><a href="/Instrument/InstrumentPeriodcheckList?instrumentId=@Request["instrumentId"]&dataType=0">
+            期间核查</a></li>
+        <!--/Authorization-->
+@*        <!--Authorization operate="/Instrument/InstrumentPeriodcheckList"-->
+        <li><a href="/Instrument/InstrumentInnerCheckList?instrumentId=@Request["instrumentId"]&dataType=0">
+            内部核查</a></li>
+        <!--/Authorization-->*@
+        <!--Authorization operate="/Assets/CheckLogFlowList"-->
+        <li><a href="/Assets/CheckLogFlowList?instrumentId=@Request["instrumentId"]&dataType=0">
+            盘点记录</a></li>
+        <!--/Authorization-->
+        <!--Authorization operate="/InstrumentFlow/FlowDetails"-->
+        <li><a href="/InstrumentFlow/FlowDetails?instrumentId=@Request["instrumentId"]&dataType=0">流转明细</a></li>
+        <!--/Authorization-->
+        <!--Authorization operate="/Instrument/AccessoriesInstrument"-->
+        <li><a href="/Instrument/AccessoriesInstrument?instrumentId=@Request["instrumentId"]&dataType=0">配件设备</a></li>
+        <!--/Authorization-->
+    </ul>
+    <div id="tabs-1">
+        <table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+            <tr>
+                <th style="width: 90px;">
+                    设备分类
+                </th>
+                <td style=" width:35%">
+                    @((ViewBag.InstrumentCate as ParamItemModel).ParamItemName)
+                </td>
+                <th style="width: 90px;">
+                    <span style="display:@ViewBag.IsShowSubCate" />设备子分类
+                </th>
+                <td style=" width:35%">
+                    @((ViewBag.SubInstrumentCate as ParamItemModel).ParamItemName)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    所属部门
+                </th>
+                <td>
+                    @ViewBag.BelongDepart
+                </td>
+                <th>
+                    最近修改信息
+                </th>
+                <td>
+                    修改人：@Model.LastUpdateUser,修改时间：@Model.LastUpdateDate
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    仪器名称
+                </th>
+                <td>
+                    @Model.InstrumentName
+                </td>
+                <th>
+                    英文名称
+                </th>
+                <td>
+                    @Model.EnglishName
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    仪器型号
+                </th>
+                <td>
+                    @Model.Specification
+                </td>
+                <th>
+                    出厂编号
+                </th>
+                <td>
+                    @Model.SerialNo
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    证书编号
+                </th>
+                <td>
+                    @Model.CertificateNo
+                </td>
+                <th>
+                    管理编号
+                </th>
+                <td>
+                    @Model.ManageNo
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    仪器条码
+                </th>
+                <td>
+                    @Model.BarCode
+                </td>
+                <th>
+                </th>
+                <td>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    校准日期
+                </th>
+                <td>
+                    @(Model.DueStartDate == null ? "" : Model.DueStartDate.Value.ToString("yyyy-MM-dd"))
+                </td>
+                <th>
+                    到期日期
+                </th>
+                <td>
+                    @(Model.DueEndDate == null ? "" : Model.DueEndDate.Value.ToString("yyyy-MM-dd"))
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    使用年限
+                </th>
+                <td>
+                    @Model.DurableYears
+                </td>
+                <th>
+                    资产编号
+                </th>
+                <td>
+                    @Model.AssetsNo
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    管理级别
+                </th>
+                <td>
+                    @((ViewBag.ManageLevel) == ""?"":(ViewBag.ManageLevel))
+                </td>
+                <th>
+                    检验周期
+                </th>
+                <td>
+                    @Model.InspectCycle
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    检验机构
+                </th>
+                <td>
+                    @Model.InspectOrg
+                </td>
+                <th>
+                    检定类别
+                </th>
+                <td>
+                    @((ViewBag.VerificationType as ParamItemModel).ParamItemName)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    技术特征
+                </th>
+                <td>
+                    @Model.TechniqueCharacter
+                </td>
+                <th>
+                    计量特性
+                </th>
+                <td>
+                    @Model.MeasureCharacter
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    项目组
+                </th>
+                <td>
+                    @Model.ProjectTeam
+                </td>
+                <th>
+                    保管人
+                </th>
+                <td>
+                    @Model.LeaderName
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    器具状态
+                </th>
+                <td>
+                    @((ViewBag.InstrumentRecordState as ParamItemModel).ParamItemName)
+                </td>
+                <th>
+                    存放地点
+                </th>
+                <td>
+                    @Model.StorePalce
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    设备类别
+                </th>
+                <td>
+                    @((ViewBag.InstrumentType as ParamItemModel).ParamItemName)
+                </td>
+                <th>
+                    校准类别
+                </th>
+                <td>
+                    @((ViewBag.CalibrationType as ParamItemModel).ParamItemName)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    购置日期
+                </th>
+                <td>
+                    @(string.Format("{0:yyyy-MM-dd}", Model.BuyDate))
+                </td>
+                <th>
+                    购置金额
+                </th>
+                <td>
+                    @Model.Price
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    生产厂家
+                </th>
+                <td>
+                    @Model.Manufacturer
+                </td>
+                <th>
+                    厂家联系信息
+                </th>
+                <td>@Model.ManufactureContactor
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    备注
+                </th>
+                <td colspan="1">
+                    @Model.Remark
+                </td>
+                <th>仪器照片</th>
+                <td><img  width="80px" height="80px" src="@ViewBag.PicPath" onclick="fnInstrumentPic()"/></td>
+            </tr>
+        </table>
+        <div class="submit_btn_div">
+            <input id="btnClose" class="submit_btn" type="button" onclick="fnClose()" value="关 闭" />
+        </div>
+    </div>
+    <!--Authorization operate="仪器详细-工艺过程"-->
+    <div id="tabs-3">
+        <table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+            <tr>
+                <th style="width: 15%;">
+                    工艺过程代码
+                </th>
+                <td style="width: 35%;">
+                    @mCraft.CraftCode
+                </td>
+                <th style="width: 15%;">
+                    工艺过程名称
+                </th>
+                <td style="width: 35%;">
+                    @mCraft.CraftName
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    设备位号
+                </th>
+                <td>
+                    @mCraft.InstrumentNo
+                </td>
+                <th>
+                    使用地点
+                </th>
+                <td>
+                    @mCraft.UsePlace
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    工艺要求
+                </th>
+                <td>
+                    @mCraft.Required
+                </td>
+                <th>
+                    测量范围
+                </th>
+                <td>
+                    @mCraft.MeasureRange
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    准确度
+                </th>
+                <td>
+                    @mCraft.Precise
+                </td>
+                <th>
+                    分辨率
+                </th>
+                <td>
+                    @mCraft.DPI
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    工艺允许误差
+                </th>
+                <td>
+                    @mCraft.PermissiblError
+                </td>
+                <th>
+                    管理部门
+                </th>
+                <td>
+                    @mCraft.ManageDepart
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    备注
+                </th>
+                <td colspan="3">
+                    @mCraft.Remark
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--/Authorization-->
+    <!--Authorization operate="仪器详细-设备档案"-->
+    <div id="tabs-4">
+        @Html.Action("GetAttachments", "Instrument", new { AttachmentBusinessType = Instrument.Common.Constants.AttachmentBusinessType.设备档案.GetHashCode(), BusinessId = GRGTCommonUtils.UtilsHelper.Encrypt(Model.InstrumentId.ToString()) })
+    </div>
+    <!--/Authorization-->
+</div>

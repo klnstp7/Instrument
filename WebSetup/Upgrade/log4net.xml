@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net"/>
+  </configSections>
+
+  <log4net>
+    <!--<appender name="file" type="log4net.Appender.FileAppender">
+      <param name="File" value="log.txt"/>
+      <param name="AppendToFile" value="true"/>
+      <layout type="log4net.Layout.PatternLayout">
+        <param name="ConversionPattern" value="[%d %l] %m%n"/>
+        <param name="ConversionPattern" value="%d [%t] %-5p %c [%x] - %m%n%n"/>
+      </layout>
+    </appender>-->
+    <!--将日志以回滚文件的形式写到文件中-->
+    <appender name="file" type="log4net.Appender.RollingFileAppender">
+      <!--定义文件存放位置-->
+      <param name="File" value="Log/"/>
+      <!--是否附加到文件-->
+      <param name="AppendToFile" value="true"/>
+      <!--最大回滚数目-->
+      <param name="MaxSizeRollBackups" value="10"/>
+      <!--是否是静态文件名-->
+      <param name="StaticLogFileName" value="false"/>
+      <!--文件命名的日期格式-->
+      <param name="DatePattern" value="yyyyMMdd&quot;.log&quot;"/>
+      <!--回滚样式-->
+      <param name="RollingStyle" value="Date"/>
+
+      <!--日志消息的格式, 表示换行-->
+      <layout type="log4net.Layout.PatternLayout">
+        <param name="ConversionPattern" value="%d [filename(%F) line(%L) class(%c) thread(%t)] %-5p [%x] - %m%n%n"/>
+      </layout>
+    </appender>
+
+
+    <root>
+      <level value="ALL"/>
+      <!-- ALL, DEBUG, INFO, WARN, ERROR, FATAL, OFF -->
+      <appender-ref ref="file"/>
+    </root>
+    <logger name="*">
+      <level value="ALL"/>
+      <appender-ref ref="file"/>
+    </logger>
+  </log4net>
+
+</configuration>

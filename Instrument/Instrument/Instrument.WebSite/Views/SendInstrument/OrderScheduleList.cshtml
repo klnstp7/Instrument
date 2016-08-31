@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "查看进度";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/jscript">
+    var oTable;
+    $(function () {
+        oTable = WrapTables4Ajax("projectList", "/SendInstrument/GetOrderScheduleList?orderId=@Request["orderId"]", "1000px", true, "auto");
+    })
+
+    function fnDetails(obj){
+        var instrumentId=$(obj).attr("instrumentId");
+           window.open("/Instrument/InstrumentDetail?instrumentId="+instrumentId);
+    }
+</script>
+<div>
+    <table id="projectList">
+        <thead>
+            <tr>
+             <th>
+                    操作
+                </th>
+                <th>
+                    状态
+                </th>
+                <th>
+                    仪器名称
+                </th>
+                <th>
+                    仪器型号
+                </th>
+                <th>
+                    出厂编号
+                </th>
+                <th>
+                    设备编号
+                </th>
+             @*   <th>
+                    证书编号
+                </th>*@
+                <th>
+                    标准报价
+                </th>
+                @*<th>
+                    检验日期
+                </th>
+                <th>
+                    有效日期
+                </th>
+                <th>
+                    器具完工
+                </th>
+                <th>
+                    证书完工
+                </th>
+                <th>
+                    是否退检
+                </th>*@
+                 <th>
+                    备注
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>

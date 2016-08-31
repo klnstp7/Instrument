@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "流转明细";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    $(function () {
+        oTable = WrapTables4Ajax("flowList", "/InstrumentFlow/GetFlowDetails?instrumentId=@ViewBag.InstrumentId", "100%");
+        oTable.fnSort([[3, 'asc']]);
+    })
+
+
+</script>
+<div>
+    <table id="flowList">
+        <thead>
+            <tr>
+                <th>
+                    事由
+                </th>
+                <th>
+                    地点
+                </th>
+                <th>
+                    操作人
+                </th>
+                <th>
+                    时间
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>

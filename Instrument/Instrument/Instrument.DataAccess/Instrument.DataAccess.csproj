@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A903918D-EB81-433B-8EB7-F0D04E3EFA04}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Instrument.DataAccess</RootNamespace>
+    <AssemblyName>Instrument.DataAccess</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>GRGT.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.2.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Libs\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ToolsLib">
+      <HintPath>..\..\..\Libs\ToolsLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssetCheckPlanDaoImplForSQLite.cs" />
+    <Compile Include="BusinessAttachmentDaoImpl.cs" />
+    <Compile Include="ContactDaoImplForSQLite.cs" />
+    <Compile Include="ContactDaoImpl.cs" />
+    <Compile Include="CraftDaoImpl.cs" />
+    <Compile Include="DBProvider.cs" />
+    <Compile Include="InstrumentCheckLogDaoImpl.cs" />
+    <Compile Include="InstrumentDaoImpl.cs" />
+    <Compile Include="InstrumentFlowDaoImpl.cs" />
+    <Compile Include="InstrumentInnerCheckDaoImpl.cs" />
+    <Compile Include="InstrumentRepairPlanDaoImpl.cs" />
+    <Compile Include="InstrumentUsingPlanDaoImpl.cs" />
+    <Compile Include="KnowledgesDaoImpl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="OrderSendInstrumentDaoImpl.cs" />
+    <Compile Include="OrderDaoImpl.cs" />
+    <Compile Include="InstrumentCertificationDaoImpl.cs" />
+    <Compile Include="DocumentDaoImpl.cs" />
+    <Compile Include="InstrumentWaitSendDaoImpl.cs" />
+    <Compile Include="InstrumentPeriodcheckDaoImpl.cs" />
+    <Compile Include="CraftDaoImplForSQLite.cs" />
+    <Compile Include="InstrumentCertificationDaoImplForSQLite.cs" />
+    <Compile Include="InstrumentDaoImplForSQLite.cs" />
+    <Compile Include="InstrumentRepairPlanDaoImplForSQLite.cs" />
+    <Compile Include="OrderDaoImplForSQLite.cs" />
+    <Compile Include="OrderSendInstrumentDaoImplForSQLite.cs" />
+    <Compile Include="AssetCheckPlanDaoImpl.cs" />
+    <Compile Include="AssetCheckPlanDetailDaoImpl.cs" />
+    <Compile Include="AssetCheckOperatorDaoImpl.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Instrument-DataAccess.config">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Instrument.Common\Instrument.Common.csproj">
+      <Project>{B519C804-483D-47B9-BF79-E9FB7C46F27E}</Project>
+      <Name>Instrument.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GRGT.snk" />
+    <EmbeddedResource Include="Instrument-DataAccessForSQLite.config">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

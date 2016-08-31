@@ -1,0 +1,17 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>组织机构管理</title>
+</head>
+
+<frameset cols="22%, *" frameborder="no" border="0" framespacing="0">
+  <frame src="@Url.Content("~/Organization/OrgTreePage")" name="leftFrame" scrolling="auto" noresize id="leftFrame1" />
+  <frame src="@Url.Content("~/Organization/OrgListPage")?orgId=@ViewBag.orgId &orgName=广电计量检测股份有限公司" name="mainFrame" scrolling="auto" noresize id="mainFrame1" />
+</frameset>
+
+</html>

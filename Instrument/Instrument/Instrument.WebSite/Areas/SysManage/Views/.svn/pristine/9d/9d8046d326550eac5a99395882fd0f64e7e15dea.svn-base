@@ -1,0 +1,77 @@
+﻿@{
+    ViewBag.Title = "上传文件管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+}
+
+<script type="text/javascript" language="javascript">
+    $(function () {
+        var columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'FileName', sType: 'string', sTitle: '文件名称' },
+            { sName: '', sType: 'int', sTitle: '文件大小(KB)' },
+            { sName: 'FileType', sType: 'string', sTitle: '文件类型',
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '未知', sValue: '0', selected: false },
+                    { sTitle: '证书模板', sValue: '1', selected: false },
+                    { sTitle: '技术依据', sValue: '2', selected: false },
+                    { sTitle: '客户回签单', sValue: '3', selected: false },
+                    { sTitle: '原始记录', sValue: '4', selected: false },
+                    { sTitle: '标准器具', sValue: '7', selected: false },
+                    { sTitle: '证书及报告', sValue: '5', selected: false },
+                    { sTitle: '证书及报告历史记录', sValue: '6', selected: false }
+                ]
+            },
+            { sName: 'UserName', sType: 'string', sTitle: '上传人' },
+            { sName: 'CreateDate', sType: 'date', sTitle: '上传时间' },
+            { sName: 'FileAccessPrefix', sType: 'string', sTitle: '文件访问前缀' },
+            { sName: 'FileVirtualPath', sType: 'string', sTitle: '文件虚拟地址' }
+        ];
+
+        oTable = GetJsondataFromServ("attachmentList", "/SysManage/Attachment/GetAttachmentListJsonData", "100%", columnInfo);
+        //oTable = GetJsondataFromServ("attachmentList", "/SysManage/Attachment/GetAttachmentListJsonData");
+    });
+
+    function fnDeleteAttachment(obj) {
+        var fileId = $(obj).attr("fileId");
+        var fileName = $(obj).attr("fileName");
+        fnConfirmWithF5('确定文件【' + fileName + '】？', '@Url.Content("~/SysManage/Attachment/DeleteAttachment?fileId=")' + fileId);
+        return false;
+    }
+
+</script>
+
+<table cellpadding="0" cellspacing="0" border="0" class="list_table" id="attachmentList">
+    <thead>
+        <tr>
+            <th width="100px;">
+                操作
+            </th>
+            <th width="160px;">
+                文件名称
+            </th>
+            <th width="110px;">
+                文件大小(KB)
+            </th>
+              <th width="110px;">
+                文件类型
+            </th>
+            <th width="90px;">
+                上传人
+            </th>
+            <th width="90px;">
+                上传时间
+            </th>
+            <th>
+                文件访问前缀
+            </th>
+            <th>
+                文件虚拟路径
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+

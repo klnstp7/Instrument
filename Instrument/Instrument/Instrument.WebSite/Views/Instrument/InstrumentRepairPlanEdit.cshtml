@@ -1,0 +1,140 @@
+﻿@model Instrument.Common.Models.InstrumentRepairPlanModel
+@{
+    ViewBag.Title = "维修计划";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+   
+   //初始化
+    var oTable = null;
+    $(document).ready(function () {
+        //表单验证
+        $("#formInstrumentRepairPlan").validate({
+            rules: {
+                RepairCompany: {required: true, specialCharValidate: true, maxGBKlength: 200},
+                Mobile: {mobile: true},
+                Leader: { required: true,specialCharValidate: true, maxGBKlength: 10 },
+                DueStartDate: {required: true},
+                DueEndDate: {required: true},
+                Remark: {required: true,specialCharValidate: true,maxGBKlength: 400},
+                RepairMoney: { required: true, number: true},
+                Reason: { required: true, specialCharValidate: true, maxGBKlength: 100 },
+                ReportCode: { required: true, specialCharValidate: true, maxGBKlength: 20 }
+            }
+        });
+
+    });
+
+    //保存
+    function fnSave() {
+        if (!$("#formInstrumentRepairPlan").valid()) {
+            return false;
+        }
+        $.post("/Instrument/SaveInstrumentRepairPlan", $("#formInstrumentRepairPlan").serialize(), function (data) {
+            if ("OK" == data) {
+                window.parent.ymPrompt.doHandler("OK", true);
+            }
+            else {
+                ymPrompt.alert(data);
+            }
+        });    
+    }
+    
+    //关闭
+    function fnClose() {
+        window.parent.ymPrompt.doHandler("close", true); 
+    }
+
+</script>
+<form id="formInstrumentRepairPlan" class="cmxform">
+<input type="hidden" id="PlanId" name="PlanId" value="@Model.PlanId" />
+<input  type="hidden" id="InstrumentId" name="InstrumentId" value="@Model.InstrumentId" />
+<table id="tableInstrumentRepairPlan" class="form_table">
+    <tr>
+        <th style="width: 35%;">
+            <span class="ico_must">维修公司</span>
+        </th>
+        <td style="width: 35%;">
+            <input name="RepairCompany" id="RepairCompany" type="text" value="@Model.RepairCompany" style="width: 200px;" />
+        </td>
+        <th style="width: 30%;">
+           维修人员
+        </th>
+        <td>
+            <input id="Repairer" name="Repairer" type="text" value="@Model.Repairer" style="width: 200px;" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            联系电话
+        </th>
+        <td>
+            <input name="Mobile" id="Mobile" type="text" value="@Model.Mobile" style="width: 200px;" />
+        </td>
+         <th>
+            <span class="ico_must">维修金额</span>
+        </th>
+        <td>
+            <input id="RepairMoney" name="RepairMoney" type="text" value="@Model.RepairMoney" style="width: 200px;" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">报修人</span>
+        </th>
+        <td>
+            <input id="Leader" name="Leader" type="text" value="@Model.Leader" style="width: 200px;" />
+        </td>
+         <th>
+            <span class="ico_must">报告编号</span>
+        </th>
+        <td>
+            <input id="ReportCode" name="ReportCode" type="text" value="@Model.ReportCode" style="width: 200px;" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">报修日期</span>
+        </th>
+        <td>
+            <input type="text" id="DueStartDate" name="DueStartDate" class="Wdate" style="width: 202px;" 
+                value="@(DateTime.MinValue == Model.DueStartDate ? string.Empty : Model.DueStartDate.ToString("yyyy-MM-dd HH:mm:ss"))" 
+                onfocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'DueEndDate\',{m:-1})}'})" />
+        </td>
+        <th>
+            <span class="ico_must">修复日期</span>
+        </th>
+        <td>
+            <input type="text" id="DueEndDate" name="DueEndDate" class="Wdate"  style="width: 202px;"
+                value="@(DateTime.MinValue == Model.DueEndDate ? string.Empty : Model.DueEndDate.ToString("yyyy-MM-dd HH:mm:ss"))" 
+                onfocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'DueStartDate\',{m:+1})}'})" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">故障原因</span>
+        </th>
+         <td>
+            <input id="Reason" name="Reason" type="text" value="@Model.Reason" style="width: 200px;" />
+        </td>
+        <th>
+            <span>保修期限</span>
+        </th>
+        <td>
+            <input id="TermService" name="TermService" type="text" value="@Model.TermService" style="width: 200px;" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">故障描述</span>
+        </th>
+        <td colspan="3">
+            <textarea id="Remark" name="Remark" rows="2" cols="61" >@Model.Remark</textarea>
+        </td>
+    </tr>
+</table>
+<div class="submit_btn_div">
+    <input id="btnSave" type="button" class="submit_btn" value=" 保 存" onclick="fnSave()" />
+    <input id="btnClose" type="button" class="submit_btn" value="关 闭" onclick="fnClose()" />
+</div>
+</form>

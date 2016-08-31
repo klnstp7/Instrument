@@ -1,0 +1,266 @@
+﻿@{
+    ViewBag.Title = "设备状态图";
+    Layout = null; ;
+}
+
+<link href="../../Content/themes/webcss/pagination.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    #tableEquipment
+    {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        border-left: 0px solid #888;
+        border-top: 0px solid #888;
+    }
+    #tableEquipment tr
+    {
+        line-height: 2;
+        text-align:center;
+        background: #F0F8FF;
+    }
+    
+    #tableEquipment tr td
+    {
+        width: 1%;
+        height: 35px;
+        border: solid 1px;
+        font-family:Arial;
+    }
+    
+    #tableEquipment tr th
+    {
+        border: solid 1px;
+        font-size:13px;
+        width: 10%;
+        
+    }
+    
+    .paiqi
+    {
+        background: #7FFF00;
+    }
+    
+    #EquipmentTableFormTable span
+    {
+        border-collapse: collapse;
+        color: #333;
+        font-family: Arial,simsun;
+         font-size:13px;
+        text-alignleftwidth: 65px;
+
+    }
+    .submit_btn, .submit_btn_gray {
+    width: 80px;
+    height: 26px;
+    line-height: 20px;
+    font-weight: normal;
+    border: 0px none;
+    margin: 0px 4px;
+    cursor: pointer;
+    color: #5D1B05;
+    background: url("../../Content/themes/webcss/img/submit_btn.gif") no-repeat scroll 0% 0% transparent;
+    
+    }
+    .myfont
+    {
+        font-size:13px;
+        font-family:Arial;
+    }
+    
+   input, textarea, select, button {
+    font-size: 13px;
+    padding: 2px;
+    margin: 0px;
+    vertical-align: middle;
+    
+    
+}    
+
+ .chongtu
+ {
+      background: #FF4040;
+ }
+
+    
+</style>
+<!--分页-->
+<script src="../../Scripts/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="../../Scripts/pagination/jquery.pagination.js" type="text/javascript"></script>
+<script src="../../My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var Clientwidth = window.screen.width;
+    var Clientheight = window.screen.height;
+    var pageRecord = 12;
+    $(function () {
+        fnExperimentPlan(0)
+
+    });
+  
+
+    //设备排期查询
+    function fnExperimentPlan(pageIndex) {
+        var url = "/Instrument/GetExperimentScheduling2?currentPage=" +pageIndex + "&pageRecord=" + pageRecord;
+        $.post(url, $("#EquipmentTableForm").serialize(), function (data) {
+            $("#tableEquipment").find("tr:gt(1)").remove();
+            $("#tableEquipment").append(data.ExperimentPlanTable);
+            $("#tableEquipment").find("tr:gt(1)").addClass("myfont");
+            $("#RecordCount").text(data.ChkEquipmentLstCount);
+            $("#pagesize").text(data.ChkEquipmentLstCount==0?"0":pageRecord);
+            $(".pagination").pagination(data.ChkEquipmentLstCount,
+			{
+			    callback: pageselectCallback,
+			    num_edge_entries: 1,   //如果设为1，那么永远会显示首页和末页 1或0
+			    next_text: "下一页",
+			    prev_text: "上一页",
+			    ellipse_text: "....", //从当前页码段到首页或末页之间的标识字符串
+			    current_page: pageIndex, 	//初始化时选中的页码
+			    items_per_page: pageRecord,   //每页每页显示的记录条数,
+			    load_first_page: false,
+                num_display_entries:5
+			}
+		    );
+        })
+        return false;
+
+    }
+
+    //分页回调函数
+    function pageselectCallback(index, jq) {
+        var url = "/Instrument/GetExperimentScheduling2?currentPage=" + index + "&pageRecord=" + pageRecord;
+        $.post(url, $("#EquipmentTableForm").serialize(), function (data) {
+            $("#tableEquipment").find("tr:gt(1)").remove();
+            $("#tableEquipment").append(data.ExperimentPlanTable);
+            $("#RecordCount").text(data.ChkEquipmentLstCount);
+            $("#pagesize").text(data.ChkEquipmentLstCount == 0 ? "0" : pageRecord);
+            $("#tableEquipment").find("tr:gt(1)").addClass("myfont");
+
+
+        })
+        return false;
+    }
+
+
+
+   
+
+
+    //设备排期详细
+    function fnExperimentPlanDetail(obj) {
+        var InstrumentId = $(obj).attr("InstrumentId");
+        window.open('@Url.Content("~/Instrument/InstrumentDetail")?instrumentId=' + InstrumentId);
+    }
+
+    //设备排期
+    function fnTestPlan(obj) {
+        var InstrumentId = $(obj).attr("InstrumentId");
+        fnNewWindow("/Instrument/EditInstrumentUsingPlan?planId=0&instrumentId=" + InstrumentId, 500, 300, "设备排期");
+    }
+
+    //设备预约:
+    function fnAppointmentPlan(obj) {
+        var InstrumentId = $(obj).attr("InstrumentId");
+        fnNewWindow("/EquipmentManagement/EditAppointmentPlan?AId=0&equipmentId=" + InstrumentId, 500, 300, "新增预约");
+    }
+
+    //维护计划
+    function fnMaintainPlan(obj) {
+        var InstrumentId = $(obj).attr("InstrumentId");
+        ymPrompt.win({ message: '/Instrument/EditInstrumentRepairPlan?planId=0&instrumentId=' + InstrumentId, width: 500, height: 350, title: '新增维护计划', handler: null, iframe: true });
+    }
+
+    //排期情况
+    function fnExperimentPlanDetail(obj) {
+        var InstrumentId = $(obj).attr("InstrumentId");
+         window.open('@Url.Content("~/Instrument/InstrumentDetail")?instrumentId=' + InstrumentId);
+    }
+
+</script>
+<form id="EquipmentTableForm">
+<table id="EquipmentTableFormTable">
+    <tr>
+        <th style="width: 100px; ">
+            <span>设备名称:</span>
+        </th>
+        <td>
+            <input id="InstrumentName" name="InstrumentName" />
+        </td>
+        <th style="width:80px;">
+            <span>分公司：</span>
+        </th>
+        <td>@Html.DropDownList("BelongSubCompany")
+        </td>
+        <th style="width:80px;">
+            <span>日期：</span>
+        </th>
+        <td>
+            <input id="ExperimentPlanDate"  name="ExperimentPlanDate" type="text" value='@(string.Format("{0:d}", DateTime.Now.ToString("yyyy-MM-dd")))'   class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true})" style="width:100px; height:24px;"/>
+        </td>
+        <td>
+            <input id="btnExperimentPlan" type="button" class="submit_btn" value="查询" onclick="fnExperimentPlan();" />
+        </td>
+        <td>
+            <div style="width: 22px; height: 22px; background: #F0F8FF; margin-left: 10px;">
+            </div>
+        </td>
+        <td>
+            空闲
+        </td>
+        <td>
+            <div style="width: 22px; height: 22px; background: #7CFC00; margin-left: 10px;">
+            </div>
+        </td>
+        <td>
+            占用
+        </td>
+        <td>
+            <div style="width: 22px; height: 22px; background: #FF4040; margin-left: 10px;">
+            </div>
+        </td>
+        <td>
+            冲突
+        </td>
+    </tr>
+</table>
+</form>
+  <table id="tableEquipment" cellpadding="0" cellspacing="0">
+	<tr style="text-align:center;" >
+		<th rowspan="2">设备名称</th>
+		<td colspan="24" style=" width:46%; font-size:13px;" >上午(AM)</td>
+		<td colspan="24" style=" width:46%;font-size:13px">下午(PM)</td>
+	</tr>
+	<tr id="TimeList">
+		<!--上午-->		
+		<td colspan="2">0</td>
+		<td colspan="2">1</td>
+		<td colspan="2">2</td>
+		<td colspan="2">3</td>
+		<td colspan="2">4</td>
+		<td colspan="2">5</td>
+		<td colspan="2">6</td>
+		<td colspan="2">7</td>
+		<td colspan="2">8</td>
+		<td colspan="2">9</td>
+		<td colspan="2">10</td>
+		<td colspan="2">11</td>
+		<!--下午-->		
+		<td colspan="2">12</td>
+		<td colspan="2">13</td>
+		<td colspan="2">14</td>
+		<td colspan="2">15</td>
+		<td colspan="2">16</td>
+		<td colspan="2">17</td>
+		<td colspan="2">18</td>
+		<td colspan="2">19</td>
+		<td colspan="2">20</td>
+		<td colspan="2">21</td>
+		<td colspan="2">22</td>
+		<td colspan="2">23</td>
+	</tr>
+  </table>
+	<!--分页-->
+    <div id="Pagination" class="pagination" style="float:right; position:relative;margin-top:10px;">
+    </div>
+     <div style="font-size:14px; font-family:Arial;float:left; position:relative;margin-top:10px">
+         每页<span id='pagesize'>0</span>条 <span>共</span><span id="RecordCount">0</span>条记录
+      </div>

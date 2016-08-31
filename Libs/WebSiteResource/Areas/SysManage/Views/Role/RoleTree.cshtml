@@ -1,0 +1,78 @@
+﻿@using Global.Common.Models; 
+@{
+    ViewBag.Title = "角色设置";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    IList<RoleModel> roleList = ViewBag.RoleList as IList<RoleModel>;
+    IList<int> checkedRoleList = ViewBag.CheckRoleList as IList<int>;
+    
+}
+
+<script type="text/javascript" language="javascript">
+    $(function () {
+        //WrapOnlyTables4Dom("roleList");
+        WrapTables4Dom("roleList");
+        
+        //全选
+        $("#selectAll").click(function () {
+            var selected = $(this).prop("checked");
+            $("input[name='roleId']").prop("checked", selected);
+
+        });
+
+        //单个钩选
+        $("input[name='roleId']").click(function () {
+            var selectedAll = $(this).prop("checked");
+            if (selectedAll) {
+                $("input[name='roleId']").each(function (i) {
+                    var selected = $(this).prop("checked");
+                    if (!selected) {
+                        selectedAll = false; 
+                    }
+                });
+            }
+            $("#selectAll").prop("checked", selectedAll);
+        });
+
+        //保存
+        $("#btnSave").click(function () {
+            $.post("/SysManage/User/SaveUserRoles", $("#form1").serialize(), function (result) {
+                window.parent.ymPrompt.close();
+                window.parent.document.location.href = window.parent.document.location.href;
+            });
+        });
+
+    });
+</script>
+<form id="form1">
+<input type="hidden" name="userId" value="@Request["UserId"]" />
+<table cellpadding="0" cellspacing="0" border="0" class="list_table" id="roleList">
+    <thead>
+        <tr>
+            <th width="70px">
+                <input type="checkbox" id="selectAll" /> 全选
+            </th>
+            <th>
+                系统角色
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in roleList)
+        {
+            bool ck = checkedRoleList.Contains(item.RoleId);
+            string check = ck ? "checked='checked'" : string.Empty;
+            <tr>
+                <td>
+                    <input type="checkbox" name="roleId" value="@item.RoleId" @check  />
+                </td>
+                <td>
+                    @item.RoleName
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="submit_btn_div">
+    <input type="button" id="btnSave" class="submit_btn" value="保存" />
+</div>
+</form>

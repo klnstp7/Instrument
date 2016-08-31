@@ -1,0 +1,90 @@
+﻿@model Global.Common.Models.UserModel
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="@Url.Content("~/Content/themes/webcss/formstyle.css")" rel="stylesheet" type="text/css" />
+<table class="form_table">
+    <tr>
+        <th style="width: 20%;">
+            姓名
+        </th>
+        <td style="width: 30%;">@Model.UserName
+        </td>
+        <th style="width: 20%;">
+            性别
+        </th>
+        <td style="width: 30%;">@(Model.Sex ? "男" : "女")
+        </td>
+    </tr>
+    <tr>
+        <th>
+            工号
+        </th>
+        <td>@Model.JobNo
+        </td>
+        <th>
+            归属部门
+        </th>
+        <td>@Model.DepartName
+        </td>
+    </tr>
+    <tr>
+        <th>
+            职务
+        </th>
+        <td>@Model.Duty
+        </td>
+        <th>
+            手机号码
+        </th>
+        <td>@Model.Mobile1
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Email---工作
+        </th>
+        <td>@Model.Email1
+        </td>
+        <th>
+            拥有角色
+        </th>
+        <td>
+            @foreach (var item in Model.roleList)
+            {
+                <span style="margin: 0px 10px 0px 0px;">@item.RoleName</span>
+            }
+        </td>
+    </tr>
+        <tr>
+        <th>
+            管理权限
+        </th>
+        <td  colspan="3">
+                <span style="margin: 0px 10px 0px 0px;">@ViewBag.org</span>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            操作手册
+        </th>
+        <td colspan="3">
+          <a href="../../FrameLayout/客户计量仪器信息管理系统操作手册.zip">下载</a>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            导航
+        </th>
+        <td colspan="3">
+            <a  href="@GRGTCommonUtils.SSOHelper.GetToUrl(GRGTCommonUtils.UtilConstants.SysType.CRM, "/Login/LoggedinDefault")" target="_blank">客户关系管理系统</a> </br> 
+            <a  href="@GRGTCommonUtils.SSOHelper.GetToUrl(GRGTCommonUtils.UtilConstants.SysType.Finance,"/Login/LoggedinDefault")" target="_blank">财务管理系统</a> </br> 
+            <a  href="@GRGTCommonUtils.SSOHelper.GetToUrl(GRGTCommonUtils.UtilConstants.SysType.MeasureLab,"/Login/LoggedinDefault")" target="_blank">计量业务管理系统</a></br> 
+            <a  href="@GRGTCommonUtils.SSOHelper.GetToUrl(GRGTCommonUtils.UtilConstants.SysType.Environment,"/Login/LoggedinDefault")" target="_blank">环境业务管理系统</a></br> 
+            <a  href="@GRGTCommonUtils.SSOHelper.GetToUrl(GRGTCommonUtils.UtilConstants.SysType.EMC,"/Login/LoggedinDefault")" target="_blank">EMC业务管理系统</a> <img src="/Content/themes/webcss/img/new.gif" /></br> 
+            <a  href="@GRGTCommonUtils.SSOHelper.GetToUrl(GRGTCommonUtils.UtilConstants.SysType.CustomerPortal,"")" target="_blank">客户自助服务平台</a><br />
+            <a  href="@GRGTCommonUtils.SSOHelper.GetToUrl(GRGTCommonUtils.UtilConstants.SysType.Instrument,"/Login/LoggedinDefault")" target="_blank">计量仪器管理系统</a> <img src="/Content/themes/webcss/img/new.gif" /></br> 
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,153 @@
+2015-12-29
+1、增加本地知识库功能，权限增加
+/CustKnowledge/Index
+/CustKnowledge/GetAllKnowledgeListJsonData
+/CustKnowledge/Details
+/CustKnowledge/Edit
+/CustKnowledge/DownLoad
+/BusinessAttachment/UploadBusinessAttachment
+/BusinessAttachment/DeleteBusinessAttachment
+/CustKnowledge/Save
+/CustKnowledge/BatchDeleteByIds
+2、系统参数增加”知识类型-KT“
+3、Web.Config中增加配置项
+<add key="KnowledgesPDFFilePath" value="/CustKnowledge/Pdf"/>
+<add key="KnowledgeOtherFilesPath" value="/CustKnowledge/Other"/>
+<add key="KnowledgesSwfFilePath" value="/CustKnowledge/swf"/>
+
+
+2015-12-28
+1、增加超期仪器提醒功能,权限增加
+/Remind/IsHasRemind
+/Remind/RemindDetail
+
+2015-12-24
+1、增加资产编号重复性提醒，权限增加/Instrument/ChkAssetsNo
+
+2015-11-30
+1.送检管理->送检进度查询->数据列表下添加“撤销送检单”，添加权限是/SendInstrument/RemoveOrder
+2.固定资产管理->导出资产添加权限/Assets/ExportCheckPlanDetail
+3.固定资产管理->导出资产添加权限/Assets/ExportForOverAge
+
+2015-11-26
+1.系统参数管理添加“配件类型(AI)”，添加“配件设备”参数
+2.仪器管理->仪器维护->修改内容页面下面添加“配件设备”
+3.仪器管理->仪器维护->修改内容页面->配件设备添加“新增/修改/详细”，同时权限添加
+/Instrument/AccessoriesInstrument
+/Instrument/GetAccessoriesInstrumentList
+/Instrument/AddAccessoriesInstrument
+/Instrument/InstrumentAccessoriesInstrumentEdit
+/Instrument/AccessoriesInstrumentDetail
+4.仪器管理->作业指导书->数据列表->关联仪器下添加权限
+/Document/ChooseMoreInstrument
+
+2015-11-24
+1.仪器管理下添加“设备说明书”
+2.仪器管理->设备说明书添加“数据列表”，同时添加权限
+/Instrument/InstrumentManualListForPage
+/Instrument/GetInstrumentManualJson
+3.系统菜单添加
+仪器管理下添加“设备说明书”，排序顺序45，链接地址是/Instrument/InstrumentManualListForPage
+4.仪器管理下添加“内部核查”
+5.仪器管理->内部核查下添加“数据列表”，同时添加的权限是
+/Instrument/AllInnerCheckList
+/Instrument/GetAllInnerCheckListJsonData
+6.仪器管理->内部核查下添加”导出“，同时添加权限是
+/Instrument/InnerCheckEditBySearchCondition
+7.系统菜单添加
+仪器管理下添加”内部核查“，排序是95，链接地址是/Instrument/AllInnerCheckList
+
+2015-11-18（何晓强）
+1.仪器管理->作业指导书->数据列表下添加“目录树”
+2.仪器管理->作业指导书->数据列表->目录树添加权限
+/Organization/BelongParamTree
+/Organization/LoadBelongParam4dhtmlxTree
+3.仪器管理->仪器维护->修改内容页面->内部核查添加“上传附件”，添加权限
+/Instrument/InstrumentInnerCheckAttachmentList
+4.仪器管理->仪器维护->修改内容页面->期间核查添加“上传附件”，添加权限
+/Instrument/InstrumentPeriodcheckAttachmentList
+5.config文件增加节点：		<add key="InstrumentPicFilePath" value="/InstrumentPic" />
+						    <add key="InnerCheckAttachmentFilePath" value="/InnerCheck" />
+							<add key="PeriodcheckAttachmentFilePath" value="/Periodcheck" />
+6.系统参数管理添加“内部核查结论(IR)”
+
+2015-11-17（何晓强）
+1.仪器管理->仪器维护->修改内容页面添加“内部核查”
+2.仪器管理->仪器维护->修改内容页面->内部核查添加“数据列表”
+/Instrument/InstrumentInnercheckList
+/Instrument/GetInstrumentInnercheckList
+3.仪器管理->仪器维护->修改内容页面->内部核查->数据列表添加“新增/修改”和“删除”
+/Instrument/InstrumentInnerCheckEdit
+/Instrument/SaveInstrumentInnerCheck
+/Instrument/DeleteInstrumentInnerCheck
+
+2015-11-10(黄志刚)
+1：计量知识库 菜单链接改成/Knowledge/BasicInfo
+2：删除计量知识菜单下面的子菜单
+
+2015-11-9（何晓强）
+1.添加了下载维修信息模板权限 仪器管理->维修检查->批量导入和下载模板里面添加/Instrument/DownloadRepairTemplate
+2.添加了批量导入维修信息权限 仪器管理->维修检查->批量导入和下载模板里面添加/Instrument/BatchImportRepairPlan
+3.添加了证书同步权限 仪器管理->修改内容页面->数据列表->新增/修改里面添加/Instrument/SynchronousInstrumentCert
+
+2015-11-9（刘观贵）
+1.送检进度查询=>同步周期校准记录增加同步结果详情提示
+2.新增权限点：
+送检管理=>送检进度查询=>数据列表=>同步周期校准记录中增加 /SendInstrument/SynSendInstrumentLog
+
+2015-10-13
+版本定稿V1.0.1-A SVN版本号（1326）
+
+2015-09-16
+1: 用户字段和其他业务系统字段统一
+2：增加计量知识库功能
+3：周检记录增加规程字段
+
+2015-09-10
+1、更新了调用计量业务系统的wcf接口代理类MeasureLabService
+2、系统参数修改控制
+3、订单综合查询接口防SQL注入安全调整
+
+2015-09-01
+1.固定资产模板导入
+2.仪器模板导入改为读取参数
+3.盘点计划与资产盘点功能
+4.状态读取枚举改为读取参数
+
+2015-8-14
+1：所属部门条件，无数据时报错
+2：导入周检状态调整为周检完成
+
+2015.7.31
+1：周检查询中增加费用字段
+2：角色选择中去掉分页
+3：版本定稿（V1.0.1-A），SVN版本号（946）
+2015.7.21
+1:增加版本自动升级功能
+
+2015.7.20
+1:版本定稿 定稿sqlserver版（V0.1Bate-A），SVN版本号（865）
+
+2015.7.9
+1、调整组织新增、修改页面，去掉组织附加信息
+2、增加仪器批量删除功能
+
+2015.6.26
+1、仪器管理:“仪器增减”名称改成“仪器维护”、增加资产属性、计量特性改成必填、
+   “证书查询”名称改成“校准查询”、仪器维修功能调整、增加上传电子证书功能、
+    增加维修记录查询和导出功能
+2、沟通交流：新增联络单功能
+3、仪器流转：新增仪器流转明细查询和仪器扫描功能
+4、订单管理：订单查询和仪器综合查询功能
+
+2015.7.6 
+1：电子档案附件记录到【业务附件表】
+2：文件存储方式需要采用配置的方式确定
+3：配置中增加本地登录与SSO登录的配置选项
+4：仪器管理模块：新增仪器增加“未周检”状态
+5：维修记录查询详细页面样式修改
+6：送检管理-进度查询-同步周期校准记录 增加同步成功个数
+7：仪器综合查询-添加下载证书操作
+8：送检管理 增加备注和地点（必填）
+9：新增期间核查功能
+

@@ -1,0 +1,95 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "仪器查询";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' ,"bSortable": false},
+             { sName: 'IsOverTime', sType: 'string', sTitle: '证书超期', CustomParam: 'OverTime',"bSortable": false,
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '已超期', sValue: '1', selected: false },
+                    { sTitle: '未超期', sValue: '0', selected: false }
+                ]
+            },
+            { sName: 'IsWarnDay', sType: 'string', sTitle: '超期预警', CustomParam: 'WarnDay',"bSortable": false,
+                                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonWarnDay)]
+            },
+             { sName: 'DueEndDate', sType: 'date', sTitle: '到期日期',"bSortable": true},
+            { sName: 'RecordState', sType: 'string', sTitle: '状态' ,"bSortable": true,
+                                searchDataSource: [
+                                   @Html.Raw(ViewBag.JsonInstrumentRecordState)]
+            },
+            { sName: 'InstrumentName', sType: 'string', sTitle: '仪器名称' ,"bSortable": true},
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号' ,"bSortable": true},
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号' ,"bSortable": true},
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号' ,"bSortable": true},
+            { sName: 'CertificateNo', sType: 'string', sTitle: '证书编号' ,"bSortable": true},
+            { sName: 'BarCode', sType: 'string', sTitle: '条码' ,"bSortable": false},
+            { sName: 'InstrumentCate', sType: 'string', sTitle: '分类' ,"bSortable": true,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentCate)
+                ]},
+//                 { sName: '', sType: 'string', sTitle: '所属部门' },
+ { sName: 'BelongDepart', sType: 'string', sTitle: '所属部门', CustomParam: 'OrgName',"bSortable": true},
+            { sName: 'DueStartDate', sType: 'date', sTitle: '校准日期',"bSortable": true},
+//            { sName: 'DueEndDate', sType: 'date', sTitle: '到期日期'},
+            { sName: 'LeaderName', sType: 'string', sTitle: '保管人' ,"bSortable": true},
+            { sName: 'StorePalce', sType: 'string', sTitle: '存放地址',"bSortable": true},
+            { sName: 'CreateUser', sType: 'string', sTitle: '创建人'}
+        ];
+        oTable = GetJsondataFromServ("Instrument", "/Instrument/GetAllInstrumentJsonData?type=Search", "2000px", columnInfo, queryColInfo, tableHigth, false, true, false);
+
+        //导出
+        $("#btnExport").click(function () {
+            var fieldCondition = oTable.fnGetAdvCondition(columnInfo);
+            var url = "/Instrument/ExportDataBySearchCondition?type=Search&" + fieldCondition ;//+ "&keyWord=" + keyWord;
+            ymPrompt.confirmInfo({ message: "是否要导出当前仪器?", title: '确认对话框', handler: function (tp) {
+                    if (tp == 'ok') {
+                       window.open(url,"_blank");
+                    }
+                }
+            });
+        });
+        $("#searchBelongDepart").click( function (){
+            fnNewWindow("/Organization/BelongOrgTree","组织架构",300,450);
+        });
+
+    });
+
+ 
+    function fnGetSelectOrgName(orgName)
+    {
+    $("#searchBelongDepart").val(orgName);
+//        ymPrompt.alert(orgName);
+    }
+    //详细
+    function fnInstrumentDetail(obj){
+        var instrumentId = $(obj).parent().attr("instrumentId");
+        window.open("/Instrument/InstrumentDetail?instrumentId="+instrumentId);
+    }
+
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+</script>
+    <div>
+    <!--Authorization operate="Search-Export"-->
+    <input type="button" id="btnExport" class="submit_btn" value="导出仪器" />
+    <!--/Authorization-->
+<table id="Instrument">
+</table>
+</div>
+

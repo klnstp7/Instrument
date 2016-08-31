@@ -1,0 +1,82 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "已送检仪器";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+//            { sName: '', sType: 'string', sTitle: '<input type="checkbox"  name="selectAll" onclick="fnSetCheckbox(this)" />' },
+            { sName: 'OrderNumber', sType: 'string', sTitle: '送检单号', CustomParam: 'OrderParam'  },
+            { sName: 'InstrumentName', sType: 'string', sTitle: '仪器名称' },
+            { sName: 'IsCompleteCert', sType: 'string', sTitle: '证书完工',
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '完工', sValue: '1', selected: false },
+                    { sTitle: '未完工', sValue: '0', selected: false }
+                ] },
+            { sName: 'IsComplete', sType: 'string', sTitle: '试验完工' ,
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '完工', sValue: '1', selected: false },
+                    { sTitle: '未完工', sValue: '0', selected: false }
+                ]},
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号' },
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号' },
+                { sName: 'InstrumentCate', sType: 'string', sTitle: '分类',CustomParam: 'InstrumentParam',
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentCate)
+                ]
+            },
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号'},
+//            { sName: '', sType: 'date', sTitle: '出厂日期'},
+            { sName: 'BelongDepart', sType: 'string', sTitle: '所属部门', CustomParam: 'OrgName'},
+            { sName: 'SendDate', sType: 'date', sTitle: '送检日期', CustomParam: 'SendDate'},
+            { sName: 'Remark', sType: 'string', sTitle: '备注'}
+
+        ];
+        oTable = GetJsondataFromServ("Instrument", "/SendInstrument/GetSendOrderJsonData", "900px", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+        $("#searchBelongDepart").click( function (){
+            fnNewWindow("/Organization/BelongOrgTree","组织架构",300,450);
+        });
+
+         //导出
+        $("#btnExport").click(function () {
+           var fieldCondition = oTable.fnGetAdvCondition(columnInfo);
+            var url = "/SendInstrument/ExportSendList?" + fieldCondition ;
+            ymPrompt.confirmInfo({ message: "是否要导出当前仪器?", title: '确认对话框', handler: function (tp) {
+                    if (tp == 'ok') {
+                       window.open(url,"_blank");
+                    }
+                }
+            });
+        });
+    });
+
+     function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+    function fnGetSelectOrgName(orgName)
+    {
+    $("#searchBelongDepart").val(orgName);
+//        ymPrompt.alert(orgName);
+    }
+
+</script>
+    <div>
+    <!--Authorization operate="AddToSendList"-->
+    <input type="button" id="btnExport" class="submit_btn" onclick="fnExport()" value="导出" />
+    <!--/Authorization-->
+<table id="Instrument">
+</table>
+</div>
+

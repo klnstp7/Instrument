@@ -1,0 +1,52 @@
+﻿@using System.Collections;
+@using Instrument.Common.Models
+@{
+    ViewBag.Title = "仪器详细";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //IList<Hashtable> OrderBillDetailList = ViewBag.OrderBillDetailList as IList<Hashtable>;
+}
+<script type="text/ecmascript">
+    $(document).ready(function () {
+   var data = @Html.Raw(ViewBag.Data);
+        var oTable = WrapTables4JsArray("instrumentDetailList",data);
+//        WrapTables4Dom("instrumentDetailList");
+    });
+    //下载证书
+    function fnDownloadPDF(obj) {
+        var certificateNumber = $(obj).attr("CertificateNumber");
+        window.open("/Order/Download?certificateNumber=" + certificateNumber);
+    }
+
+</script>
+<table id="instrumentDetailList">
+    <thead>
+        <tr>
+            <th>
+                操作
+            </th>
+            <th>
+                器具名称
+            </th>
+            <th>
+                仪器型号
+            </th>
+            <th>
+                出厂编号
+            </th>
+            <th>
+                设备编号
+            </th>
+            <th>
+                证书编号
+            </th>
+            <th>
+                器具完工
+            </th>
+            <th>
+                证书完工
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>

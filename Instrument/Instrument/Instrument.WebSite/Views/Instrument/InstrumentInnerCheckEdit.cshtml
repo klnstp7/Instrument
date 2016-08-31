@@ -1,0 +1,111 @@
+﻿@model Instrument.Common.Models.InnerCheckModel
+@{
+    ViewBag.Title = "内部核查";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    //初始化
+    var oTable = null;
+    $(document).ready(function () {
+        //表单验证
+        $("#form1").validate({
+            rules: {
+                Leader: { required: true, specialCharValidate: true, maxGBKlength: 10 },
+                Remark: { specialCharValidate: true, maxGBKlength: 300 }
+            }
+        });
+
+    });
+    //保存
+    function fnSave() {
+        if (!$("#form1").valid()) {
+            return false;
+        }
+        $.post("/Instrument/SaveInstrumentInnerCheck", $("#form1").serialize(), function (data) {
+            if ("OK" == data) {
+                window.parent.oTable.api().ajax.reload();
+                window.parent.ymPrompt.close();
+            }
+            else {
+                ymPrompt.alert(data);
+            }
+        });
+    }
+
+    //关闭
+    function fnClose() {
+        window.parent.ymPrompt.doHandler("close", true);
+    }
+
+</script>
+<form id="form1" class="cmxform" method="post">
+<input type="hidden" id="InnerCheckId" name="InnerCheckId" value="@Model.InnerCheckId" />
+<input  type="hidden" id="InstrumentId" name="InstrumentId" value="@Model.InstrumentId" />
+<table id="tbInnerCheck" class="form_table">
+    <tr>
+        <th style="width: 35%;">
+            检查日期
+        </th>
+        <td style="width: 35%;">
+            <input type="text" id="CheckDate" name="CheckDate" class="Wdate" style="width: 242px;" 
+                value="@(null == Model.CheckDate ? string.Empty : Model.CheckDate.Value.ToString("yyyy-MM-dd"))" 
+                onfocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd',maxDate:''})" />
+        </td>
+        <th style="width: 30%;">
+           有效日期
+        </th>
+        <td>
+            <input type="text" id="PeriodDate" name="PeriodDate" class="Wdate" style="width: 242px;" 
+                value="@(null == Model.PeriodDate ? string.Empty : Model.PeriodDate.Value.ToString("yyyy-MM-dd"))" 
+                onfocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd',maxDate:''})" />
+        </td>
+    </tr>
+    <tr>
+        <th style="width: 35%;">
+            结论
+        </th>
+        <td style="width: 35%">
+            @Html.DropDownList("Result", new SelectList(ViewBag.InnerCheckResultList, "Value", "Text", Model.Result),
+                        new { @class = "fix_width",@style="width:220px"})
+        </td>
+        <th style="width: 35%;">
+            <span class="ico_must">负责人
+        </th>
+        <td style="width: 35%">
+            <input id="Leader" name="Leader" type="text" value="@Model.Leader" style="width: 240px;" />
+        </td>
+    </tr>
+    <tr>
+        <th style="width: 35%;">
+            创建日期
+        </th>
+        <td style="width: 35%;">
+            <label>
+            @(null == Model.CreateDate ? string.Empty : Model.CreateDate.Value.ToString("yyyy-MM-dd"))
+            </label>
+        </td>
+        <th style="width: 35%;">
+            创建人
+        </th>
+        <td style="width: 35%;">
+            <label>
+            @Model.Creator
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td colspan="3">
+            <textarea id="Remark" name="Remark" rows="2" cols="61" >@Model.Remark</textarea>
+        </td>
+    </tr>
+</table>
+<div class="submit_btn_div">
+    <input id="btnSave" type="button" class="submit_btn" value=" 保 存" onclick="fnSave()" />
+    <input id="btnClose" type="button" class="submit_btn" value="关 闭" onclick="fnClose()" />
+</div>
+</form>
+
+

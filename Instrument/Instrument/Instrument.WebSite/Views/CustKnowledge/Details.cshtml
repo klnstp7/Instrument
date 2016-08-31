@@ -1,0 +1,81 @@
+﻿@model Instrument.Common.Models.KnowledgesModel
+@{
+    ViewBag.Title = "本地知识库详细";
+    
+}
+<script src="@Url.Content("~/Scripts/pdfobject.js")" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+    $(function () {
+        $("#tabs").tabs({ cache: true });
+        var data = @Html.Raw(ViewBag.Data);
+        var oTable = WrapTables4JsArray("OtherList",data);
+    });
+
+    function fnClose() {
+        window.close();
+    }
+
+    //下载业务附件
+    function fnDownLoad(obj){
+         var fileId = $(obj).attr("data-id");
+         window.open("/CustKnowledge/DownLoad?fileId="+fileId);
+         return false;
+    }
+</script>
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1" >本地知识</a></li>
+        <li><a href="@string.Format("/SysManage/Common/IFramePage?src=/SysManage/Common/ReadPdf&height=600px&filePath={0}", ViewBag.FilePath)">
+            内容PDF浏览</a></li>
+    </ul>
+    <div id="tabs-1">
+        <form id="form1" class="cmxform">
+        <input type="hidden" id="KnowledgeId" name="KnowledgeId" value="@Model.KnowledgeId" />
+        <table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+            <tr>
+                <th width="35%">
+                    内容标题
+                </th>
+                <td>
+                    @Model.Title
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    内容类型
+                </th>
+                <td>
+                   @ViewBag.KType
+                </td>
+            </tr>
+            <tr>
+                <th width="90px">
+                    内容摘要
+                </th>
+                <td>
+                    @Model.Abstract
+                </td>
+            </tr>
+        </table>
+        <h3 class="form_module_title">
+            附件</h3>
+        <div id="divOther">
+            <table id="OtherList">
+                <thead>
+                    <tr>
+                        <th>
+                            序号
+                        </th>
+                        <th>
+                            文件名称
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="submit_btn_div">
+            <input id="btnClose" type="button" class="submit_btn" value="关 闭" onclick="fnClose()" />
+        </div>
+        </form>
+    </div>
+</div>

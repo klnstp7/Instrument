@@ -1,0 +1,105 @@
+﻿@model Global.Common.Models.ParamItemModel
+@{
+    ViewBag.Title = "ParamItemDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        var existedValue = false;
+        $("#btnSave").click(function () {
+            if (existedValue) {
+                return false;
+            }
+            if ($("#ParamItemValue").val() == $("#ParentCode").val()) {
+                $("#showResult").html("参数值不能和父参数值一样！");
+                $("#showResult").show();
+                return false;
+            }
+            if ($("#form1").valid()) {
+                $.post("/SysManage/Param/SaveItem", $("#form1").serialize(), function (data) {
+                    if (data == "OK") window.parent.document.location.href = window.parent.document.location.href;
+                    else
+                        ymPrompt.alert(data);
+                });
+            }
+        });
+
+        $("#ParamItemValue").change(function () {
+            if ($(this).val().length > 0) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/SysManage/Param/JudgeParamItemValue?paramItemId=' + $("#ParamItemId").val() + '&paramId=' + $("#ParamId").val() + '&paramItemValue=' + $(this).val(),
+                    success: function (data) {
+                        if (data == "True") {
+                            existedValue = true;
+                            $("#showResult").html("已存在该参数项值！");
+                            $("#showResult").show();
+                        }
+                        else {
+                            existedValue = false;
+                            $("#showResult").html("");
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#btnClose").click(function () {
+            window.parent.ymPrompt.close();
+        });
+    });
+
+</script>
+<form id="form1" class="cmxform">
+<input name="ParamId" id="ParamId" type="hidden" value="@Model.ParamId" />
+<input name="ParamItemId" id="ParamItemId" type="hidden" value="@Model.ParamItemId" />
+<h3 class="form_module_title">
+    系统参数编辑</h3>
+<table class="form_table">
+    <tr>
+        <th style="width: 20%;">
+            <span class="ico_must">参数项名称</span>
+        </th>
+        <td style="width: 80%;">
+            <input id="ParamItemName" class="fix_width" name="ParamItemName" type="text" value="@Model.ParamItemName" required />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">参数项值</span>
+        </th>
+        <td>
+            <input id="ParamItemValue" class="fix_width" name="ParamItemValue" type="text"  value="@Model.ParamItemValue" required />
+            <p id="showResult" class="info_block" style="color:Red;display:none;"></p>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">父参数项值</span>
+        </th>
+        <td>
+            <input id="ParentCode" class="fix_width" name="ParentCode" type="text"  value="@Model.ParentCode" required />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            显示顺序
+        </th>
+        <td>
+            <input id="ShowOrder" class="fix_width" name="ShowOrder" type="text"  value="@Model.ShowOrder"/>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td>
+            <input id="Remark" class="fix_width" name="Remark" type="text"  value="@Model.Remark"/>
+        </td>
+    </tr>
+</table>
+<div class="submit_btn_div">
+    <input id="btnSave" type="button" class="submit_btn" value=" 保 存 " />
+    <input id="btnClose" type="button" class="submit_btn" value="关闭窗口" />
+</div>
+</form>

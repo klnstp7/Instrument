@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "UserList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript" >
+    $(document).ready(function () {
+        var data = @Html.Raw(ViewBag.UserData);
+        var oTable = WrapTables4JsArray("user",data);
+        oTable.fnSetColumnVis( 9, false );
+        oTable.fnSort( [ [6,'asc'],[9,'asc'], [2,'asc'] ] );
+
+    });
+
+    function fnNewWindow(id) {
+        ymPrompt.win({ message: '@Url.Content("~/SysManage/Role/RoleTree")?userId='+id, width: 360, height: 400, title: '用户角色设置', handler: null, iframe: true });
+    }
+</script> 
+
+<table cellpadding="0" cellspacing="0" border="0" class="display" id="user">
+    <thead>
+        <tr>            
+            <th width="50px">姓名</th>
+            <th>性别</th>
+            <th>工号</th>
+            <th>所在部门</th>
+            <th>职位</th>
+            <th>手机号码</th>           
+            <th>员工状态</th>
+            <th width="100px">用户角色</th>
+            <th width="70px">操作</th>
+            <th>部门编码</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+			<td colspan="10">数据正在加载中...</td> 
+		</tr>
+    </tbody>
+</table>
+

@@ -1,0 +1,83 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "仪器扫描";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    var oTable = null;
+    $(function () {
+
+        $('#form').validate({
+            rules: {
+                Reason:  {
+                    required:true,
+                },
+                barCode: {
+                    required: true,
+                    specialCharValidate: true
+                }
+            }
+        });
+        oTable = WrapTables4JsArray("qr", []);
+        //扫描
+        $("#btnScan").click(function () {
+            if ($("#form").valid()) {
+                $.post("/InstrumentFlow/Save?barCode=" + $("#barCode").val(), $("#form").serialize(), function (data) {
+                    if (data.Msg == "OK") {
+                        oTable.fnDestroy();
+                        oTable = WrapTables4Ajax("qr", "/InstrumentFlow/GetFlowDetails?instrumentId=" + data.InstrumentId);
+                        oTable.fnSort([[3, 'asc']]);
+                        $("#InstrumentInfo").html(data.InstrumentInfo);
+                        $("#InstrumentInfo").show();
+                    }
+                    $("#barCode").val("");
+                });
+            }
+        });
+        $("#barCode").focus();
+    })
+    function EnterPress(e) {
+        var e = e || window.event;
+        if (e.keyCode == 13) {
+            $("#btnScan").click();
+            return false;
+        }
+    }
+</script>
+<form id="form">
+<table class="form_table">
+    <tr>
+    <th style=" width:80px;">
+       事由:</th>
+       <td> 
+        <input type="text" id="Reason" name="Reason" onkeypress="EnterPress(event)"/>
+    </td>
+    <th style=" width:80px;"> 条形码：</th>
+        <td> <span>
+          <input type="text" id="barCode" name="barCode" onkeypress="EnterPress(event)"/></span> <span>
+           <input type="button" id="btnScan" class="submit_btn" value="扫 描" /></span>
+    </td>
+    </tr>
+</table>
+<div style="float:none"><br />
+<b> 仪器信息：</b>   <span id="InstrumentInfo" ></span>
+</div>
+</form>
+<table id="qr">
+    <thead>
+        <tr>
+            <th>
+                事由
+            </th>
+            <th>
+                地点
+            </th>
+            <th>
+                操作人
+            </th>
+            <th>
+                操作时间
+            </th>
+        </tr>
+    </thead>
+</table>

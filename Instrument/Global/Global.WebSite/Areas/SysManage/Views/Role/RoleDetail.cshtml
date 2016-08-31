@@ -1,0 +1,63 @@
+﻿@model Global.Common.Models.RoleModel 
+@{
+    ViewBag.Title = "RoleDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="@Url.Content("~/Content/themes/webcss/formstyle.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+
+        $("#btnSave").click(function () {
+
+            if ($("#form1").valid()) {
+                $.post("/SysManage/Role/Save", $("#form1").serialize(), function (data) {
+                    if (data == "OK") {
+                        window.parent.document.location.href = window.parent.document.location.href;
+                    }
+                    else alert(data);
+                });
+            }
+        });
+
+        $("#btnClose").click(function () {
+            window.parent.ymPrompt.close();
+        });
+
+        $('input:radio[name="IsEnabled"][value="@(Model.IsEnabled)"]').attr("checked", "checked");
+
+    });
+    
+</script>
+<form id="form1" class="cmxform">
+<input name="RoleId" id="RoleId" type="hidden" value="@Model.RoleId" />
+<table class="form_table">
+    <tr>
+        <th style="width: 20%;">
+            <span class="ico_must">角色名称</span>
+        </th>
+        <td style="width: 80%;">
+            <input id="RoleName" class="fix_width" name="RoleName" type="text" value="@Model.RoleName" required  />
+            <span id="showResultCode"></span>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            禁用
+        </th>
+        <td>
+            <input name="IsEnabled" field="IsEnabled" value="False" type="radio" />是
+            <input name="IsEnabled" field="IsEnabled" value="True" type="radio" checked />否
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td>@Html.TextArea("Remark", @Model.Remark, new { @cols = "39", @rows = "6" })
+        </td>
+    </tr>
+</table>
+<div class="submit_btn_div">
+    <input id="btnSave" class="submit_btn" type="button" value=" 保 存 " />
+    <input id="btnClose" class="submit_btn" type="button" value="关闭窗口" />
+</div>

@@ -1,0 +1,42 @@
+﻿@using System.Collections;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Hashtable> item = ViewBag.itemList as List<Hashtable>;
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/ChemistryJs.js")" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+    
+    //重新加载
+    function fnReloadInstrument() {
+        oTable.reloadData();
+    }
+
+</script>
+<div id="div"  style="width: 100%; padding: 4px;">
+
+    @if (item != null)
+    {
+        foreach (Hashtable a in item)
+        {
+        @*OneType*@
+            <div style="width: 45%; height: 200px; float: left; background-color: #efefef;padding-left: 30px;margin-top:8px; margin-left:10px; margin-right:10px;">
+                <div style="height: 30px; float: left; width: 100%; margin-top: 30px;">
+                    <div style="height: 30px; border-bottom: 2px #d5d5d5 solid; float: left; font-size: 20px;
+                        font-weight: bolder;">
+                        <div style="height: 30px; width: 110px; float: left; border-bottom: 4px #bad2ea solid;">
+                            知识类型：</div>
+                        <div style="height: 30px; float: left;">
+                            <a href='/Knowledge/BasicInfo?ParamItemValue=@a["ParamItemValue"]&ParamName=@a["ParamItemName"]' style="color: #416794; text-decoration: none;">@a["ParamItemName"]</a></div>
+                    </div>
+                </div>
+                <div style="height: 30px; float: left; width: 100%; margin-top: 20px; font-size: 17px;">
+                    知识简介：@a["Remark"]</div>
+                <div style="height: 30px; float: left; width: 100%; margin-top: 20px; font-size: 17px;">
+                    知识数量：@a["Count"]</div>
+            </div>
+        @*OneType*@
+        }
+    }
+    
+</div>

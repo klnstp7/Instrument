@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "系统操作日志";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script language="javascript" type="text/javascript">
+    var columnInfo;
+    var oTable;
+    $(function () {
+        columnInfo = [
+            { sName: 'OperateType', sType: 'int', sTitle: '类别',
+            searchDataSource: [
+                @Html.Raw(ViewBag.OperateType)
+                ]},
+            { sName: 'Operator', sType: 'string', sTitle: '操作人' },
+            { sName: 'OperateIP', sType: 'string', sTitle: 'IP地址' },
+            { sName: 'OperateContent', sType: 'string', sTitle: '日志记录', sWidth: '410px' },
+            { sName: 'TargetPK', sType: 'string', sTitle: '操作对象' },
+            { sName: 'TargetType', sType: 'string', sTitle: '对象类别',
+            searchDataSource: [
+                @Html.Raw(ViewBag.TargetType)
+                ]},
+            { sName: 'OperateDate', sType: 'date', sTitle: '操作时间' }
+        ];
+        queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+        oTable = GetJsondataFromServ("operateList", "/SysManage/OperateLog/GetOperateLogListJsonData", "100%", columnInfo, queryColInfo, "auto", false);
+    });
+
+</script>
+<div>
+    <table id="operateList">
+    </table>
+</div>
+

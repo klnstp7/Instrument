@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "本地知识库";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+    queryColInfo.ColNum = 1;
+    queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '<input id="checkAll" name="checkAll" type="checkbox" />',sWidth:'30px' },
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'Title', sType: 'string', sTitle: '内容标题' ,sWidth:'200px'},
+            { sName: 'KType', sType: 'string', sTitle: '内容|类型' ,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.KnowledgeType)
+                ]
+            },
+            { sName: 'Abstract', sType: 'string', sTitle: '内容摘要',sWidth:'300px'},
+            { sName: 'Creator', sType: 'string', sTitle: '创建人' },
+            { sName: 'CreatDate', sType: 'date', sTitle: '创建日期' }
+        ];
+        oTable = GetJsondataFromServ("tbknowledge", "/CustKnowledge/GetAllKnowledgeListJsonData", "100%", columnInfo, queryColInfo, "auto", false,false,true,true);
+
+        //新增
+        $("#btnAdd").click(function () {
+            window.open("/CustKnowledge/Edit?KnowledgeId=0", "_blank");
+        });
+
+        $("#checkAll").click(function(){
+            var checkAll = $(this).prop("checked");
+            $("input:checkBox[name='chk']").prop("checked",checkAll);
+        });
+    });
+
+    //详细
+    function fnDetail(obj){
+        var knowledgeId = $(obj).parent().attr("knowledgeId");
+        window.open("/CustKnowledge/Details?knowledgeId="+knowledgeId);
+    }
+
+    //编辑
+    function fnEdit(obj){
+        var knowledgeId = $(obj).parent().attr("knowledgeId");
+        window.open("/CustKnowledge/Edit?knowledgeId="+knowledgeId);
+    }
+
+    //删除
+    function fnDelete() {
+        var knowledgeIds = fnGetAllCheckedValue('chk');
+        fnConfirmWithoutF5('确定删除所选的记录？', '@Url.Content("~/CustKnowledge/BatchDeleteByIds?knowledgeIds=")' + knowledgeIds, fnReloadInstrument);
+        return false;
+    }
+
+    //重新加载
+    function fnReloadInstrument(){
+        oTable.reloadData();
+    }
+</script>
+<div style="float: left;">
+    <!--Authorization operate="/CustKnowledge/Edit"-->
+    <input id="btnAdd" type="button" class="submit_btn" value="新 增" />
+    <!--/Authorization-->
+    <!--Authorization operate="/CustKnowledge/BatchDeleteByIds"-->
+    <input type="button" id="btnDelete" class="submit_btn" onclick="fnDelete()" value="删 除" />
+    <!--/Authorization-->
+    <table id="tbknowledge">
+</table>
+</div>
+
+

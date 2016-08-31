@@ -1,0 +1,63 @@
+﻿@model IList<Global.Common.Models.ParamModel>
+@{
+    ViewBag.Title = "系统参数信息管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $("#btnAddParam").click(function () {
+            fnNewWindow(0);
+        });
+        WrapTables4Dom("paramTable");
+    });
+    function fnNewWindow(id) {
+        ymPrompt.win({ message: '@Url.Content("~/SysManage/Param/Details")?paramId=' + id, width: 440, height: 200, title: '系统参数信息维护', handler: null, iframe: true });
+    }
+</script>
+<div>
+    <input type="button" class="submit_btn" name="btnAddParam" id="btnAddParam" value="新增" />
+</div>
+<table cellpadding="0" cellspacing="0" border="0" class="display" id="paramTable">
+    <thead>
+        <tr>
+            <th width="8%">
+                序号
+            </th>
+            <th>
+                参数名称
+            </th>
+            <th>
+                参数编码
+            </th>
+            <th>
+                子参数个数
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody id="itemBody">
+        @{
+            int count = 1;
+            foreach (var m in Model)
+            {
+            <tr class="GradeA">
+                <td>@(count++)
+                </td>
+                <td>@m.ParamName
+                </td>
+                <td>@m.ParamCode
+                </td>
+                <td>@m.itemsList.Count
+                </td>
+                <td>
+                    <a href="#" onclick="fnNewWindow(@m.ParamId);return false;">编辑</a>&nbsp;&nbsp;&nbsp;
+                    <a href='#' onclick="fnDelete('@Url.Content("~/SysManage/Param/Delete?paramId=")@(m.ParamId)');return false;">
+                        删除</a>
+                </td>
+            </tr>
+            }
+        }
+    </tbody>
+</table>

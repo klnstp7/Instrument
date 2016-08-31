@@ -1,0 +1,334 @@
+﻿@using ToolsLib.Utility
+@using System.Web.UI.WebControls
+@using Instrument.Common.Models;
+@using Global.Common;
+@model Instrument.Common.Models.InstrumentModel
+@{
+    ViewBag.Title = "新增或修改配件信息";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+   
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script type="text/javascript">
+
+    //初始化
+    $(document).ready(function () {
+        //基本信息(表单验证)
+        $('#formInstrument').validate({
+            rules: {
+                InstrumentName: { required: true, maxGBKlength: 160, specialCharValidate: true },  //仪器名称
+                Specification: { required: true, maxGBKlength: 140, specialCharValidate: true },   //仪器型号
+                BelongDepart: { required: true },   //所属科室
+                InstrumentType: { required: true },   //仪器类别
+                RecordState: { required: true },   //器具状态               
+                Price: { number: true },    //购置金额
+                DurableYears: { maxGBKlength: 15, specialCharValidate: true },    //使用年限
+                SerialNo: { required: true, maxGBKlength: 120, specialCharValidate: true },
+                TechniqueCharacter: { required: true, maxGBKlength: 600, specialCharValidate: true },  //技术特征
+                MeasureCharacter: { required: true, maxGBKlength: 600, specialCharValidate: true },  //计量特性
+                Manufacturer: { maxGBKlength: 180, specialCharValidate: true },
+                ManufactureContactor: { maxGBKlength: 500, specialCharValidate: true },
+                ManageNo: { required: true, maxGBKlength: 120, specialCharValidate: true,
+                    remote:
+                    {
+                        url: "/Instrument/ChkManageNo",
+                        type: "post",
+                        data: {
+                            instrumentId: function () { return "@GRGTCommonUtils.UtilsHelper.Encrypt(Model.InstrumentId.ToString())" },
+                            manageNo: function () { return $("#ManageNo").val() }
+                        }
+                    }
+                },
+                AssetsNo: { maxGBKlength: 120, specialCharValidate: true },
+                ManageLevel: { maxGBKlength: 4, specialCharValidate: true },
+                InspectCycle: { maxGBKlength: 20, specialCharValidate: true },
+                LeaderName: { maxGBKlength: 8, specialCharValidate: true },
+                StorePalce: { maxGBKlength: 60, specialCharValidate: true },
+                Remark: { maxGBKlength: 500, specialCharValidate: true },
+                CertificationCode: { specialCharValidate: true, maxGBKlength: 50 },
+                RecordState2: { required: true },
+                InstrumentPic: { extension: "gif,jpg,png,jpeg" },
+                MeasureOrg: { maxGBKlength: 200, specialCharValidate: true },
+                ErrorValue: { specialCharValidate: true, maxGBKlength: 500 },
+                CheckResult: { specialCharValidate: true, maxGBKlength: 500 },
+                Remark2: { specialCharValidate: true, maxGBKlength: 500 },
+                CertMoney: { number: true }
+            },
+            messages: {
+                InstrumentPic: "请选择jpg,png,gif,jpeg格式文件!",
+                ManageNo: {
+                    remote: "管理编号已存在,请重新编号!"
+                }
+            }
+        });
+        //改变照片的显示
+        fnPicChange();
+        //一级分类改变事件
+        $("#InstrumentCate").change(function () {
+            fnCateChange();
+        });
+    });
+    function fnCateChange() {
+        $("#spanSubCate").hide();
+        $("#SubInstrumentCate").hide();
+        $('#SubInstrumentCate').html("");
+        url = '/Instrument/GetSubInstrumentCate?parentCode=' + $("#InstrumentCate").val();
+        $.getJSON(url, function (data) {
+            $.each(data, function (i, item) {
+                $("#spanSubCate").show();
+                $("#SubInstrumentCate").show();
+                $('#SubInstrumentCate').append($("<option></option>").val(item.ParamItemValue).html(item.ParamItemName));
+            });
+        });
+    }
+    function fnPicChange() {
+        if ("@Model.InstrumentId" == 0) {
+            $("#Pic")[0].style.display = "none";   //隐藏照片控件
+        }
+    }
+    //保存(配件基本信息)
+    function fnSave() {
+        //表单验证(默认)
+        if (!$("#formInstrument").valid()) {
+            return false;
+        }
+        var options = {
+            success: fnClose
+        };
+        $("#formInstrument").ajaxSubmit(options);
+    }
+    //关闭
+    function fnClose() {
+        window.opener.fnReloadInstrument();
+        window.close();
+    }
+    //放大照片
+    function fnInstrumentPic() {
+        window.open("/Instrument/InstrumentPic?picSrc=@ViewBag.PicPath");
+    }
+
+</script>
+<form id="formInstrument" class="cmxform" method="post" action="/Instrument/Insert"
+enctype="multipart/form-data">
+<h3 class="form_module_title">
+    配件基本信息</h3>
+    
+<table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+    <tr>
+        <td>
+        <input id="ParentID" name="ParentID" type="hidden" value="@Model.ParentID"/>
+        <input id="InstrumentId" name="InstrumentId" type="hidden" value="@Model.InstrumentId"/>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">设备分类
+        </th>
+        <td>
+            @Html.DropDownList("InstrumentCate", new SelectList(ViewBag.InstrumentCateList, "Value", "Text", Model.InstrumentCate),
+                new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+        <th>
+            <span id="spanSubCate" />子分类
+        </th>
+        <td>
+            @Html.DropDownList("SubInstrumentCate", new SelectList(ViewBag.SubInstrumentCateList, "Value", "Text", Model.SubInstrumentCate),
+                new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must" />所属部门
+        </th>
+        <td >
+            @Html.DropDownListTree("OrgName", ViewBag.BelongDepartList as IList<Global.Common.Models.OrgModel>, "OrgCode", "OrgName", string.IsNullOrEmpty(Model.BelongDepart) ? "" : Model.BelongDepart, "OrgId", "ParentOrgId", "0", new { @class = "fix_width" })
+        </td>
+         <th>
+            项目组
+        </th>
+        <td>
+            @Html.TextBox("ProjectTeam", Model.ProjectTeam, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th style="width: 15%;">
+            <span class="ico_must" />仪器名称
+        </th>
+        <td style="width: 35%;">
+            @Html.TextBox("InstrumentName", Model.InstrumentName, new { @class = "fix_width" })
+        </td>
+        <th>
+            英文名称
+        </th>
+        <td>
+            @Html.TextBox("EnglishName", Model.EnglishName, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must" />仪器型号
+        </th>
+        <td>
+            @Html.TextBox("Specification", Model.Specification, new { @class = "fix_width" })
+        </td>
+        <th>
+            <span class="ico_must" />出厂编号
+        </th>
+        <td>
+            @Html.TextBox("SerialNo", Model.SerialNo, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must" />管理编号
+        </th>
+        <td>
+            @Html.TextBox("ManageNo", Model.ManageNo, new { @class = "fix_width" })
+        </td>
+        <th>
+            资产编号
+        </th>
+        <td>
+            @Html.TextBox("AssetsNo", Model.AssetsNo, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            管理级别
+        </th>
+        <td>
+            @Html.DropDownList("ManageLevel", new SelectList(ViewBag.ManageLevelList, "Value", "Text", Model.ManageLevel),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+        <th>
+            校准周期
+        </th>
+        <td>
+            @Html.TextBox("InspectCycle", Model.InspectCycle, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            使用年限
+        </th>
+        <td>
+            @Html.TextBox("DurableYears", Model.DurableYears, new { @class = "fix_width" })
+        </td>
+        <th>
+            保管人
+        </th>
+        <td>
+            @Html.TextBox("LeaderName", Model.LeaderName, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th id="thTechniqueCharacter">
+            <span class="ico_must">技术特征</span>
+        </th>
+        <td>
+            @Html.TextArea("TechniqueCharacter", Model.TechniqueCharacter, new { @cols = "50", @rows = "1" })
+        </td>
+        <th id="thMeasureCharacter">
+            <span class="ico_must">计量特性</span>
+        </th>
+        <td>
+            @Html.TextArea("MeasureCharacter", Model.MeasureCharacter, new { @cols = "50", @rows = "1" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            设备状态
+        </th>
+        <td>
+            @Html.DropDownList("RecordState", new SelectList(ViewBag.InstrumentRecordStateList, "Value", "Text", Model.RecordState),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+        <th>
+            存放地点
+        </th>
+        <td>
+            @Html.TextBox("StorePalce", Model.StorePalce, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">设备类别</span>
+        </th>
+        <td>
+            @Html.DropDownList("InstrumentType", new SelectList(ViewBag.InstrumentTypeList, "Value", "Text", Model.InstrumentType),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+        <th>
+            资产属性
+        </th>
+        <td>
+            @Html.DropDownList("CalibrationType", new SelectList(ViewBag.CalibrationTypeList, "Value", "Text", Model.CalibrationType),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            计量类别
+        </th>
+        <td>
+            @Html.DropDownList("VerificationType", new SelectList(ViewBag.VerificationTypeList, "Value", "Text", Model.VerificationType),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+        <th>
+            配件类型
+        </th>
+        <td>
+            @Html.DropDownList("CombinedType", new SelectList(ViewBag.CombinedTypeList, "Value", "Text", Model.CombinedType),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            购置日期
+        </th>
+        <td>
+            <input id="BuyDate" name="BuyDate" type="text" value="@(string.Format("{0:yyyy-MM-dd}", Model.BuyDate))" class="Wdate" 
+                        onfocus="WdatePicker({isShowClear:true,readOnly:true,dateFmt:'yyyy-MM-dd'})" style="width: 302px" />
+        </td>
+        <th>
+            购置金额
+        </th>
+        <td>
+            @Html.TextBox("Price", Model.Price, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            生产厂家
+        </th>
+        <td>
+            @Html.TextBox("Manufacturer", Model.Manufacturer, new { @class = "fix_width" })
+        </td>
+        <th>
+            厂家联系信息
+        </th>
+        <td>
+            @Html.TextBox("ManufactureContactor", Model.ManufactureContactor, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td>
+            <textarea id="Remark" name="Remark" rows="1" cols="50" value=@Model.Remark></textarea>
+        </td>
+        <th>
+            仪器照片
+        </th>
+        <td>
+            <img  id="Pic"width="80px" height="80px" src="@ViewBag.PicPath" onclick="fnInstrumentPic()"/>
+            <input type="file" id="InstrumentPic" name="InstrumentPic" />
+        </td>
+    </tr>
+</table>
+<div class="submit_btn_div">
+    <input id="btnSave" type="button" class="submit_btn" onclick="fnSave()" value="保 存" />
+    <input id="btnClose" class="submit_btn" type="button" onclick="fnClose()" value="关 闭" />
+</div>
+</form>

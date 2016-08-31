@@ -1,0 +1,75 @@
+﻿@model Instrument.Common.Models.InnerCheckModel
+@{
+    ViewBag.Title = "内部核查";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    //关闭
+    function fnClose() {
+        window.parent.ymPrompt.doHandler("close", true);
+    }
+</script>
+<form id="form1" class="cmxform">
+<table id="tbInnerCheck" class="form_table">
+    <tr>
+        <th>
+            检查日期
+        </th>
+        <td>
+            @(null == Model.CheckDate ? string.Empty : Model.CheckDate.Value.ToString("yyyy-MM-dd"))
+        </td>
+        <th>
+           有效日期
+        </th>
+        <td>
+            @(null == Model.PeriodDate ? string.Empty : Model.PeriodDate.Value.ToString("yyyy-MM-dd"))
+        </td>
+    </tr>
+    <tr>
+        <th>
+            结论
+        </th>
+        <td>
+            @ViewBag.Result
+        </td>
+        <th>
+           负责人
+        </th>
+        <td>
+            @(null == Model.Leader ? string.Empty : Model.Leader)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            创建日期
+        </th>
+        <td>
+            <label>
+            @(null == Model.CreateDate ? string.Empty : Model.CreateDate.Value.ToString("yyyy-MM-dd"))
+            </label>
+        </td>
+        <th>
+            创建人
+        </th>
+        <td>
+            <label>
+            @Model.Creator
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td colspan="3">
+            @Model.Remark
+        </td>
+    </tr>
+</table>
+<div id="tabs-2">
+ <li>附件信息</li>
+ @Html.Action("GetAttachments", "Instrument", new { AttachmentBusinessType = Instrument.Common.Constants.AttachmentBusinessType.内部核查.GetHashCode(), BusinessId = GRGTCommonUtils.UtilsHelper.Encrypt(Model.InnerCheckId.ToString()) })
+</div>
+</form>
+
+

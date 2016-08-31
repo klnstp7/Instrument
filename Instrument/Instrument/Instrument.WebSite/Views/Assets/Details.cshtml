@@ -1,0 +1,109 @@
+﻿@using Global.Common.Models;
+@using Instrument.Common;
+@model Instrument.Common.Models.InstrumentModel
+@{
+    ViewBag.Title = "详细信息";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+$(function(){    
+    $("#tabs").tabs({ cache: true });
+});
+
+</script>
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">基本信息</a></li>
+        <li><a href="/Assets/CheckLogFlowList?instrumentId=@Request["instrumentId"]">
+           盘点记录</a></li>
+        <li><a href="/InstrumentFlow/FlowDetails?instrumentId=@Request["instrumentId"]">流转明细</a></li>
+    </ul>
+    <div id="tabs-1">
+        <table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+            <tr>
+                <th>
+                    所属部门
+                </th>
+                <td>
+                    @Model.BelongDepart
+                </td>
+                <th style="width: 15%;">
+                    资产名称
+                </th>
+                <td style="width: 35%;">
+                    @Model.InstrumentName
+                </td>
+            </tr>
+             <tr>
+                <th>
+                    仪器型号
+                </th>
+                <td>
+                    @Model.Specification
+                </td>
+                <th>
+                    出厂编号
+                </th>
+                <td>
+                    @Model.SerialNo
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    资产编号
+                </th>
+                <td>
+                    @Model.AssetsNo
+                </td>
+                <th>
+                      管理编号
+                </th>
+                <td>
+                    @Model.ManageNo
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    条码
+                </th>
+                <td>
+                    @Model.BarCode
+                </td>
+                 <th>
+                    状态
+                </th>
+                <td>
+                @ViewBag.State
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    最近盘点时间
+                </th>
+                <td>
+                    @(string.Format("{0:yyyy-MM-dd}", Model.LastCheckDate))
+                </td>
+                <th>
+                    最近盘点人
+                </th>
+                <td>
+                    @Model.LastCheckUser
+                </td>
+            </tr>
+             <tr>
+                <th>
+                    生产厂家
+                </th>
+                <td>
+                    @Model.Manufacturer
+                </td>
+                <th>
+                    备注
+                </th>
+                <td>
+                    @Model.Remark
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

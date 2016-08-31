@@ -1,0 +1,147 @@
+﻿@model Instrument.Common.Models.InstrumentUsingPlanModel
+@{
+    ViewBag.Title = "排期调度";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    //初始化
+    var oTable = null;
+    var columnInfo = null;
+    var tableWidth = "1400px";
+    var tableHigth = "auto";
+    var queryColInfo = {};
+    $(document).ready(function () {
+        //表单验证
+        $("#formInstrumentUsingPlan").validate({
+            rules: {
+                Order_ProjectCode: { required: true, specialCharValidate: true, maxGBKlength: 30 },
+                StartDate: { required: true },
+                EndDate: { required: true },
+                Remark: { specialCharValidate: true, maxGBKlength: 400 }
+            }
+        });
+
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作', Width:'40px' },
+            { sName: 'ProjectName', sType: 'string', sTitle: '测试名称' },
+            { sName: 'EngineerName', sType: 'string', sTitle: '工程师' },
+            { sName: 'ExperimentCount', sType: 'int', sTitle: '试验总量' },
+            { sName: 'OrderNumber', sType: 'string', sTitle: '委托单号' },
+            { sName: 'CompanyName', sType: 'string', sTitle: '客户名称' },
+            { sName: 'SaleName', sType: 'string', sTitle: '业务员' },
+            { sName: 'SampleName', sType: 'string', sTitle: '样品名称' }
+        ];
+        queryColInfo.ColNum = 2;
+        queryColInfo.IsRLType = false;
+        oTable = GetJsondataFromServ("tbOrderProject", "@ViewBag.GetProjectUrl", tableWidth, columnInfo, queryColInfo, tableHigth, true);
+
+        $("#btnReturn").click(function () {
+            $("#div2").hide();
+            $("#div1").show();
+        });
+    });
+
+    //保存
+    function fnSave() {
+        if (!$("#formInstrumentUsingPlan").valid()) {
+            return false;
+        }
+        $.post("/Instrument/SaveInstrumentUsingPlan", $("#formInstrumentUsingPlan").serialize(), function (data) {
+            if ("OK" == data) {
+                if(window.parent.fnExperimentPlan)
+                    window.parent.fnExperimentPlan();
+                window.parent.ymPrompt.doHandler("OK", true);
+            }
+            else {
+                ymPrompt.alert(data);
+            }
+        });
+    }
+
+    //关闭
+    function fnClose() {
+        window.parent.ymPrompt.doHandler("close", true);
+    }
+
+    //选择测试项目
+    function fnSelectIt(obj) {
+        var ProjectNumber = $(obj).attr("ProjectNumber");
+        var EngineerName = $(obj).attr("EngineerName");
+        $("#Order_ProjectCode").val(ProjectNumber);
+        $("#EngineerName").val(EngineerName);
+        $("#div1").hide();
+        $("#div2").show();
+    }
+</script>
+<form id="formInstrumentUsingPlan" class="cmxform">
+<input type="hidden" id="PlanId" name="PlanId" value="@Model.PlanId" />
+<input  type="hidden" id="InstrumentId" name="InstrumentId" value="@Model.InstrumentId" />
+<div id="div1" style="display: none">
+    <table id="tbOrderProject">
+    </table>
+</div>
+<div id="div2">
+    <table id="tableInstrumentUsingPlan" class="form_table">
+        <tr>
+            <th style="width: 35%;">
+                <span class="ico_must">订单/项目编号</span>
+            </th>
+            <td style="width: 35%;">
+                <input name="Order_ProjectCode" readonly="readonly" id="Order_ProjectCode" type="text" value="@Model.Order_ProjectCode" style="width: 240px;" />
+            </td>
+            <td style="width: 30%;">
+                <a href="#" style="color: Blue" id="btnReturn">选择测试项目</a>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                工程师
+            </th>
+            <td>
+                <input id="EngineerName" name="EngineerName" readonly="readonly" type="text" value="@Model.EngineerName" style="width: 240px;" />
+            </td>
+            <th>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <span class="ico_must">开始时间</span>
+            </th>
+            <td>
+                <input type="text" id="StartDate" name="StartDate" class="Wdate" style="width: 242px;" 
+                value="@(DateTime.MinValue == Model.StartDate ? string.Empty : Model.StartDate.ToString("yyyy-MM-dd HH:mm:ss"))" 
+                onfocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'EndDate\',{d:-0})}'})" />
+            </td>
+            <th>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <span class="ico_must">结束时间</span>
+            </th>
+            <td>
+                <input type="text" id="EndDate" name="EndDate" class="Wdate"  style="width: 242px;" 
+                value="@(DateTime.MinValue == Model.EndDate ? string.Empty : Model.EndDate.ToString("yyyy-MM-dd HH:mm:ss"))"
+                onfocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'StartDate\',{d:+0})}'})" />
+            </td>
+            <th>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <span>备注</span>
+            </th>
+            <td>
+                <textarea id="Remark" name="Remark" rows="2" cols="31">@Model.Remark</textarea>
+            </td>
+            <th>
+            </th>
+        </tr>
+    </table>
+    <div class="submit_btn_div">
+        <input id="btnSave" type="button" class="submit_btn" value=" 保 存" onclick="fnSave()" />
+        <input id="btnClose" type="button" class="submit_btn" value="关 闭" onclick="fnClose()" />
+    </div>
+</div>
+</form>

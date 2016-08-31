@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "附件信息";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/InstrumentJs.js")" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+      var tableOrderOther;
+      $(function () {
+          //委托单其它附件
+          tableOrderOther = fnGetBusinessAttachmentList4Detail($("#AttachmentBusinessType").val(), $("#BusinessId").val(), tableOrderOther, "OrderOtherList");
+      });
+</script>
+<input type="hidden"  name="AttachmentBusinessType" id="AttachmentBusinessType" value="@ViewBag.AttachmentBusinessType"/>
+<input type="hidden"  name="BusinessId" id="BusinessId" value="@ViewBag.BusinessId"/>
+<table id="OrderOtherList">
+    <thead>
+        <tr>
+            <th>
+                序号
+            </th>
+            <th>
+                文件名称
+            </th>
+            <th>
+                备注
+            </th>
+        </tr>
+    </thead>
+</table>

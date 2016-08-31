@@ -1,0 +1,50 @@
+﻿@model LightFlow.Common.Models.FlowInstanceModel
+<style type="text/css">
+    .span_self
+    {
+        font-size:large; 
+        font-family:黑体;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+        $("#Remark").focus();
+        //表单验证
+        $("#formAudit").validate({
+            rules: {
+                Remark: {
+                    required: true,
+                    maxGBKlength: 3000
+                }
+            },
+            messages: {
+                Remark: "请填写审核意见"
+
+            }
+        })
+
+        $("#tableAudit").css("width", window.screen.width);
+    });
+    
+</script>
+<div style=" position:fixed; top:0px;z-index:9999; background:#5CACEE;display:inline; ">    
+        <form id="formAudit">
+        <table id="tableAudit"  >
+            <tr>
+                <td >
+                <span class="span_self">当前步骤：@Model.CurrentStep</span> &nbsp;     
+                 <span class="span_self">审核意见：</span>
+                 @Html.TextArea("Remark", new { @cols = "50", @rows = "3", @style = "height:45px; resize: none;" })
+                    <input type="hidden" id="CurrentStepId" name="CurrentStepId" value="@Model.CurrentStepId" />
+                    <input type="hidden" id="FlowId" name="FlowId" value="@Model.FlowId" />
+                    <input type="hidden" id="FKValue" name="FKValue" value="@Model.FKValue" />
+                    <input type="hidden" id="InstanceId" name="InstanceId" value="@Model.InstanceId" />
+
+                     <input id="btnPass" type="button" class="submit_btn" value=" 通 过 " onclick="fnAuditWorkflow(@(GRGTCommonUtils.UtilConstants.AutidResult.通过.GetHashCode()),true);" />
+            <input id="btnNoPass" type="button" class="submit_btn" value="不通过" onclick="fnAuditWorkflow(@(GRGTCommonUtils.UtilConstants.AutidResult.不通过.GetHashCode()),false);" />
+              </td>
+            </tr>
+        </table>
+        </form>
+       
+    </div>

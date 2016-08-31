@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "选择体系文件";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    var oTable;
+    $(function () {
+        oTable = WrapTables4Ajax("documentList", "/Instrument/GetDocumentJsonData?instrumentId=0&type=1", "100%", true, "auto");
+    });
+
+    function fnChooseDocumentSelect(obj) {
+        var documentId = $(obj).attr("id");
+        window.parent.fnDocumentSelect(documentId);
+    }
+</script>
+<div>
+    <table id="documentList">
+        <thead>
+        <tr>
+            <th>
+                    操作
+                </th>
+                <th>
+                    文件名
+                </th>
+                <th>
+                    分类
+                </th>
+                <th>
+                    入档时间
+                </th>
+                <th>
+                    备注
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>

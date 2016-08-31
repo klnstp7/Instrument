@@ -1,0 +1,215 @@
+﻿@using ToolsLib.Utility
+@using System.Web.UI.WebControls
+@model Global.Common.Models.OrgModel
+@{
+    ViewBag.Title = "仪器维护";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/InstrumentJs.js")" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            <!--Authorization operate="/Instrument/DeleteInstruments"-->
+            { sName: '', sType: 'string', sTitle: '<input type="checkbox" onclick="fnSetCheckbox(this)"/>' ,"bSortable": false},
+            <!--/Authorization-->
+            { sName: '', sType: 'string', sTitle: '操作' ,"bSortable": false},
+             { sName: 'IsOverTime', sType: 'string', sTitle: '证书超期', CustomParam: 'OverTime',"bSortable": false,
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '已超期', sValue: '1', selected: false },
+                    { sTitle: '未超期', sValue: '0', selected: false }
+                ]
+            },
+            { sName: 'IsWarnDay', sType: 'string', sTitle: '超期预警', CustomParam: 'WarnDay',"bSortable": false,
+                                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonWarnDay)]
+            },
+            { sName: 'DueEndDate', sType: 'date', sTitle: '到期日期',"bSortable": true},
+            { sName: 'RecordState', sType: 'string', sTitle: '状态' ,"bSortable": true,
+                                searchDataSource: [
+                                   @Html.Raw(ViewBag.JsonInstrumentRecordState)]
+            },
+            { sName: 'InstrumentName', sType: 'string', sTitle: '仪器名称' ,"bSortable": true},
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号' ,"bSortable": true},
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号' ,"bSortable": true},
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号' ,"bSortable": true},
+            { sName: 'CertificateNo', sType: 'string', sTitle: '证书编号' ,"bSortable": true},
+            { sName: 'BarCode', sType: 'string', sTitle: '条码' ,"bSortable": false},
+            { sName: 'InstrumentCate', sType: 'string', sTitle: '分类' ,"bSortable": true,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentCate)
+                ]},
+            { sName: 'BelongDepart', sType: 'string', sTitle: '所属部门', CustomParam: 'OrgName',"bSortable": true},
+            { sName: 'DueStartDate', sType: 'date', sTitle: '校准日期',"bSortable": true},           
+            { sName: 'LeaderName', sType: 'string', sTitle: '保管人' ,"bSortable": true},
+            { sName: 'StorePalce', sType: 'string', sTitle: '存放地址',"bSortable": true},
+            { sName: 'CreateUser', sType: 'string', sTitle: '创建人',"bSortable": false}
+        ];
+        oTable = GetJsondataFromServ("Instrument", "/Instrument/GetAllInstrumentJsonData?type=Maintain", "2000px", columnInfo, queryColInfo, tableHigth, false, true, false);
+              //导出
+        $("#btnExport").click(function () {
+            var fieldCondition = oTable.fnGetAdvCondition(columnInfo);
+            var url = "/Instrument/ExportDataBySearchCondition?type=Maintain&" + fieldCondition ;
+            ymPrompt.confirmInfo({ message: "是否要导出当前仪器?", title: '确认对话框', handler: function (tp) {
+                    if (tp == 'ok') {
+                       window.open(url,"_blank");
+                    }
+                }
+            });
+        });
+
+        $("#searchBelongDepart").click( function (){
+            fnNewWindow("/Organization/BelongOrgTree","组织架构",300,450);
+        });
+
+
+        $('#form1').validate({
+          rules: {
+            ExcelFile: { required:true,extension: "xlsx|xls" }
+          },
+          messages: {
+              ExcelFile:"请上传.xlsx或.xls后缀的文件"
+          }
+          });
+
+    });
+
+
+
+ 
+    function fnGetSelectOrgName(orgName)
+    {
+    $("#searchBelongDepart").val(orgName);
+//        ymPrompt.alert(orgName);
+    }
+    //详细
+    function fnInstrumentDetail(obj){
+        var instrumentId = $(obj).parent().attr("instrumentId");
+        window.open("/Instrument/InstrumentDetail?instrumentId="+instrumentId);
+    }
+
+    //编辑
+    function fnSelectInstrument(obj){
+        var instrumentId = $(obj).parent().attr("instrumentId");
+        window.open("/Instrument/Edit?instrumentId="+instrumentId);
+    }
+
+    //删除
+    function fnDelInstr(obj) {
+        var instrumentId = $(obj).parent().attr("instrumentId");
+        var instrumentName = $(obj).parent().attr("instrumentName");
+        fnConfirmWithoutF5('确定删除【' + instrumentName + '】？', '@Url.Content("~/Instrument/Delete?instrumentId=")' + instrumentId, fnReloadInstrument);
+        return false;
+    }
+
+    function fnSynInstrument(obj){
+        var instrumentId = $(obj).parent().attr("instrumentId");
+        var instrumentName = $(obj).parent().attr("instrumentName");
+        fnConfirmWithoutF5('确定推送数据到业务系统？', '@Url.Content("~/Instrument/SynInstrument?instrumentId=")' + instrumentId, fnReloadInstrument);
+        return false;
+    }
+
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+    function fnbtnAddInstrument()
+    {
+        window.open("/Instrument/Add")
+    }
+
+        //重新加载
+    function fnReloadInstrument()
+    {
+        //刷新
+        oTable.api().ajax.reload();
+    }
+
+    function BatchImportInstrument(){
+        var options = {
+            success: fnCallback,
+            url: "/Instrument/BatchImportInstrument"
+        };
+        if ($("#form1").valid()) {
+            $('#form1').ajaxSubmit(options);
+            return false;
+        }
+    }
+
+    function fnCallback(responseText){
+        var jsonObj = eval("(" + responseText + ")");
+        if(jsonObj.sMsg==""){
+            ymPrompt.alert("操作成功,"+jsonObj.Result);
+            }
+            else
+                alert(jsonObj.Result+"\r\n"+jsonObj.sMsg);
+            oTable.api().ajax.reload();
+    }
+
+    function fnDownloadTemplate(){
+        fnAjaxDownloadFile("/Instrument/DownloadTemplate");
+    }
+    function fnUploadCerts(){
+        fnNewWindow("/Instrument/UploadInstrumentCert","批量导入证书","420px","380px");
+    }
+    //设置全选、反选
+    function fnSetCheckbox(obj) {
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk', isChecked);
+    }
+        //删除项目
+    function fnDeleteInstrument() {
+        var InstrumentIds = fnGetAllCheckedValue('chk');
+        if ("" == InstrumentIds) {
+            ymPrompt.alert("请选择要删除的仪器");
+            return;
+        }
+        ymPrompt.confirmInfo({ message: "确定要删除选中的仪器？", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                $.post("/Instrument/DeleteInstruments?InstrumentIds=" + InstrumentIds, function (data) {
+                    if (data == "OK") {
+                            ymPrompt.alert("删除成功！");
+                            fnReloadInstrument();
+                    }
+                    else ymPrompt.alert(data);
+                });
+            }
+        }
+        });
+    }
+</script>
+<div>
+    <form id="form1" method="post" action="/Instrument/BatchImportInstrument" enctype="multipart/form-data">
+    <!--Authorization operate="/Instrument/Add"-->
+    <input type="button" id="btnAddInstrument" onclick="fnbtnAddInstrument()" class="submit_btn"
+        value="新增仪器" />
+    <!--/Authorization-->
+    <!--Authorization operate="/Instrument/DeleteInstruments"-->
+    <input type="button" id="btnDel" class="submit_btn" value="批量删除" onclick="fnDeleteInstrument()" />
+    <!--/Authorization-->
+    <!--Authorization operate="Maintain-Export"-->
+    <input type="button" id="btnExport" class="submit_btn" value="导出EXCEL" />
+    <!--/Authorization-->
+   <input id="btnDownloadTemplate" onclick="fnDownloadTemplate()" type="button" class="submit_btn" value="下载模板" />
+   <!--Authorization operate="Maintain-CertImport"-->
+   <input id="btnUploadCerts" onclick="fnUploadCerts()" type="button" class="submit_btn8" value="上传电子证书" />
+   <!--/Authorization-->
+    <!--Authorization operate="Maintain-Import"-->
+    <input type="file" id="ExcelFile" name="ExcelFile" />
+    <input type="button" id="btnImport" class="submit_btn" onclick="BatchImportInstrument()"
+        value="批量新增" />
+        
+    <!--/Authorization-->
+    </form>
+    <table id="Instrument">
+    </table>
+</div>

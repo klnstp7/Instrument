@@ -1,0 +1,43 @@
+/* tags */
+body { font-family:Arial, simsun; font-size:12pt; margin:0; padding:0;position:relative; }
+input,textarea,select,button { color:#000; margin:0; vertical-align:middle; }
+form , ul , ol , li { margin:0; padding:0; list-style:none; }
+img { border:0; }
+h1,h2,h3,h4,h5 { margin:0; padding:0; font-size:14pt; }
+p { margin:0 0 3pt; }
+a:visited , a:link { text-decoration:underline; color:#333; }
+a:hover { color:#F50 !important; text-decoration:underline; }
+table { border-collapse:collapse; }
+
+/* div use for clear */
+.clear { clear:both; height:1px; font-size:0; overflow:hidden;  }
+/* Clear Fix */
+.clearfix:after { content:"."; display:block; height:0; clear:both; visibility:hidden; }
+.clearfix { display:inline-block; }
+/* Hide from IE Mac */
+.clearfix {display:block;}
+/* End hide from IE Mac */
+/* end of clearfix */
+
+/* float */
+.float_l { float:left !important; }
+.float_r { float:right !important; }
+
+/* elements */
+#header { height:60pt; line-height:60pt; text-align:right; font-size:18pt; padding-right:12pt; font-weight:bold; border-bottom:2pt solid #000; }
+ #logo { width:130pt; padding-top:6pt; float:left; margin-right:14pt; }
+.container { font-size:9pt; line-height:1.4em; padding:4pt 0; margin:0 10pt; }
+.container.bordered { padding-bottom:16pt; margin-bottom:6pt; margin-top:10pt; border-bottom:2pt solid #000; }
+.two_col_container { float:left; }
+.two_col_container.left { width:48.8%; padding-right:1%; border-right:1px dotted #000; }
+.two_col_container.right { width:49.8%; }
+.form_table { width:95%;  }
+.form_table td, .form_table th { font-size:9pt; font-weight:normal; padding:3pt 0; }
+.form_table th { text-align:right; vertical-align:bottom; }
+.border-bottom { border-bottom:1px solid #aaa !important; }
+.data_table { width:100%; }
+.data_table td, .data_table th { font-size:9pt; padding:4pt; text-align:center; border:1px solid #000; }
+.data_table th { background-color:#ddd; }
+.big_font { font-size:16pt !important; padding:14pt 0 !important; }
+table.no_border td, table.no_border th { border:none; }
+table.right_align td, table.right_align th { text-align:right; }

@@ -1,0 +1,159 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "固定资产";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作',width:'110px' },
+            
+            { sName: 'RecordState', sType: 'string', sTitle: '状态',
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentState)
+                ]},
+            { sName: 'InstrumentName', sType: 'string', sTitle: '资产名称' },
+            { sName: 'AssetsNo', sType: 'string', sTitle: '资产编号' },
+            { sName: 'Specification', sType: 'string', sTitle: '型号规格' },
+            { sName: 'BarCode', sType: 'string', sTitle: '条码' },
+             { sName: 'CalibrationType', sType: 'string', sTitle: '资产属性' ,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonCalibrationType)
+                ]},
+            { sName: 'BelongDepart', sType: 'string', sTitle: '所属部门', CustomParam: 'OrgName'},
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号' },
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号' },
+            { sName: 'BuyDate', sType: 'date', sTitle: '购置日期' },
+            { sName: 'Price', sType: 'int', sTitle: '购置金额' },
+            { sName: 'Manufacturer', sType: 'string', sTitle: '生产厂家' },
+            { sName: 'ManufactureContactor', sType: 'string', sTitle: '厂家联系信息' },
+            { sName: 'LeaderName', sType: 'string', sTitle: '保管人' },
+            { sName: 'StorePalce', sType: 'string', sTitle: '存放地点'},
+            { sName: 'LastCheckDate', sType: 'date', sTitle: '最近盘点时间'},
+            { sName: 'LastCheckUser', sType: 'string', sTitle: '最近盘点人'}
+        ];
+        oTable = GetJsondataFromServ("Instrument", "/Assets/GetAllAssetsJsonData?type=Maintain", "2200px", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+
+        $("#searchBelongDepart").click( function (){
+            fnNewWindow("/Organization/BelongOrgTree","组织架构",300,450);
+        });
+
+        $('#form1').validate({
+          rules: {
+            ExcelFile: { required:true,extension: "xlsx|xls" }
+          },
+          messages: {
+              ExcelFile:"请上传.xlsx或.xls后缀的文件"
+          }
+          });
+
+
+    });
+    
+    function fnExport(){
+        var fieldCondition = oTable.fnGetAdvCondition(columnInfo);
+        var url = "/Assets/ExportDataBySearchCondition?" + fieldCondition ;
+        ymPrompt.confirmInfo({ message: "是否要导出当前资产?", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                       window.open(url,"_blank");
+                    }
+                }
+            });
+    }
+
+ 
+    function fnGetSelectOrgName(orgName){
+        $("#searchBelongDepart").val(orgName);
+    }
+    //详细
+    function fnInstrumentDetail(obj){
+        var instrumentId = $(obj).parent().attr("instrumentId");
+        window.open("/Assets/Details?instrumentId="+instrumentId);
+    }
+
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+    //编辑
+    function fnSelectInstrument(obj){
+        var instrumentId = $(obj).parent().attr("instrumentId");
+        window.open("/Assets/Edit?instrumentId="+instrumentId);
+    }
+
+    //删除
+    function fnDelInstr(obj) {
+        var instrumentId = $(obj).parent().attr("instrumentId");
+        var instrumentName = $(obj).parent().attr("instrumentName");
+        fnConfirmWithoutF5('确定删除【' + instrumentName + '】？', '@Url.Content("~/Assets/Delete?instrumentId=")' + instrumentId, fnReloadInstrument);
+        return false;
+    }
+
+            //重新加载
+    function fnReloadInstrument(){
+        //刷新
+        oTable.reloadData();
+    }
+
+    function fnAddAssets(){
+        window.open("/Assets/Edit?instrumentId=0")
+    }
+
+    function fnDownloadTemplate(){
+        fnAjaxDownloadFile("/Assets/DownloadAssetsTemplate");
+    }
+
+    function BatchImportInstrument(){
+        var options = {
+            success: fnCallback,
+        };
+        if ($("#form1").valid()) {
+            $('#form1').ajaxSubmit(options);
+            return false;
+        }
+    }
+
+    function fnCallback(responseText){
+        var jsonObj = eval("(" + responseText + ")");
+        if(jsonObj.sMsg==""){
+            ymPrompt.alert("操作成功,"+jsonObj.Result);
+            }
+            else
+                alert(jsonObj.Result+"\r\n"+jsonObj.sMsg);
+            oTable.api().ajax.reload();
+    }
+
+
+</script>
+<div>
+    <form id="form1" method="post" action="/Assets/BatchImportAssets" enctype="multipart/form-data">
+    <!--Authorization operate="新增资产-新增"-->
+    <input type="button" id="btnAddAssets" onclick="fnAddAssets()" class="submit_btn"
+        value="新增" />
+    <!--/Authorization-->
+    <!--Authorization operate="/Assets/DownloadAssetsTemplate"-->
+    <input id="btnDownloadTemplate" onclick="fnDownloadTemplate()" type="button" class="submit_btn"
+        value="下载模板" />
+    <!--/Authorization-->
+    <!--Authorization operate="/Assets/BatchImportAssets"-->
+    <input type="file" id="ExcelFile" name="ExcelFile" />
+    <input type="button" id="btnImport" class="submit_btn" onclick="BatchImportInstrument()"
+        value="批量新增" />
+    <!--/Authorization-->
+    <!--Authorization operate="/Assets/ExportDataBySearchCondition"-->
+    <input type="button" id="btnExport" onclick="fnExport()" class="submit_btn" value="导 出" />
+    <!--/Authorization-->
+    </form>
+    <table id="Instrument">
+    </table>
+</div>

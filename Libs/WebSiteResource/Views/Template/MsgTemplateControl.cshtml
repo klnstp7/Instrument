@@ -1,0 +1,344 @@
+﻿@{
+    ViewBag.Title = "MsgTempleteControl";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $("input[name='MsgType'][type='checkbox']").change(function () {
+            var myId = this.id;
+            var tableId = 'tb' + myId;
+            if (this.checked == true) {
+                $("#" + tableId).show();
+            }
+            else {
+                $("#" + tableId).hide();
+            }
+        });
+
+        $("input[name='MsgType'][type='checkbox']").each(function () {
+            var myId = this.id;
+            var tableId = 'tb' + myId;
+            if (this.checked == true) {
+                $("#" + tableId).show();
+            }
+            else {
+                $("#" + tableId).hide();
+            }
+        });
+
+        if ('@ViewBag.IsLeaderShow' == 'true')
+            $("#tbLeader").show();
+        else
+            $("#tbLeader").hide();
+
+        if ('@ViewBag.IsCompanyShow' == 'true')
+            $("#tbCompany").show();
+        else
+            $("#tbCompany").hide();
+
+        if ('@ViewBag.IsOthersShow' == 'true')
+            $("#tbOthers").show();
+        else
+            $("#tbOthers").hide();
+
+
+
+        //保存
+        $("#btnSave").click(function () {
+            if (fnCheckLeaderFormat() && fnCheckOthersFormat()) {
+                $.post("/Template/SaveMsgTemplate", $("#formMsg").serialize(), function (data) {
+                    if (data == "OK") {
+                        alert("信息保存成功,系统将自动发送！");
+                    }
+                    else {
+                        fnErrorWindow();
+                    }
+                });
+            }
+        });
+
+        $("#LeaderInfo")
+            .bind("keydown", function (event) {
+                if (event.keyCode === $.ui.keyCode.TAB &&
+            $(this).data("ui-autocomplete").menu.active) {
+                    event.preventDefault();
+                }
+            })
+            .autocomplete({
+                source: function (request, response) {
+                    $.getJSON("/Login/SearchUser4Msg", {
+                        term: extractLast(request.term),
+                        labOrgCode: $("#labOrgCode").val()
+                    }, response);
+                },
+                search: function () {
+                    var term = extractLast(this.value);
+                    if (term.length < 1) {
+                        return false;
+                    }
+                },
+                focus: function () {
+                    return false;
+                },
+                select: function (event, ui) {
+                    var terms = split(this.value);
+                    terms.pop();
+                    labArr = ui.item.label.split(',');
+                    descArr = ui.item.desc.split(',');
+                    var tmpValue = $.trim(labArr[0]) + '[' + $.trim(labArr[1]) + ']';
+                    terms.push(tmpValue);
+
+                    terms.push("");
+                    this.value = terms.join(", ");
+                    addCheckUser('CheckedLeaderInfo', tmpValue, descArr.join('|'));
+
+                    return false;
+                }
+            });
+
+
+        $("#OthersInfo")
+            .bind("keydown", function (event) {
+                if (event.keyCode === $.ui.keyCode.TAB &&
+            $(this).data("ui-autocomplete").menu.active) {
+                    event.preventDefault();
+                }
+            })
+            .autocomplete({
+                source: function (request, response) {
+                    $.getJSON("/Login/SearchUser4Msg", {
+                        term: extractLast(request.term)
+                    }, response);
+                },
+                search: function () {
+                    var term = extractLast(this.value);
+                    if (term.length < 1) {
+                        return false;
+                    }
+                },
+                focus: function () {
+                    return false;
+                },
+                select: function (event, ui) {
+                    var terms = split(this.value);
+                    terms.pop();
+
+                    labArr = ui.item.label.split(',');
+                    descArr = ui.item.desc.split(',');
+                    var tmpValue = $.trim(labArr[0]) + '[' + $.trim(labArr[1]) + ']';
+                    terms.push(tmpValue);
+
+                    terms.push("");
+                    this.value = terms.join(", ");
+
+                    addCheckUser('CheckedOthersInfo', tmpValue, descArr.join('|'));
+
+                    return false;
+                }
+            });
+
+
+
+    });
+
+ 
+  
+    function split(val) {
+        return val.split(/,\s*/);
+    }
+    function extractLast(term) {
+        return split(term).pop();
+    }
+
+    function addCheckUser(inputId, data, msgStr) {
+        var chkVal = $("#" + inputId).val();
+        if (chkVal.indexOf(data) == -1) {
+            $("#" + inputId).val(chkVal + "," + data + "(" + msgStr + ")");
+            
+        }
+    }
+
+    function fnCheckLeaderFormat() {
+        var chkSign = undefined;
+        chkSign = $("#CheckedLeaderInfo");
+
+        if (chkSign.length == 0)
+            return true;
+
+        var chkValue = "," + chkSign.val() + ",";
+        var engineers = $("#LeaderInfo").val().split(',');
+        for (var j = 0; j < engineers.length; j++) {
+            if ($.trim(engineers[j]) == "") continue;
+            if (chkValue.indexOf("," + $.trim(engineers[j]) + "(") == -1) {
+                alert('@ViewBag.LeaderTitle' + engineers[j] + "有误,请输入正确信息!");
+                return false;
+            }
+        }
+
+        var terms = new Array();
+        var chkEngineers = $("#CheckedLeaderInfo").val().split(',');
+        for (var i = 0; i < chkEngineers.length; i++) {
+            if ($.trim(chkEngineers[i]) == "") continue;
+            for (var j = 0; j < engineers.length; j++) {
+                if ($.trim(engineers[j]) == "") continue;
+                var aStr = "," + chkEngineers[i];
+                if (aStr.indexOf("," + $.trim(engineers[j]) + "(") > -1) {
+                    terms.push(chkEngineers[i]);
+                    break;
+                }
+            }
+        }
+        $("#CheckedLeaderInfo").val(terms.join(","));
+        return true;
+    }
+
+    function fnCheckOthersFormat() {
+        var chkSign = undefined;
+        chkSign = $("#CheckedOthersInfo");
+
+        if (chkSign.length == 0)
+            return true;
+
+        var chkValue = "," + chkSign.val() + ",";
+        var engineers = $("#OthersInfo").val().split(',');
+        for (var j = 0; j < engineers.length; j++) {
+            if ($.trim(engineers[j]) == "") continue;
+            if (chkValue.indexOf("," + $.trim(engineers[j]) + "(") == -1) {
+                alert('@ViewBag.OthersTitle' + engineers[j] + "有误,请输入正确信息!");
+                return false;
+            }
+        }
+
+        var terms = new Array();
+        var chkEngineers = $("#CheckedOthersInfo").val().split(',');
+        for (var i = 0; i < chkEngineers.length; i++) {
+            if ($.trim(chkEngineers[i]) == "") continue;
+            for (var j = 0; j < engineers.length; j++) {
+                if ($.trim(engineers[j]) == "") continue;
+                var aStr = "," + chkEngineers[i];                
+                if (aStr.indexOf("," + $.trim(engineers[j]) + "(") > -1) {
+                    terms.push(chkEngineers[i]);
+                    break;
+                }
+            }
+        }
+        $("#CheckedOthersInfo").val(terms.join(","));
+        return true;
+    }
+    
+</script>
+<form id="formMsg" class="cmxform">    
+    <div class="submit_btn_div">
+        <input type="button" id="btnSave" class="submit_btn" value="保存" />
+        <input type="hidden" id="labOrgCode" name="labOrgCode" value="@ViewBag.OrgCode" />
+        <input type="hidden" id="ApplyId" name="ApplyId" value="@ViewBag.ApplyId" />
+    </div>
+    <table class="form_table" id="tbCompany">
+        <tr>
+            <th style="width:120px;">@ViewBag.CompanyTitle</th>
+            <td>
+                <input id="CompanyInfo" name="CompanyInfo" type="text" value="@ViewBag.CompanyTelephone"  style="width:100%;"/>
+            </td>
+        </tr>
+        
+    </table>
+    <table class="form_table" id="tbLeader">
+        <tr>
+            <th style="width:120px;">@ViewBag.LeaderTitle</th>
+            <td>
+                <input id="LeaderInfo" type="text" value="@ViewBag.LeaderInfo"  style="width:100%;"/>             
+                <input id="CheckedLeaderInfo" name="CheckedLeaderInfo" type="hidden" value="@ViewBag.CheckLeaderInfo" />
+            </td>
+        </tr>
+        
+    </table>
+
+    <table class="form_table" id="tbOthers">
+        <tr>
+            <th style="width:120px;">@ViewBag.OthersTitle</th>
+            <td>
+                <input id="OthersInfo" type="text" value="@ViewBag.OthersInfo" style="width:100%;"/>
+                <input id="CheckedOthersInfo" name="CheckedOthersInfo" type="hidden" value="@ViewBag.CheckOthersInfo" />
+            </td>
+        </tr>
+        
+    </table>
+    <table class="form_table" style="display:none;">
+        <tr>
+            <th style="width:120px;">信息发送类型</th>
+            <td>
+                <input id="Msg" name="MsgType" type="checkbox" value="@Measure.LabCommon.Constants.TemplateType.短信模板.GetHashCode()" checked="checked" />
+                <label for="Msg" style="padding-right:10px;" >短信</label>
+                <input id="MMS" name="MsgType" type="checkbox" value="@Measure.LabCommon.Constants.TemplateType.彩信模板.GetHashCode()" />
+                <label for="MMS" style="padding-right:10px;" >彩信</label>
+                <input id="Email" name="MsgType" type="checkbox" value="@Measure.LabCommon.Constants.TemplateType.邮件模板.GetHashCode()" />
+                <label for="Email" style="padding-right:10px;" >邮件</label>
+                <input id="Micro" name="MsgType" type="checkbox" value="@Measure.LabCommon.Constants.TemplateType.微信模板.GetHashCode()" />
+                <label for="Micro" style="padding-right:10px;" >微信</label>
+
+
+            </td>
+        </tr>
+    </table>
+    <table id="tbMsg" class="form_table">
+        <tr>
+            <th style="width:120px;">
+                给客户的短信:
+            </th>
+            <td>
+                <textarea id="txtClientMsg" name="txtClientMsg" rows="2" style="width:100%;">@ViewBag.ClientMsgContent</textarea>
+            </td>
+        </tr>
+        <tr>
+            <th style="width:120px;">
+                给工程师的短信:
+            </th>
+            <td>
+                <textarea id="txtMsg" name="txtMsg" rows="2" style="width:100%;">@ViewBag.MsgContent</textarea>
+            </td>
+           
+        </tr>
+         <tr>
+            <th style="width:120px;">
+                给其他的短信:
+            </th>
+            <td>
+                <textarea id="txtOtherMsg" name="txtOtherMsg" rows="2" style="width:100%;">@ViewBag.OtherMsgContent</textarea>
+            </td>
+           
+        </tr>
+         
+    </table>
+    <table id="tbMMS" class="form_table">
+        <tr>
+            <th style="width:120px;">
+                彩信:
+            </th>
+            <td>
+                <textarea id="txtMMS" name="txtMMS" rows="2" style="width:100%;">@ViewBag.MMSContent</textarea>
+            </td>
+        </tr>
+    </table>
+    
+    <table id="tbEmail" class="form_table">
+        <tr>
+            <th style="width:120px;">
+                邮件:
+            </th>
+            <td>
+                <textarea id="txtEmail" name="txtEmail" rows="4" style="width:100%;">@ViewBag.EmailContent</textarea>
+            </td>
+        </tr>
+    </table>
+    <table id="tbMicro" class="form_table">
+        <tr>
+            <th style="width:120px;">
+                微信:
+            </th>
+            <td>
+                <textarea id="txtMicro" name="txtMicro" rows="2" style="width:100%;">@ViewBag.MicroContent</textarea>
+            </td>
+        </tr>
+    </table>
+</form>
+

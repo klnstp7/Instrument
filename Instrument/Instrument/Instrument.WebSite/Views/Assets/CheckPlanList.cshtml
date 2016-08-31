@@ -1,0 +1,75 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "盘点计划";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作',sWidth:'180px' },
+            { sName: 'PlanName', sType: 'string', sTitle: '计划名称' },
+             { sName: 'PlanType', sType: 'string', sTitle: '计划类型' ,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.PlanType)
+                ]},
+            { sName: 'StartDate', sType: 'date', sTitle: '开始日期' },
+            { sName: 'EndDate', sType: 'date', sTitle: '结束日期' },
+            { sName: 'BelongDepart', sType: 'date', sTitle: '创建日期'},
+            { sName: 'CreateUser', sType: 'string', sTitle: '创建人'},
+            { sName: 'Remark', sType: 'string', sTitle: '备注',sWidth:'140px' }
+        ];
+        oTable = GetJsondataFromServ("Instrument", "/Assets/GetAllCheckPlanJsonData", "1000px", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+    });
+
+    function fnAddPlan(){
+        window.open("/Assets/EditCheckPlan?planId=0");
+    }
+
+    //编辑
+    function fnEditCheckPlan(obj){
+        var planId=$(obj).parent().attr("planId");
+        window.open("/Assets/EditCheckPlan?planId="+planId);
+    }
+
+    //删除
+    function fnDeletePlan(obj){
+        var planId = $(obj).parent().attr("planId");
+        var planName = $(obj).parent().attr("planName");
+        fnConfirmWithF5WithOTable('确定删除【' + planName + '】？', '@Url.Content("~/Assets/DeleteCheckPlan?planId=")' + planId, oTable);
+        return false;
+    }
+
+    //详细
+    function fnAssetsPlanDetail(obj){
+        var planId = $(obj).parent().attr("planId");
+        window.open("/Assets/CheckPlanDetail?planId="+planId);
+    }
+
+    //盘盈信息
+    function fnCheckPlanOverage(obj){
+        var planId = $(obj).parent().attr("planId");
+        window.open("/Assets/AssetsOverage?planId="+planId);
+    }
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+</script>
+    <div>
+      <!--Authorization operate="/Assets/EditCheckPlan"-->
+    <input type="button" id="btnAdd" onclick="fnAddPlan()" class="submit_btn"
+        value="新增计划" />
+    <!--/Authorization-->
+<table id="Instrument">
+</table>
+</div>
+

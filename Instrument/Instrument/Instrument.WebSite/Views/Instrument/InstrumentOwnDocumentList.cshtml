@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "体系文件";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    var oTable;
+    $(function () {
+        oTable = WrapTables4Ajax("documentList", "/Instrument/GetDocumentJsonData?instrumentId=@ViewBag.InstrumentId&type=2", "100%", true, "auto");
+        //详细页面隐藏
+        if ("0" == "@ViewBag.DataType") {
+            oTable.fnSetColumnVis(0, false);
+            $("#btnChose")[0].style.display = "none";
+        }
+    });
+
+    function fnDeleteRelation(obj) {
+        var documentId = $(obj).attr("id");
+        fnConfirmWithF5WithOTable("确定删除关联此文件吗？", "/Instrument/DeleteInstrumentOwnDocument?documentId=" + documentId + "&instrumentId=@ViewBag.InstrumentId", oTable);
+        return false;
+    }
+
+    function fnChoseDocument() {
+        fnNewWindow("/Instrument/ChooseDocument", "选择体系文件", "800", "400");
+    }
+
+    function fnDocumentSelect(documentId) {
+        $.post("/Instrument/AddOwnDocument?documentId=" + documentId + "&instrumentId=@ViewBag.InstrumentId", function (data) {
+            if (data == "OK") {
+                oTable.api().ajax.reload();
+                ymPrompt.alert("关联成功");
+            }
+            else
+                ymPrompt.alert(data);
+        })
+    }
+
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+</script>
+<div>
+    <!--Authorization operate="/Instrument/AddOwnDocument"-->
+    <input type="button" id="btnChose" onclick="fnChoseDocument()" class="submit_btn8"
+        value="从体系文件库选择" />
+    <!--/Authorization-->
+    <table id="documentList">
+        <thead>
+            <tr>
+                <th>
+                    操作
+                </th>
+                <th>
+                    文件名
+                </th>
+                <th>
+                    分类
+                </th>
+                <th>
+                    入档时间
+                </th>
+                <th>
+                    备注
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>

@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="InstrumentWCFServices" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://172.18.0.50:8003/Instrument?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://172.18.0.50:8003/Instrument?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="InstrumentWCFServices_AppLogin_InputMessage">
+    <wsdl:part name="parameters" element="tns:AppLogin" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_AppLogin_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AppLoginResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetBaseInfoByBarCode_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBaseInfoByBarCode" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetBaseInfoByBarCode_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBaseInfoByBarCodeResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetInstrumentDetailByBarCode_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetInstrumentDetailByBarCode" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetInstrumentDetailByBarCode_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetInstrumentDetailByBarCodeResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetInstrumentList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetInstrumentList" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetInstrumentList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetInstrumentListResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_InstrumentCheck_InputMessage">
+    <wsdl:part name="parameters" element="tns:InstrumentCheck" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_InstrumentCheck_OutputMessage">
+    <wsdl:part name="parameters" element="tns:InstrumentCheckResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_AddInstrument_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddInstrument" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_AddInstrument_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddInstrumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetCirculationRecordList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCirculationRecordList" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetCirculationRecordList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCirculationRecordListResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_AddCirculationRecord_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddCirculationRecord" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_AddCirculationRecord_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddCirculationRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetCheckingPlanBaseInfoList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCheckingPlanBaseInfoList" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetCheckingPlanBaseInfoList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCheckingPlanBaseInfoListResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetPlanLsit_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPlanLsit" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetPlanLsit_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPlanLsitResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetCetificationList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCetificationList" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetCetificationList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCetificationListResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_SendOrder_InputMessage">
+    <wsdl:part name="parameters" element="tns:SendOrder" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_SendOrder_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SendOrderResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetInstrumentListByKeyWorks_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetInstrumentListByKeyWorks" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetInstrumentListByKeyWorks_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetInstrumentListByKeyWorksResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetAllInstrument_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllInstrument" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetAllInstrument_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAllInstrumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetMyShoppingCart_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMyShoppingCart" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_GetMyShoppingCart_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMyShoppingCartResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_AddToShoppingCart_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddToShoppingCart" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_AddToShoppingCart_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddToShoppingCartResponse" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_DeleteFromShoppingCart_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteFromShoppingCart" />
+  </wsdl:message>
+  <wsdl:message name="InstrumentWCFServices_DeleteFromShoppingCart_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteFromShoppingCartResponse" />
+  </wsdl:message>
+  <wsdl:portType name="InstrumentWCFServices">
+    <wsdl:operation name="AppLogin">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/AppLogin" message="tns:InstrumentWCFServices_AppLogin_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/AppLoginResponse" message="tns:InstrumentWCFServices_AppLogin_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBaseInfoByBarCode">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetBaseInfoByBarCode" message="tns:InstrumentWCFServices_GetBaseInfoByBarCode_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetBaseInfoByBarCodeResponse" message="tns:InstrumentWCFServices_GetBaseInfoByBarCode_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetInstrumentDetailByBarCode">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetInstrumentDetailByBarCode" message="tns:InstrumentWCFServices_GetInstrumentDetailByBarCode_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetInstrumentDetailByBarCodeResponse" message="tns:InstrumentWCFServices_GetInstrumentDetailByBarCode_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetInstrumentList">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetInstrumentList" message="tns:InstrumentWCFServices_GetInstrumentList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetInstrumentListResponse" message="tns:InstrumentWCFServices_GetInstrumentList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="InstrumentCheck">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/InstrumentCheck" message="tns:InstrumentWCFServices_InstrumentCheck_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/InstrumentCheckResponse" message="tns:InstrumentWCFServices_InstrumentCheck_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddInstrument">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/AddInstrument" message="tns:InstrumentWCFServices_AddInstrument_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/AddInstrumentResponse" message="tns:InstrumentWCFServices_AddInstrument_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCirculationRecordList">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetCirculationRecordList" message="tns:InstrumentWCFServices_GetCirculationRecordList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetCirculationRecordListResponse" message="tns:InstrumentWCFServices_GetCirculationRecordList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddCirculationRecord">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/AddCirculationRecord" message="tns:InstrumentWCFServices_AddCirculationRecord_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/AddCirculationRecordResponse" message="tns:InstrumentWCFServices_AddCirculationRecord_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCheckingPlanBaseInfoList">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetCheckingPlanBaseInfoList" message="tns:InstrumentWCFServices_GetCheckingPlanBaseInfoList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetCheckingPlanBaseInfoListResponse" message="tns:InstrumentWCFServices_GetCheckingPlanBaseInfoList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPlanLsit">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetPlanLsit" message="tns:InstrumentWCFServices_GetPlanLsit_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetPlanLsitResponse" message="tns:InstrumentWCFServices_GetPlanLsit_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCetificationList">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetCetificationList" message="tns:InstrumentWCFServices_GetCetificationList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetCetificationListResponse" message="tns:InstrumentWCFServices_GetCetificationList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SendOrder">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/SendOrder" message="tns:InstrumentWCFServices_SendOrder_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/SendOrderResponse" message="tns:InstrumentWCFServices_SendOrder_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetInstrumentListByKeyWorks">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetInstrumentListByKeyWorks" message="tns:InstrumentWCFServices_GetInstrumentListByKeyWorks_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetInstrumentListByKeyWorksResponse" message="tns:InstrumentWCFServices_GetInstrumentListByKeyWorks_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllInstrument">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetAllInstrument" message="tns:InstrumentWCFServices_GetAllInstrument_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetAllInstrumentResponse" message="tns:InstrumentWCFServices_GetAllInstrument_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMyShoppingCart">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetMyShoppingCart" message="tns:InstrumentWCFServices_GetMyShoppingCart_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/GetMyShoppingCartResponse" message="tns:InstrumentWCFServices_GetMyShoppingCart_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddToShoppingCart">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/AddToShoppingCart" message="tns:InstrumentWCFServices_AddToShoppingCart_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/AddToShoppingCartResponse" message="tns:InstrumentWCFServices_AddToShoppingCart_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteFromShoppingCart">
+      <wsdl:input wsaw:Action="http://tempuri.org/InstrumentWCFServices/DeleteFromShoppingCart" message="tns:InstrumentWCFServices_DeleteFromShoppingCart_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/InstrumentWCFServices/DeleteFromShoppingCartResponse" message="tns:InstrumentWCFServices_DeleteFromShoppingCart_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_InstrumentWCFServices" type="tns:InstrumentWCFServices">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AppLogin">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/AppLogin" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBaseInfoByBarCode">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/GetBaseInfoByBarCode" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetInstrumentDetailByBarCode">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/GetInstrumentDetailByBarCode" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetInstrumentList">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/GetInstrumentList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InstrumentCheck">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/InstrumentCheck" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddInstrument">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/AddInstrument" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCirculationRecordList">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/GetCirculationRecordList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddCirculationRecord">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/AddCirculationRecord" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCheckingPlanBaseInfoList">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/GetCheckingPlanBaseInfoList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPlanLsit">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/GetPlanLsit" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCetificationList">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/GetCetificationList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendOrder">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/SendOrder" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetInstrumentListByKeyWorks">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/GetInstrumentListByKeyWorks" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllInstrument">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/GetAllInstrument" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMyShoppingCart">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/GetMyShoppingCart" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddToShoppingCart">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/AddToShoppingCart" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteFromShoppingCart">
+      <soap:operation soapAction="http://tempuri.org/InstrumentWCFServices/DeleteFromShoppingCart" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="InstrumentWCFServices">
+    <wsdl:port name="BasicHttpBinding_InstrumentWCFServices" binding="tns:BasicHttpBinding_InstrumentWCFServices">
+      <soap:address location="http://172.18.0.50:8003/Instrument" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

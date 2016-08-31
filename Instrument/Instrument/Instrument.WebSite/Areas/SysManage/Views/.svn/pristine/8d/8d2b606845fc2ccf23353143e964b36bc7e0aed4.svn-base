@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "更改密码";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+
+        //保存
+        $("#btnSave").click(function () {
+            if ($("#EditForm").valid()) {
+                if ($("#NewPwd").val() != $("#RequiredPwd").val()) {
+                    alert("新密码与确认密码不一致!");
+                    return;
+                }
+                $.post("/SysManage/User/SaveUserPwd?loginPwd=" + $("#LoginPwd").val() + "&newPwd=" + $("#NewPwd").val(), $("#EditForm").serialize(), function (data) {
+                    if ("OK" == data) {
+                        alert("修改密码成功!");
+                        location.reload();
+                    }
+                    else
+                        alert(data);
+                });
+            }
+        });
+
+        //关闭
+        $("#btnClose").click(function () {
+            window.close();
+        });
+
+    });
+
+</script>
+<form id="EditForm" class="EditForm">
+<table class="form_table">
+    <tr>
+        <th style="width:40%;">
+            登录名称
+        </th>
+        <td>
+            <input id="JobNo" name="JobNo" type="text" readonly="readonly" value=@ViewBag.JobNo />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            旧 密 码
+        </th>
+        <td>
+            <input id="LoginPwd" name="LoginPwd" type="password" required />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            新 密 码
+        </th>
+        <td>
+            <input id="NewPwd" name="NewPwd" type="password" required />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            确认密码
+        </th>
+        <td>
+            <input id="RequiredPwd" name="RequiredPwd" type="password" required />
+        </td>
+    </tr>
+</table>
+<div class="submit_btn_div">
+    <input id="btnSave" class="submit_btn" type="button" value=" 保 存" />
+    <input id="btnClose" class="submit_btn" type="button" value="关 闭" onclick="window.close()" />
+</div>
+</form>

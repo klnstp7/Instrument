@@ -1,0 +1,149 @@
+﻿@using Global.Common.Models;
+@model Measure.LabCommon.Models.TemplateCfgModel
+@{
+    ViewBag.Title = "打印显示模板配置";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    IList<ParamItemModel> branchList = ViewBag.BranchList as IList<ParamItemModel>;
+
+    //模板类型
+    int quotation = (int)Measure.LabCommon.Constants.TemplateType.报价单模板;
+    int orderBill = (int)Measure.LabCommon.Constants.TemplateType.委托单模板;
+    int fee = (int)Measure.LabCommon.Constants.TemplateType.收费单模板;
+    int recept = (int)Measure.LabCommon.Constants.TemplateType.签收单模板;
+    int certificateRecept = (int)Measure.LabCommon.Constants.TemplateType.证书签收单模板;
+
+    int Msg = (int)Measure.LabCommon.Constants.TemplateType.短信模板;
+    int MMS = (int)Measure.LabCommon.Constants.TemplateType.彩信模板;
+    int EMail = (int)Measure.LabCommon.Constants.TemplateType.邮件模板;
+    int Micro = (int)Measure.LabCommon.Constants.TemplateType.微信模板;
+    int ClientMsg = (int)Measure.LabCommon.Constants.TemplateType.客户短信模板;
+    int OtherMsg = (int)Measure.LabCommon.Constants.TemplateType.其他短信模板;
+
+    int printType = (int)Measure.LabCommon.Constants.TemplateConfigType.打印单据类;
+    int msgType = (int)Measure.LabCommon.Constants.TemplateConfigType.信息推送类;
+    string msgOrgCode = ViewBag.MsgOrgCode;
+}
+@*<link href="@Url.Content("~/ckeditor/contents.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/ckeditor/ckeditor.js")" type="text/javascript"></script>*@
+<script src="@Url.Content("~/FCKeditor/fckeditor.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        //var TemplateContent = CKEDITOR.replace("TemplateContent", { filebrowserImageUploadUrl: '/Template/UploadPicture',height:300 });
+        //TemplateContent.setData($("#TemplateContent").val());
+        //
+        CreateFCKeditor("TemplateContent", "");
+        $("#save").click(function () {
+            //var txtcontent = TemplateContent.getData();
+            //$("#TemplateContent").val(txtcontent);
+
+            $("#templatecfg").submit();
+        });
+
+    });
+
+
+    function CreateFCKeditor(fckName, fckBasePath) {
+        if (fckBasePath == "") fckBasePath = '../../fckeditor/';
+        var oFCKeditor = new FCKeditor(fckName);
+        oFCKeditor.ToolbarSet = 'Default';
+        oFCKeditor.BasePath = fckBasePath;
+        oFCKeditor.Width = '100%';
+        oFCKeditor.Height = '360';
+        oFCKeditor.CheckBrowser = true;
+        //oFCKeditor.Value = '';
+        //oFCKeditor.Create();
+        oFCKeditor.ReplaceTextarea();
+    }
+</script>
+<form id="templatecfg" method="post" enctype="multipart/form-data" action="/Template/SaveTemplateConfig">
+<input type="hidden" id="OrgCode" name="OrgCode" value="@Model.OrgCode" />
+<input type="hidden" id="TemplateType" name="TemplateType" value="@Model.TemplateType" />
+<input type="hidden" id="ConfigType" name="ConfigType" value="@Model.ConfigType" />
+<table class="form_table">
+    <tr>
+        <td style="width: 160px">
+            <div class="chooseOrg" style="overflow: scroll; width: 100%; height: 440px;">
+                <div>
+                    <h1>
+                        报价单</h1>
+                    <ul>
+                        @foreach (var item in branchList)
+                        {
+                            <li><a orgCode="@item.ParamItemValue" href="/Template/TemplateConfig?orgCode=@item.ParamItemValue&templateType=@quotation&configType=@printType" >@item.ParamItemName</a></li>    
+                        }
+                    </ul>
+                </div>
+                <div>
+                    <h1>
+                        委托单</h1>
+                    <ul>
+                        @foreach (var item in branchList)
+                        {
+                            <li><a orgCode="@item.ParamItemValue" href="/Template/TemplateConfig?orgCode=@item.ParamItemValue&templateType=@orderBill&configType=@printType" >@item.ParamItemName</a></li>    
+                        }
+                    </ul>
+                </div>
+                <div>
+                    <h1>
+                        收费单</h1>
+                    <ul>
+                        @foreach (var item in branchList)
+                        {
+                            <li><a orgCode="@item.ParamItemValue" href="/Template/TemplateConfig?orgCode=@item.ParamItemValue&templateType=@fee&configType=@printType" >@item.ParamItemName</a></li>    
+                        }
+                    </ul>
+                </div>
+                <div>
+                    <h1>
+                        信息模板</h1>
+                    <ul>
+                        <li><a orgCode="@msgOrgCode" href="/Template/TemplateConfig?orgCode=@msgOrgCode&templateType=@Msg&configType=@msgType" >
+                            工程师短信</a></li>
+                        <li><a orgCode="@msgOrgCode" href="/Template/TemplateConfig?orgCode=@msgOrgCode&templateType=@ClientMsg&configType=@msgType" >
+                            客户短信</a></li>
+                        <li><a orgCode="@msgOrgCode" href="/Template/TemplateConfig?orgCode=@msgOrgCode&templateType=@OtherMsg&configType=@msgType" >
+                            其他短信</a></li>
+                        <li><a orgCode="@msgOrgCode" href="/Template/TemplateConfig?orgCode=@msgOrgCode&templateType=@MMS&configType=@msgType" >
+                            彩信</a></li>
+                        <li><a orgCode="@msgOrgCode" href="/Template/TemplateConfig?orgCode=@msgOrgCode&templateType=@EMail&configType=@msgType" >
+                            邮件</a></li>
+                        <li><a orgCode="@msgOrgCode" href="/Template/TemplateConfig?orgCode=@msgOrgCode&templateType=@Micro&configType=@msgType" >
+                            微信</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h1>
+                        器具签收单</h1>
+                    <ul>
+                        @foreach (var item in branchList)
+                        {
+                            <li><a orgCode="@item.ParamItemValue" href="/Template/TemplateConfig?orgCode=@item.ParamItemValue&templateType=@recept&configType=@printType" >@item.ParamItemName</a></li>    
+                        }
+                    </ul>
+                </div>
+                <div>
+                    <h1>
+                        证书签收单</h1>
+                    <ul>
+                        @foreach (var item in branchList)
+                        {
+                            <li><a orgCode="@item.ParamItemValue" href="/Template/TemplateConfig?orgCode=@item.ParamItemValue&templateType=@certificateRecept&configType=@printType" >@item.ParamItemName</a></li>    
+                        }
+                    </ul>
+                </div>
+            </div>
+        </td>
+        <td>
+            @*<input type="text" id="TemplateContent" name="TemplateContent" value="@Model.TemplateContent" />*@
+            <div style="width: 100%; text-align: center;">
+                <div style="float: left;">
+                    <input type="button" id="save" class="submit_btn" value="保存" /></div>
+                <div>
+                    <span style="font-size: large; font-weight: bold;">@ViewBag.MyTitle</span></div>
+            </div>
+            <textarea id="TemplateContent" name="TemplateContent">@Model.TemplateContent</textarea>
+        </td>
+    </tr>
+</table>
+</form>

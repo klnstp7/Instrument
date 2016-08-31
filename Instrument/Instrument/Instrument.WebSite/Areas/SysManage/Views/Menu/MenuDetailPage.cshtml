@@ -1,0 +1,100 @@
+﻿@model Global.Common.Models.MenuModel
+@{
+    ViewBag.Title = "MenuDetailPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="@Url.Content("~/Content/themes/webcss/formstyle.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" language="javascript">
+
+    $(document).ready(function () {
+        $("#btnAdd").click(function () {
+            if ($("#form1").valid()) {
+                $.post("/SysManage/Menu/Save?done=add", $("#form1").serialize(), function (data) {
+                    if (data == "OK") {
+                        window.parent.document.location.href = window.parent.document.location.href;
+                    }
+                    else alert(data);
+                });
+            }
+        });
+
+        $("#btnUpdate").click(function () {
+            if ($("#form1").valid()) {
+                $.post("/SysManage/Menu/Save?done=update", $("#form1").serialize(), function (data) {
+                    if (data == "OK") {
+                        window.parent.document.location.href = window.parent.document.location.href;
+                    }
+                    else alert(data);
+                });
+            }
+        });
+
+    });
+
+    function fnDelete(menuId) {
+        ymPrompt.confirmInfo({ message: "是否删除该菜单及其子菜单？", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                url = "/SysManage/Menu/Delete?menuId=" + menuId;
+                $.get(url, function (data) {
+                    if (data == "OK") window.parent.document.location.href = window.parent.document.location.href;
+                    else alert(data);
+                });
+            }
+        }
+        });
+    }
+
+</script>
+<form id="form1" class="cmxform">
+<input name="MenuId" id="MenuId" type="hidden" value="@Model.MenuId" />
+<input name="ParentMenuId" id="ParentMenuId" type="hidden" value="@Model.ParentMenuId" />
+<table class="form_table">
+    <tr>
+        <th style="width: 20%;">
+            <span class="ico_must">菜单名称</span>
+        </th>
+        <td style="width: 80%;">
+            <input id="MenuName" class="fix_width" name="MenuName" type="text" value="@Model.MenuName" required   />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            显示顺序
+        </th>
+        <td>
+            <input id="ShowOrder" class="fix_width" name="ShowOrder" type="text" value="@Model.ShowOrder"  />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            链接地址
+        </th>
+        <td>
+            <input id="LinkUrl" class="fix_width" name="LinkUrl" type="text" value="@Model.LinkUrl"  />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            是否可用
+        </th>
+        <td>
+            是:@Html.RadioButton("IsEnabled", true, @Model.IsEnabled?true:false, new { @style="margin-right:10px;"}) 
+             
+            否:@Html.RadioButton("IsEnabled", false, !@Model.IsEnabled?true:false)
+            
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td>
+            @Html.TextArea("Remark", @Model.Remark, new { @cols = "39", @rows = "6" })
+        </td>
+    </tr>
+</table>
+<div class="submit_btn_div">
+    <input id="btnAdd" class="submit_btn" type="button" value="新增子节点" />&nbsp;&nbsp;&nbsp;
+    <input id="btnUpdate" class="submit_btn" type="button" value=" 修改" />&nbsp;&nbsp;&nbsp;
+    <input id="btnDelete" class="submit_btn" type="button" value="删除" onclick="fnDelete('@Model.MenuId');" />
+</div>

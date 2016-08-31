@@ -1,0 +1,45 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="/FlexPaper/js/flexpaper_flash.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var fp;
+    window.onload = function () {
+        
+        var fileURL = $("#file").val();
+        fp = new FlexPaperViewer(
+                        '/FlexPaper/FlexPaperViewer',
+                        'viewerPlaceHolder',
+                        { config: {
+                            SwfFile: escape(fileURL),
+                            Scale: 1.5,
+                            ZoomTransition: 'easeOut',
+                            ZoomTime: 2,
+                            ZoomInterval: 2,
+                            FitPageOnLoad: false,
+                            FitWidthOnLoad: false,
+                            PrintEnabled: false,
+                            FullScreenAsMaxWindow: true,
+                            ProgressiveLoading: false,
+                            MinZoomSize: 0.2,
+                            MaxZoomSize: 5,
+                            SearchMatchAll: false,
+                            InitViewMode: 'Portrait',
+                            ViewModeToolsVisible: true,
+                            ZoomToolsVisible: true,
+                            NavToolsVisible: true,
+                            CursorToolsVisible: true,
+                            SearchToolsVisible: true,
+                            localeChain: 'en_US'
+                        }
+                        }
+                        );
+    };
+    
+</script>
+
+<div class="reader" id="reader">
+    <a id="viewerPlaceHolder" style="width: 100%; height: @ViewBag.Height; display: block;"></a>
+    <!--设置一个隐蔽控件来得到要显示的文件的名字-->
+    <input type="hidden" id="file" value='@ViewBag.PdfUrl' />
+</div>

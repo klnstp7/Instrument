@@ -1,0 +1,121 @@
+﻿@{
+    Layout = null;
+    string JobNo = ViewBag.JobNo as string;
+    string pw = ViewBag.Pwd as string;
+    //bool rememberMe = ViewBag.RememberMe as string == "true" ? true : false;
+    //string ck = rememberMe ? "checked" : "";
+    string sysTitle = ToolsLib.Utility.WebUtils.GetSettingsValue("SystemTitle");
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GRGTest @Html.Raw(sysTitle)</title>
+    <link href="@Url.Content("~/Content/themes/base/css_validate/screen.css?v=1")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/jquery-1.8.2.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/validate/jquery.validate.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/validate/additional-methods.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/validate/messages_zh.js?v=1")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.blockUI.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/CommonUtil.js")" type="text/javascript"></script>
+    <link href="@Url.Content("~/Content/themes/webcss/formstyle.css")" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+            $(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);
+            var msg = "本站不支持IE6浏览器访问，请更换以下一款浏览器：\r safari(苹果浏览器)；\r opera(欧朋浏览器)；\r chrome(谷歌浏览器)；\r Firefox(火狐狸浏览器)；\r 遨游云浏览器；\r IE7/IE8/IE9/IE10(微软浏览器)；\r 360浏览器(必须为极速模式)；\r Sogo浏览器(必须为高速模式)";
+            if ($.browser.msie && $.browser.version == 6) {
+                alert(msg);
+            }
+
+            $("#btnConfirm").click(function () {
+                if ($.browser.msie && $.browser.version == 6) {
+                    alert(msg);
+                    return false;
+                }
+
+                if ($("#form1").valid()) {
+                    $.post("/Login/Login", $("#form1").serialize(), function (responseData) {
+                        if (responseData.toString() == "OK") {
+                            window.location.href = "/Login/LoggedinDefault";
+                        }
+                        else {
+                            var regx = /<p>.+<\/p>/g;
+                            var rs = responseData.match(regx);
+
+                            if (rs != null) {
+                                window.location.href = "/Login/Error?message=" + responseData;
+                            }
+                            else {
+                                $("#erro").html(responseData);
+                                $("#erro").show();
+                            }
+                        }
+                    });
+                }
+            });
+
+            //输入框响应回车事件
+            $(".loginInfo").keyup(function (e) {
+                if (e.keyCode == 13) {
+                    $("#btnConfirm").click();
+                }
+            });
+
+        });
+    </script>
+</head>
+<body id="login_page">
+    <div id="login_div" class="tabs">
+        <div class="login_content tabs_div">
+            <form id="form1">
+            <table class="form_table">
+                <tr>
+                    <th width="31%" height="28">
+                        登录账号：
+                    </th>
+                    <td width="40%">
+                        <input name="JobNo" class="loginInfo" id="JobNo" tabindex="1" type="text" value="@JobNo" minlength="5" required />
+                    </td>
+                    <td width="29%" rowspan="2">
+                        <input id="btnConfirm" class="login_btn" type="button" tabindex="3" value="登录" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        登录密码：
+                    </th>
+                    <td>
+                        <input name="LoginPwd" id="LoginPwd" tabindex="2" class="loginInfo" type="password" />
+                    </td>
+                </tr>
+                @*<tr>
+                    <th height="34">
+                        &nbsp;
+                    </th>
+                    <th>
+                        &nbsp;
+                    </th>
+                    <td id="login_option">
+                        <input type="checkbox" id="save_cookie" name="RememberMe" checked="@ck" />
+                        <label for="save_cookie" style="width: 70px;">
+                            记住我</label>
+                    </td>
+                </tr>*@
+                <tr>
+                    <td colspan="3">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <span id="erro" class="info_error2" style="display: none;">密码输入错误已达3次，请确认后再重试，否者账户将被锁定！</span>
+                    </td>
+                </tr>
+            </table>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

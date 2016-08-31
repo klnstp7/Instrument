@@ -1,0 +1,88 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "仪器送检选择";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '<input type="checkbox"  name="selectAll" onclick="fnSetCheckbox(this)" />' },
+             { sName: 'IsOverTime', sType: 'string', sTitle: '证书超期', CustomParam: 'OverTime',
+                searchDataSource: [
+                    { sTitle: '全部', sValue: '', selected: true },
+                    { sTitle: '已超期', sValue: '1', selected: false },
+                    { sTitle: '未超期', sValue: '0', selected: false }
+                ]
+            },
+            { sName: 'IsWarnDay', sType: 'string', sTitle: '超期预警', CustomParam: 'WarnDay',
+                                searchDataSource: [
+                                    @Html.Raw(ViewBag.JsonWarnDay)]
+            },
+             { sName: 'DueEndDate', sType: 'date', sTitle: '到期日期'},
+            { sName: 'RecordState', sType: 'string', sTitle: '状态' ,
+                                searchDataSource: [
+                                   @Html.Raw(ViewBag.JsonInstrumentRecordState)]
+            },
+             { sName: 'ManageLevel', sType: 'string', sTitle: '管理级别' ,
+                                searchDataSource: [
+                                   @Html.Raw(ViewBag.JsonManageLevel)]
+            },
+            { sName: 'InstrumentName', sType: 'string', sTitle: '仪器名称' },
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号' },
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号' },
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号' },
+            { sName: 'CertificateNo', sType: 'string', sTitle: '证书编号' },
+            { sName: 'InstrumentCate', sType: 'string', sTitle: '分类' ,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentCate)
+                ]},
+                { sName: 'BelongDepart', sType: 'string', sTitle: '所属部门', CustomParam: 'OrgName'},
+            { sName: 'DueStartDate', sType: 'date', sTitle: '校准日期'},
+//            { sName: 'DueEndDate', sType: 'date', sTitle: '到期日期'},
+            { sName: 'LeaderName', sType: 'string', sTitle: '保管人' },
+            { sName: 'StorePalce', sType: 'string', sTitle: '存放地址'},
+            { sName: 'CreateUser', sType: 'string', sTitle: '创建人'}
+        ];
+        oTable = GetJsondataFromServ("Instrument", "/SendInstrument/GetAllInstrumentJsonData", "2000px", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+        $("#searchBelongDepart").click( function (){
+            fnNewWindow("/Organization/BelongOrgTree","组织架构",300,450);
+        });
+    });
+
+    //全选
+    function fnSetCheckbox(obj){
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk', isChecked);
+    }
+
+    function fnAddToSendList(){
+        var instrumentIds = fnGetAllCheckedValue("chk");
+        if(instrumentIds.length<1) {ymPrompt.alert("请选择项目"); return;}
+        fnConfirmWithF5WithOTable("确定把所选的仪器添加到送检清单？", "/SendInstrument/AddToPreSendList?instrumentIds=" + instrumentIds , oTable);
+        return false;
+    }
+
+    function fnGetSelectOrgName(orgName){
+        $("#searchBelongDepart").val(orgName);
+    }
+        function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+</script>
+    <div>
+    <!--Authorization operate="AddToSendList"-->
+@*      全 选 <input type="checkbox"  name="selectAll" onclick="fnSetCheckbox(this)" />*@
+    <input type="button" id="btnSend" class="submit_btn8" onclick="fnAddToSendList()" value="添加到待送清单" />
+    <!--/Authorization-->
+<table id="Instrument">
+</table>
+</div>
+

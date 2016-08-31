@@ -1,0 +1,56 @@
+﻿@using Global.Common.Models;
+@{
+    ViewBag.Title = "PriorityList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string taskIdList = ViewBag.TaskIdList as string;
+    IList<ParamItemModel> priorityLevelList = ViewBag.PriorityLevelList as IList<ParamItemModel>;
+}
+<script type="text/javascript">
+    $(function () {
+        $("#btnUpdate").click(function () {
+            var selected = false;
+            $(":radio").each(function (i) {
+                if ($(this).prop("checked")) {
+                    selected = true;
+                }
+            });
+            if (!selected) {
+                alert("请选择优先级");
+                return false;
+            }
+            $.post("/SysManage/Task/UpdatePriority", $("#form1").serialize(), function (result) {
+                if (result == "OK") {
+                    alert("保存成功!");
+                    window.parent.location.href = window.parent.location.href;
+                }
+                else {
+                    alert(result);
+                }
+
+            }, "html");
+        });
+
+    });
+
+</script>
+<form id="form1" method="post"> 
+<input type="hidden" name="taskIdList" value="@taskIdList" />
+<table cellpadding="0" cellspacing="0" border="0" class="form_table">
+    <tr>
+        <th>
+            任务优先级
+        </th>
+        <td>
+        @foreach (var item in priorityLevelList)
+        {
+            <input type="radio" name="PriorityLevel" value="@item.ParamItemValue" />@item.ParamItemName
+        }
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="text-align:center;">
+            <input id="btnUpdate" type="button" class="submit_btn" value=" 保 存 " />
+        </td>
+    </tr>
+</table>
+</form>

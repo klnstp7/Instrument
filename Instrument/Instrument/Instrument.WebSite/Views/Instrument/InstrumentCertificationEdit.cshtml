@@ -1,0 +1,284 @@
+﻿@using ToolsLib.Utility
+@model Instrument.Common.Models.InstrumentCertificationModel
+@{
+    ViewBag.Title = "周期校准记录";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script type="text/javascript">
+
+    //初始化
+    var oTable = null;
+    $(document).ready(function () {
+        //表单验证
+        $("#formInstrumentCertification").validate({
+            rules: {
+                RecordState: { required: true },
+                CertificationCode: { specialCharValidate: true, maxGBKlength: 50 },
+                ErrorValue: { specialCharValidate: true, maxGBKlength: 500 },
+                CheckResult: { specialCharValidate: true, maxGBKlength: 500 },
+                certification: { extension: "pdf" },
+                Remark: { specialCharValidate: true, maxGBKlength: 500 },
+                CertMoney: { number: true },
+                CertificationCode: {specialCharValidate: true}
+            },
+            messages: {
+                certification: "请上传.pdf后缀的文件",
+                CertificationCode: {
+                    remote: "证书编号已存在,请重新编号!"
+                }
+            }            
+        });
+
+        $("#MeasureOrg").autocomplete({
+            minLength: 1,
+            source: "/Instrument/QuickSearchOperatorNameByKeyWord",
+            select: function (event, ui) {
+                $("#ParamItemName").val(ui.item.label);
+                $("#MeasureOrg").val(ui.item.label);
+                return false;
+            }
+        });
+
+        $('input:radio[name="RecordState"]').change(function () {
+            if ($(this).val() == "1") {
+                $("#CertificationCode").rules("add", { required: true });
+                $("#CheckDate").rules("add", { required: true });
+                $("#EndDate").rules("add", { required: true });
+                $("#MeasureOrg").rules("add", { required: true});
+                $("#thCertificationCode").html("<span class='ico_must' />证书编号");
+                $("#thCheckDate").html("<span class='ico_must' />校准日期");
+                $("#thEndDate").html("<span class='ico_must' />到期日期");
+                $("#thMeasureOrg").html("<span class='ico_must' />计量机构");
+            }
+            else {
+                $("#CertificationCode").rules("remove", "required");
+                $("#CheckDate").rules("remove", "required");
+                $("#EndDate").rules("remove", "required");
+                $("#MeasureOrg").rules("remove", "required");
+                $("#thCertificationCode").html("证书编号");
+                $("#thCheckDate").html("校准日期");
+                $("#thEndDate").html("到期日期");
+                $("#thMeasureOrg").html("计量机构");
+            }
+        });
+        if (@Model.RecordState == @Instrument.Common.Constants.InstrumentCertificationState.完成周检.GetHashCode())
+        {
+            $("#CertificationCode").rules("add", { required: true });
+                $("#CheckDate").rules("add", { required: true });
+                $("#EndDate").rules("add", { required: true });
+                $("#MeasureOrg").rules("add", { required: true });
+                $("#thCertificationCode").html("<span class='ico_must' />证书编号");
+                $("#thCheckDate").html("<span class='ico_must' />校准日期");
+                $("#thEndDate").html("<span class='ico_must' />到期日期");
+                $("#thMeasureOrg").html("<span class='ico_must' />计量机构");
+        }        
+    });
+
+    //保存
+    function fnSave() {
+
+        if (!$("#formInstrumentCertification").valid()) {
+            return false;
+        }
+        fnUploadCert();
+    }
+
+    //上传证书
+    function fnUploadCert() {
+        var options = {
+            success: fnShowResponse
+        };
+        $("#formInstrumentCertification").ajaxSubmit(options);
+    }
+    //更新
+    function fnShowResponse(responseText, statusText) {
+        var json = eval("(" + responseText + ")");
+        if (json.Msg != "OK") {
+            ymPrompt.alert(json.Msg);
+            return;
+        }
+        ymPrompt.alert('保存成功');
+        window.parent.oTableCertification.api().ajax.reload();
+        window.parent.ymPrompt.close();
+
+    }
+    //关闭
+    function fnClose() {
+        window.parent.ymPrompt.doHandler("close", true);
+    }
+
+    //同步
+    function fnSynchronous(){
+        if($("#CertificationCode").val() == ""){ ymPrompt.alert("证书编号不能为空！"); return; }
+        ymPrompt.confirmInfo({message:'确定同步该周检？',handler:function(tp){
+            if(tp == 'ok'){
+                $.post("/Instrument/SynchronousInstrumentCert?certificationCode=" + $("#CertificationCode").val()+"&InstrumentId="+ $("#InstrumentId").val()+"&LogId="+$("#LogId").val(),function(data){
+                    if (data.Msg == "OK"){
+                      var url = "/Instrument/EditInstrumentCertification?LogId=" + data.Data.LogId + "&instrumentId="+data.Data.InstrumentId;
+                      window.location.href=url;
+                      parent.fnReload();
+                    }
+                    else ymPrompt.alert(data.Msg);
+                });
+            }
+        }});
+    }
+
+    //刷新列表
+    function fnReloadTable() {
+        if (null != oTable) {
+            oTable.api().ajax.reload();
+        }
+    }
+
+</script>
+<form id="formInstrumentCertification" method="post" action="/Instrument/SaveInstrumentCertification"
+class="cmxform" enctype="multipart/form-data">
+<input type="hidden" id="LogId" name="LogId" value="@Model.LogId" />
+<input  type="hidden" id="InstrumentId" name="InstrumentId" value="@Model.InstrumentId" />
+<div class="submit_btn_div">
+    <input id="btnSave" type="button" class="submit_btn" value="保 存" onclick="fnSave()" />
+    @*<input id="btnSynchronous" type="button" class="submit_btn" value="同 步" onclick="fnSynchronous()" />*@
+    <input id="btnClose" type="button" class="submit_btn" value="关 闭" onclick="fnClose()" />
+</div>
+<table id="tableInstrumentCertification" class="form_table">
+    <tr>
+        <th>
+            周检状态
+        </th>
+        <td>
+            @Html.RadioButtonList("RecordState", ViewBag.RecordStateList as SelectList, new { @style = "width:20px;" })
+        </td>
+        <th id="thCertificationCode">
+            证书编号
+        </th>
+        <td>
+            <input id="CertificationCode" name="CertificationCode" type="text" value="@Model.CertificationCode" style="width: 240px;" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            上传计量证书
+        </th>
+        <td>
+            <input type="file" id="certification" name="certification" />
+        </td>
+        <th>
+            费用
+        </th>
+        <td>
+         <input id="CertMoney" name="CertMoney" type="text" value="@Model.CertMoney" style="width: 240px;" />
+        </td>
+    </tr>
+    <tr>
+        <th id="thCheckDate">
+            校准日期
+        </th>
+        <td>
+            <input name="CheckDate" id="CheckDate" type="text" 
+                value="@(null == Model.CheckDate ? "" : Model.CheckDate.Value.ToString("yyyy-MM-dd"))" 
+                class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true,maxDate:'#F{$dp.$D(\'EndDate\',{d:-0})}'})" style="width: 242px;"  />
+        </td>
+        <th id="thEndDate">
+            到期日期
+        </th>
+        <td>
+            <input name="EndDate" id="EndDate" type="text" 
+                value="@(null == Model.EndDate ? "" : Model.EndDate.Value.ToString("yyyy-MM-dd"))" 
+                class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true,minDate:'#F{$dp.$D(\'CheckDate\',{d:-0})}'})" style="width: 242px;"  />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            送检单号
+        </th>
+        <td>
+            <input name="OrderNo" id="OrderNo" type="text" value="@Model.OrderNo" style="width: 240px;" />
+        </td>
+        <th id="thMeasureOrg">
+            计量机构
+        </th>
+        <td>
+                <input id="MeasureOrg" name="MeasureOrg" type="text" value="@Model.MeasureOrg" style="width: 240px;" />
+                <input type="hidden" id="ParamItemName" name="ParamItemName" />
+
+        </td>
+    </tr>
+    <tr>
+        <th>
+            送检日期
+        </th>
+        <td>
+            <input id="SendInstrumentDate" name="SendInstrumentDate" type="text" 
+                value="@(null == Model.SendInstrumentDate ? null : Model.SendInstrumentDate.Value.ToString("yyyy-MM-dd"))" 
+                class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true})" style="width: 242px;"  />
+        </td>
+        <th>
+            返回日期
+        </th>
+        <td>
+            <input type="text" id="ReturnInstrumentDate" name="ReturnInstrumentDate" 
+                value="@(null == Model.ReturnInstrumentDate ? null : Model.ReturnInstrumentDate.Value.ToString("yyyy-MM-dd"))" 
+                class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true})" style="width: 242px;"  />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            证书取回日期
+        </th>
+        <td>
+            <input type="text" id="GetCertificateDate" name="GetCertificateDate" 
+                value="@(null == Model.GetCertificateDate ? null : Model.GetCertificateDate.Value.ToString("yyyy-MM-dd"))" 
+                class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true})" style="width: 242px;" />
+        </td>
+        <th>
+            证书确认日期
+        </th>
+        <td>
+            <input type="text" id="CertificateConfirmDate" name="CertificateConfirmDate" 
+                value="@(null == Model.CertificateConfirmDate ? null : Model.CertificateConfirmDate.Value.ToString("yyyy-MM-dd"))" 
+                class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true})" style="width: 242px;" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            检测结果
+        </th>
+        <td>
+            <input id="CheckResult" name="CheckResult" type="text" value="@Model.CheckResult" style="width: 240px;" />
+        </td>
+        <th>
+            误差
+        </th>
+        <td>
+            <input id="ErrorValue" name="ErrorValue" type="text" value="@Model.ErrorValue" style="width: 240px;" />
+        </td>
+    </tr>
+
+    <tr>
+    <th>
+            创建日期
+        </th>
+        <td>
+            <label>
+                @(null == Model.CreateDate ? null : Model.CreateDate.ToString("yyyy-MM-dd"))
+            </label>
+            </td>
+            <th>
+            创建人
+        </th>
+            <td>
+            <label>@(Model.CreateUser)</label>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td colspan="3">
+            <textarea id="Remark" name="Remark" rows="2" cols="91">@Model.Remark</textarea>
+        </td>
+    </tr>
+</table>
+</form>

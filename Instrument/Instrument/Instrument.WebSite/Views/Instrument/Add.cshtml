@@ -1,0 +1,588 @@
+﻿@using ToolsLib.Utility
+@using System.Web.UI.WebControls
+@using Instrument.Common.Models;
+@using Global.Common;
+@model Instrument.Common.Models.InstrumentModel
+@{
+    ViewBag.Title = "新增仪器和证书信息";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+   
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script type="text/javascript">
+
+    //初始化
+    $(document).ready(function () {
+
+        $("#MeasureOrg").autocomplete({
+            minLength: 1,
+            source: "/Instrument/QuickSearchOperatorNameByKeyWord",
+            select: function (event, ui) {
+                $("#ParamItemName").val(ui.item.label);
+                $("#MeasureOrg").val(ui.item.label);
+                return false;
+            }
+        });
+
+        //基本信息(表单验证)
+        $('#formInstrument').validate({
+            rules: {
+                InstrumentName: { required: true, maxGBKlength: 160, specialCharValidate: true },  //仪器名称
+                Specification: { required: true, maxGBKlength: 140, specialCharValidate: true },   //仪器型号
+                BelongDepart: { required: true },   //所属科室
+                InstrumentType: { required: true },   //仪器类别
+                RecordState: { required: true },   //器具状态               
+                Price: { number: true },    //购置金额
+                DurableYears: { maxGBKlength: 15, specialCharValidate: true },    //使用年限
+                SerialNo: { required: true, maxGBKlength: 120, specialCharValidate: true },
+                TechniqueCharacter: { required: true, maxGBKlength: 600, specialCharValidate: true },  //技术特征
+                MeasureCharacter: { required: true, maxGBKlength: 600, specialCharValidate: true },  //计量特性
+                Manufacturer: { maxGBKlength: 180, specialCharValidate: true },
+                ManufactureContactor: { maxGBKlength: 500, specialCharValidate: true },
+                ManageNo: { required: true, maxGBKlength: 120, specialCharValidate: true,
+                    remote:
+                    {
+                        url: "/Instrument/ChkManageNo",
+                        type: "post",
+                        data: {
+                            instrumentId: function () { return 0 },
+                            manageNo: function () { return $("#ManageNo").val() }
+                        }
+                    }
+                },
+                //                ManageNo: { required: true, maxGBKlength: 120, specialCharValidate: true },
+                AssetsNo: { maxGBKlength: 120, specialCharValidate: true,
+                    remote:
+                    {
+                        url: "/Instrument/ChkAssetsNo",
+                        type: "post",
+                        data: {
+                            instrumentId: function () { return 0 },
+                            assetsNo: function () { return $("#AssetsNo").val() }
+                        }
+                    }
+                 },
+                ManageLevel: { maxGBKlength: 4, specialCharValidate: true },
+                InspectCycle: { maxGBKlength: 20, specialCharValidate: true },
+                LeaderName: { maxGBKlength: 8, specialCharValidate: true },
+                StorePalce: { maxGBKlength: 60, specialCharValidate: true },
+                Remark: { maxGBKlength: 500, specialCharValidate: true },
+                CertificationCode: { specialCharValidate: true, maxGBKlength: 50 },
+                RecordState2: { required: true },
+                certification: { extension: "pdf" },
+                InstrumentPic: { extension: "gif,jpg,png,jpeg"},
+                MeasureOrg: { maxGBKlength: 200, specialCharValidate: true },
+                ErrorValue: { specialCharValidate: true, maxGBKlength: 500 },
+                CheckResult: { specialCharValidate: true, maxGBKlength: 500 },
+                Remark2: { specialCharValidate: true, maxGBKlength: 500 },
+                CertMoney: { number: true }
+                //                CertificationCode: {
+                //                    remote:
+                //                    {
+                //                        url: "/Instrument/ChkCertificateNo",
+                //                        type: "post",
+                //                        data: {
+                //                            certificateNo: function () { return $("#CertificationCode").val() }
+                //                        }
+                //                    }
+                //                }
+            },
+            messages: {
+                certification: "请上传.pdf后缀的文件",
+                InstrumentPic: "请选择jpg,png,gif,jpeg格式文件!",
+                ManageNo: {
+                    remote: "管理编号已存在,请重新编号!"
+                },
+                AssetsNo: {
+                    remote: "资产编号已存在,请重新编号!"
+                }
+            }
+        });
+        
+
+        $("#OrgName").chosen({ search_contains: true });
+
+        $("#ManageLevel").change(function () {
+            if ($(this).val() != "C") {
+                $('input:radio[name="RecordState2"]').rules("add", { required: true });
+                $("#TechniqueCharacter").rules("add", { required: true });
+                $("#MeasureCharacter").rules("add", { required: true });
+                $("#CertificationCode").rules("add", { required: true });
+                $("#CheckDate").rules("add", { required: true });
+                $("#EndDate").rules("add", { required: true });
+                $("#MeasureOrg").rules("add", { required: true });
+                $("#thTechniqueCharacter").html("<span class='ico_must' />技术特征</span>");
+                $("#thMeasureCharacter").html("<span class='ico_must' />计量特性</span>");
+                $("#thRecordState2").html("<span class='ico_must' />周检状态</span>");
+                $("#thCertificationCode").html("<span class='ico_must' />证书编号</span>");
+                $("#thCheckDate").html("<span class='ico_must' />校准日期</span>");
+                $("#thEndDate").html("<span class='ico_must' />到期日期</span>");
+                $("#thMeasureOrg").html("<span class='ico_must' />计量机构</span>");
+            }
+            else {
+                $('input:radio[name="RecordState2"]').rules("remove", "required");
+                $("#TechniqueCharacter").rules("remove", "required");
+                $("#MeasureCharacter").rules("remove", "required");
+                $("#CertificationCode").rules("remove", "required");
+                $("#CheckDate").rules("remove", "required");
+                $("#EndDate").rules("remove", "required");
+                $("#MeasureOrg").rules("remove", "required");
+                $("#thTechniqueCharacter").html("技术特征");
+                $("#thMeasureCharacter").html("计量特性");
+                $("#thRecordState2").html("周检状态");
+                $("#thCertificationCode").html("证书编号");
+                $("#thCheckDate").html("校准日期");
+                $("#thEndDate").html("到期日期");
+                $("#thMeasureOrg").html("计量机构");
+            }
+        });
+
+        $('input:radio[name="RecordState2"]').change(function () {
+            if ($(this).val() == "1") { //完成周检
+                if ($("#ManageLevel").val() != "C") {
+                    $("#CertificationCode").rules("add", { required: true });
+                    $("#CheckDate").rules("add", { required: true });
+                    $("#EndDate").rules("add", { required: true });
+                    $("#MeasureOrg").rules("add", { required: true });
+                    $("#thCertificationCode").html("<span class='ico_must' />证书编号");
+                    $("#thCheckDate").html("<span class='ico_must' />校准日期");
+                    $("#thEndDate").html("<span class='ico_must' />到期日期");
+                    $("#thMeasureOrg").html("<span class='ico_must' />计量机构");
+                    $("#tableInstrumentCheckLog input").removeAttr("readonly");
+                    $("#tableInstrumentCheckLog textarea").removeAttr("readonly");
+
+                }
+            }
+            else if ($(this).val() == "-1") { //未检
+                $("#CertificationCode").rules("remove", "required");
+                $("#CheckDate").rules("remove", "required");
+                $("#EndDate").rules("remove", "required");
+                $("#MeasureOrg").rules("remove", "required");
+                $("#thCertificationCode").html("证书编号");
+                $("#thCheckDate").html("校准日期");
+                $("#thEndDate").html("到期日期");
+                $("#thMeasureOrg").html("计量机构");
+                $("#tableInstrumentCheckLog input").attr("readonly", "readonly");
+                $("#tableInstrumentCheckLog textarea").attr("readonly", "readonly");
+            }
+            else {//周检中
+                $("#CertificationCode").rules("remove", "required");
+                $("#CheckDate").rules("remove", "required");
+                $("#EndDate").rules("remove", "required");
+                $("#MeasureOrg").rules("remove", "required");
+                $("#thCertificationCode").html("证书编号");
+                $("#thCheckDate").html("校准日期");
+                $("#thEndDate").html("到期日期");
+                $("#thMeasureOrg").html("计量机构");
+                $("#tableInstrumentCheckLog input").removeAttr("readonly");
+                $("#tableInstrumentCheckLog textarea").removeAttr("readonly");
+            }
+        });
+
+        fnCateChange();
+        //一级分类改变事件
+        $("#InstrumentCate").change(function () {
+            fnCateChange();
+        });
+    });
+
+    function fnCateChange() {
+        $("#spanSubCate").hide();
+        $("#SubInstrumentCate").hide();
+        $('#SubInstrumentCate').html("");
+        url = '/Instrument/GetSubInstrumentCate?parentCode=' + $("#InstrumentCate").val();
+        $.getJSON(url, function (data) {
+            $.each(data, function (i, item) {
+                $("#spanSubCate").show();
+                $("#SubInstrumentCate").show();
+                $('#SubInstrumentCate').append($("<option></option>").val(item.ParamItemValue).html(item.ParamItemName));
+            });
+            //                $("#SubInstrumentCate").chosen({ search_contains: true });
+        });
+    }
+    //保存(仪器信息和证书信息)
+    function fnSave() {
+        //表单验证(默认)
+        $("#AssetsNo").rules("remove");
+        if (!$("#formInstrument").valid()) {
+            return false;
+        }
+        if ($("#EndDate").val() != "") {
+            if ($("#CheckDate").val() != "") {
+                d1Arr = $("#CheckDate").val().split('-');
+                d2Arr = $("#EndDate").val().split('-');
+                var f = new Date(d1Arr[0], d1Arr[1], d1Arr[2]);
+                var l = new Date(d2Arr[0], d2Arr[1], d2Arr[2]);
+                if (f >= l) {
+                    ymPrompt.alert("证书校准日期应小于证书到期日期");
+                    return false;
+                }
+            }
+        }
+        fnUploadCert();
+    }
+
+
+    //上传证书
+    function fnUploadCert() {
+        var options = {
+            success: fnShowResponse
+        };
+        $("#formInstrument").ajaxSubmit(options);
+    }
+    //更新
+    function fnShowResponse(responseText, statusText) {
+        var json = eval("(" + responseText + ")");
+        if (json.Msg != "OK") {
+            ymPrompt.alert(json.Msg);
+            return;
+        }
+        ymPrompt.alert("新增仪器成功！");
+        //        if (window.opener.fnReloadInstrument)
+        $("#ManageNo").val("");
+        fnClose();
+    }
+
+
+
+    //关闭
+    function fnClose() {
+        window.opener.fnReloadInstrument();
+        window.opener = null;
+        window.close();
+    }
+
+</script>
+<form id="formInstrument" class="cmxform" method="post" action="/Instrument/Insert"
+enctype="multipart/form-data">
+<h3 class="form_module_title">
+    基本信息</h3>
+<table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+    <tr>
+        <th>
+            设备分类
+        </th>
+        <td>
+            @Html.DropDownList("InstrumentCate", new SelectList(ViewBag.InstrumentCateList, "Value", "Text", 0),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+        <th>
+            <span id="spanSubCate" />子分类
+        </th>
+        <td>
+            @Html.DropDownList("SubInstrumentCate", new SelectList(ViewBag.SubInstrumentCateList, "Value", "Text", 0),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must" />所属部门
+        </th>
+        <td >
+            @Html.DropDownListTree("OrgName", ViewBag.BelongDepartList as IList<Global.Common.Models.OrgModel>, "OrgCode", "OrgName", Model.BelongDepart, "OrgId", "ParentOrgId", "0", new { @class = "fix_width" })
+        </td>
+         <th>
+            项目组
+        </th>
+        <td>
+            @Html.TextBox("ProjectTeam", "", new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th style="width: 15%;">
+            <span class="ico_must" />仪器名称
+        </th>
+        <td style="width: 35%;">
+            @Html.TextBox("InstrumentName", Model.InstrumentName, new { @class = "fix_width" })
+        </td>
+        <th>
+            英文名称
+        </th>
+        <td>
+            @Html.TextBox("EnglishName", Model.EnglishName, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must" />仪器型号
+        </th>
+        <td>
+            @Html.TextBox("Specification", Model.Specification, new { @class = "fix_width" })
+        </td>
+        <th>
+            <span class="ico_must" />出厂编号
+        </th>
+        <td>
+            @Html.TextBox("SerialNo", Model.SerialNo, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must" />管理编号
+        </th>
+        <td>
+            @Html.TextBox("ManageNo", "", new { @class = "fix_width" })
+        </td>
+        <th>
+            资产编号
+        </th>
+        <td>
+            @Html.TextBox("AssetsNo", "", new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            管理级别
+        </th>
+        <td>
+            @* @Html.TextBox("ManageLevel", "", new { @class = "fix_width" })*@
+            @Html.DropDownList("ManageLevel", new SelectList(ViewBag.ManageLevelList, "Value", "Text", 0),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+        <th>
+            校准周期
+        </th>
+        <td>
+            @Html.TextBox("InspectCycle", "", new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            使用年限
+        </th>
+        <td>
+            @Html.TextBox("DurableYears", 1, new { @class = "fix_width" })
+        </td>
+        <th>
+            保管人
+        </th>
+        <td>
+            @Html.TextBox("LeaderName", "", new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th id="thTechniqueCharacter">
+            <span class="ico_must">技术特征</span>
+        </th>
+        <td>
+            @Html.TextArea("TechniqueCharacter", "", new { @cols = "50", @rows = "1" })
+        </td>
+        <th id="thMeasureCharacter">
+            <span class="ico_must">计量特性</span>
+        </th>
+        <td>
+            @Html.TextArea("MeasureCharacter", "", new { @cols = "50", @rows = "1" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            设备状态
+        </th>
+        <td>
+            @Html.DropDownList("RecordState", new SelectList(ViewBag.InstrumentRecordStateList, "Value", "Text", 0),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+        <th>
+            存放地点
+        </th>
+        <td>
+            @Html.TextBox("StorePalce", "", new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <span class="ico_must">设备类别</span>
+        </th>
+        <td>
+            @Html.DropDownList("InstrumentType", new SelectList(ViewBag.InstrumentTypeList, "Value", "Text", 0),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+        <th>
+            资产属性
+        </th>
+        <td>
+            @Html.DropDownList("CalibrationType", new SelectList(ViewBag.CalibrationTypeList, "Value", "Text", 0),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            计量类别
+        </th>
+        <td>
+            @Html.DropDownList("VerificationType", new SelectList(ViewBag.VerificationTypeList, "Value", "Text", 0),
+                        new { @class = "fix_width", @style = "width: 307px;" })
+        </td>
+        <th>
+        </th>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            购置日期
+        </th>
+        <td>
+            <input id="BuyDate" name="BuyDate" type="text" class="Wdate" onfocus="WdatePicker({isShowClear:true,readOnly:true,dateFmt:'yyyy-MM-dd'})"
+                style="width: 302px" />
+        </td>
+        <th>
+            购置金额
+        </th>
+        <td>
+            @Html.TextBox("Price", 0, new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            生产厂家
+        </th>
+        <td>
+            @Html.TextBox("Manufacturer", Model.Manufacturer, new { @class = "fix_width" })
+        </td>
+        <th>
+            厂家联系信息
+        </th>
+        <td>
+            @Html.TextBox("ManufactureContactor", "", new { @class = "fix_width" })
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td>
+            <textarea id="Remark" name="Remark" rows="1" cols="50"></textarea>
+        </td>
+        <th>
+            仪器照片
+        </th>
+        <td>
+            <input type="file" id="InstrumentPic" name="InstrumentPic" />
+        </td>
+    </tr>
+</table>
+<h3 class="form_module_title">
+    周期校准信息</h3>
+<table id="tableInstrumentCheckLog" class="form_table">
+    <tr>
+        <th id="thRecordState2">
+            周检状态
+        </th>
+        <td>
+            @Html.RadioButtonList("RecordState2", ViewBag.RecordStateList as SelectList, new { @style = "width:20px;" })
+        </td>
+        <th id="thCertificationCode">
+            证书编号
+        </th>
+        <td>
+            <input id="CertificationCode" name="CertificationCode" type="text" style="width: 240px;" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            上传电子证书
+        </th>
+        <td>
+            <input type="file" id="certification" name="certification" />
+        </td>
+        <th>
+            费用
+        </th>
+        <td>
+            <input id="CertMoney" name="CertMoney" type="text" style="width: 240px;" />
+        </td>
+    </tr>
+    <tr>
+        <th id="thCheckDate">
+            校准日期
+        </th>
+        <td>
+            <input name="CheckDate" id="CheckDate" type="text" class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true,maxDate:'#F{$dp.$D(\'EndDate\',{d:-0})}'})"
+                style="width: 242px;" />
+        </td>
+        <th id="thEndDate">
+            到期日期
+        </th>
+        <td>
+            <input name="EndDate" id="EndDate" type="text" class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true,minDate:'#F{$dp.$D(\'CheckDate\',{d:-0})}'})"
+                style="width: 242px;" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            送检单号
+        </th>
+        <td>
+            <input name="OrderNo" id="OrderNo" type="text" style="width: 240px;" />
+        </td>
+        <th id="thMeasureOrg">
+            计量机构
+        </th>
+        <td>
+                <input id="MeasureOrg" name="MeasureOrg" type="text" style="width: 240px;" />
+                <input type="hidden" id="ParamItemName" name="ParamItemName" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            送检日期
+        </th>
+        <td>
+            <input id="SendInstrumentDate" name="SendInstrumentDate" type="text" class="Wdate"
+                onfocus="WdatePicker({isShowClear:false,readOnly:true})" style="width: 242px;" />
+        </td>
+        <th>
+            返回日期
+        </th>
+        <td>
+            <input type="text" id="ReturnInstrumentDate" name="ReturnInstrumentDate" class="Wdate"
+                onfocus="WdatePicker({isShowClear:false,readOnly:true})" style="width: 242px;" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            证书取回日期
+        </th>
+        <td>
+            <input type="text" id="GetCertificateDate" name="GetCertificateDate" class="Wdate"
+                onfocus="WdatePicker({isShowClear:false,readOnly:true})" style="width: 242px;" />
+        </td>
+        <th>
+            证书确认日期
+        </th>
+        <td>
+            <input type="text" id="CertificateConfirmDate" name="CertificateConfirmDate" class="Wdate"
+                onfocus="WdatePicker({isShowClear:false,readOnly:true})" style="width: 242px;" />
+        </td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+        <th>
+            检测结果
+        </th>
+        <td>
+            <input id="CheckResult" name="CheckResult" type="text" style="width: 240px;" />
+        </td>
+        <th>
+            误差
+        </th>
+        <td>
+            <input id="ErrorValue" name="ErrorValue" type="text" style="width: 240px;" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td colspan="3">
+            <textarea id="Remark2" name="Remark2" rows="1" cols="91"></textarea>
+        </td>
+    </tr>
+</table>
+<div class="submit_btn_div">
+    <input id="btnSave" type="button" class="submit_btn" onclick="fnSave()" value="保 存" />
+    <input id="btnClose" class="submit_btn" type="button" onclick="fnClose()" value="关 闭" />
+</div>
+</form>

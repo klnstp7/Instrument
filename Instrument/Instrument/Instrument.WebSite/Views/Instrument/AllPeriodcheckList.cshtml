@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "期间核查查询";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'InstrumentCate', sType: 'string', sTitle: '分类' ,CustomParam: 'instrumentParam',
+                searchDataSource: [
+                    @Html.Raw(ViewBag.JsonInstrumentCate)
+                ]},
+            { sName: '', sType: 'string', sTitle: '所属部门', CustomParam: 'instrumentParam'},
+            { sName: 'InstrumentName', sType: 'string', sTitle: '仪器名称', CustomParam: 'instrumentParam' },
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号', CustomParam: 'instrumentParam'  },
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号' , CustomParam: 'instrumentParam' },
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号' , CustomParam: 'instrumentParam' },
+            { sName: 'StorePalce', sType: 'string', sTitle: '存放地点' , CustomParam: 'instrumentParam' },
+            { sName: 'Frequency', sType: 'string', sTitle: '频次' },
+            { sName: 'PlanDate', sType: 'date', sTitle: '计划日期'},
+            { sName: 'CompleteDate', sType: 'date', sTitle: '完成日期'},
+            { sName: 'Leader', sType: 'string', sTitle: '负责人'},
+            { sName: 'Result', sType: 'string', sTitle: '结论',
+                searchDataSource: [
+                    @Html.Raw(ViewBag.PeriodcheckResult)
+                ]},
+            { sName: '', sType: 'date', sTitle: '最新校准日期'}
+        ];
+        oTable = GetJsondataFromServ("tbPeriodcheckList", "/Instrument/GetAllPeriodcheckListJsonData", "2000px", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+        });
+
+    function fnExport(){
+        var fieldCondition = oTable.fnGetAdvCondition(columnInfo);
+        var url = "/Instrument/PeriodcheckEditBySearchCondition?" + fieldCondition ;
+        ymPrompt.confirmInfo({ message: "是否要导出当前记录?", title: '确认对话框', handler: function (tp) {
+                if (tp == 'ok') {
+                    window.open(url,"_blank");
+                }
+            }
+        });
+    }
+
+     function fnDetail(obj){
+            var id=$(obj).attr("id");
+            fnNewWindow("/Instrument/InstrumentPeriodcheckDetail?periodcheckId="+id, "期间核查详细", "650", "365");
+        }
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+</script>
+<div>
+    <!--Authorization operate="/Instrument/PeriodcheckEditBySearchCondition"-->
+    <input id="btnExport" type="button" onclick="fnExport()" class="submit_btn" value="导 出" />&nbsp;
+    <!--/Authorization-->
+    <table id="tbPeriodcheckList">
+    </table>
+</div>

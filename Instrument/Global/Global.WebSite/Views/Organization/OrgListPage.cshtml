@@ -1,0 +1,83 @@
+﻿@model Global.Common.Models.OrgModel
+@{
+    ViewBag.Title = "ViewPage1";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+
+            WrapTables4Dom("example");
+
+            $("#btnAddNew").click(function () {
+                if(@Request["orgId"] == 0) ymPrompt.alert("根目录只能有一个，请添加子目录。");
+                else fnNewWindow(0);
+            });
+
+        });
+
+        function fnNewWindow(id)
+        {
+            ymPrompt.win({ message: '@Url.Content("~/Organization/Details")?orgId=' + id + '&parentOrgId=@(Request["orgId"])', width: 640, height: 490, title: '组织机构信息维护', handler: null, iframe: true });
+        }
+
+</script>
+<!--Authorization operate="Organization-AddOrganization"-->
+<input type="button" value="新增组织" class="submit_btn" id="btnAddNew"/>
+ <!--/Authorization-->
+<table cellpadding="0" cellspacing="0" border="0" class="list_table" id="example">
+    <thead>
+        <tr class="tbl_tr">
+            <th width="8%">
+                序号
+            </th>
+            <th>
+                组织名称
+            </th>
+            <th>
+                组织编号
+            </th>           
+            @*<th>
+                组织类型
+            </th>        *@
+            
+            <th>
+                状态
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @*@{
+            int count = 1;
+            foreach (var m in Model)
+            {
+            <tr class="GradeA">
+                <td>@(count++)
+                </td>
+                <td>@m.OrgName
+                </td>
+                <td>@m.OrgCode
+                </td>                
+                <td>@m.ShowOrder
+                </td>
+                <td>@m["IsEnabled"]
+                </td>
+                <td>
+                    <a href="#" onclick="fnNewWindow(@m["OrgId"]);return false;">编辑</a>&nbsp;&nbsp;&nbsp;
+                    @if (m["OrgCode"].ToString() != "GRGT")
+                    {
+                        <a href='#' onclick="fnConfirmWithF5('确定要禁用【@m["OrgName"]】及其下属部门吗？','@Url.Content("~/Organization/DisableOrg?orgId=")@m["OrgId"]');return false;">
+                            禁用</a>Html.Raw("&nbsp; &nbsp;");
+                        <a href='#' onclick="fnConfirmWithF5('确定要启用【@m["OrgName"]】及其下属部门吗？','@Url.Content("~/Organization/EnableOrg?orgId=")@m["OrgId"]');return false;">
+                            启用</a>Html.Raw("&nbsp; &nbsp;");
+                        <a href='#' onclick="fnConfirmWithF5('确定要删除【@m["OrgName"]】及其下属部门吗？','@Url.Content("~/Organization/Delete?orgId=")@m["OrgId"]');return false;">
+                            删除</a>
+                    }
+                </td>
+            </tr>
+            }
+        }*@
+    </tbody>
+</table>

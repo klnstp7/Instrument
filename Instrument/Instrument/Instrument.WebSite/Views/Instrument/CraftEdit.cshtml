@@ -1,0 +1,152 @@
+﻿@model Instrument.Common.Models.CraftModel
+@{
+    ViewBag.Title = "工艺过程";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+
+
+    function fnChoice() {
+        fnNewWindow("/Instrument/ChoseCraft", "选择工艺", "800", "400");
+    }
+
+    function fnSelect(data) {
+        $("#CraftId").val(data.model.CraftId);
+        $("#CraftCode").val(data.model.CraftCode);
+        $("#CraftName").val(data.model.CraftName);
+        $("#InstrumentNo").val(data.model.InstrumentNo);
+        $("#UsePlace").val(data.model.UsePlace);
+        $("#Required").val(data.model.Required);
+        $("#MeasureRange").val(data.model.MeasureRange);
+        $("#Precise").val(data.model.Precise);
+        $("#DPI").val(data.model.DPI);
+        $("#PermissiblError").val(data.model.PermissiblError);
+        $("#ManageDepart").val(data.model.ManageDepart);
+        $("#Remark").html(data.model.Remark);
+    }
+
+    //保存
+    function fnSaveCraft() {
+        var beforeId = $("#BeforeCraftId").val();
+        var id = $("#CraftId").val();
+
+        $.post("/Craft/Save", $("#formCraft").serialize(), function (data) {
+            if (data == "OK") {
+                //更新工艺标识
+                if (beforeId != id) {
+                    $.post("/Instrument/UpdateInstrumentOfCraft?craftId=" + id + "&instrumentId=" + $("#InstrumentId").val(), function (data) {
+                        if (data != "OK") {
+                            ymPrompt.alert("更新仪器工艺过程失败");
+                            return;
+                        }
+                        ymPrompt.alert("保存成功");
+                    })
+                }
+                else
+                    ymPrompt.alert("保存成功");
+            }
+            else
+                ymPrompt.alert("保存失败");
+        })
+        
+    
+    }
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+</script>
+<div id="tabs-1">
+    <form id="formCraft" class="cmxform">
+    @Html.Hidden("CraftId", Model.CraftId)
+    @Html.Hidden("BeforeCraftId", Model.CraftId)
+    <input id="InstrumentId" type="hidden" name="InstrumentId" value="@ViewBag.InstrumentId" />
+    <table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+        <tr>
+            <th style="width: 15%;">
+                <span class="ico_must">工艺过程代码</span>
+            </th>
+            <td style="width: 35%;">
+                @Html.TextBox("CraftCode", Model.CraftCode, new { @class = "fix_width", @readonly = "readonly" })
+                &nbsp;&nbsp;<img id="imgSearch" src="../../Content/themes/webcss/img/findService.png"
+                    style="bottom: 0px; cursor: pointer" onclick="fnChoice(this)" />
+            </td>
+            <th style="width: 15%;">
+                <span class="ico_must">工艺过程名称</span>
+            </th>
+            <td style="width: 35%;">
+                @Html.TextBox("CraftName", Model.CraftName, new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span class="ico_must">设备位号</span>
+            </th>
+            <td>
+                @Html.TextBox("InstrumentNo", Model.InstrumentNo, new { @class = "fix_width" })
+            </td>
+            <th>
+                使用地点
+            </th>
+            <td>
+                @Html.TextBox("UsePlace", Model.UsePlace, new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                工艺要求
+            </th>
+            <td>
+                @Html.TextBox("Required", Model.Required, new { @class = "fix_width" })
+            </td>
+            <th>
+                测量范围
+            </th>
+            <td>
+                @Html.TextBox("MeasureRange", Model.MeasureRange, new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                准确度
+            </th>
+            <td>
+                @Html.TextBox("Precise", Model.Precise, new { @class = "fix_width" })
+            </td>
+            <th>
+                分辨率
+            </th>
+            <td>
+                @Html.TextBox("DPI", Model.DPI, new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                工艺允许误差
+            </th>
+            <td>
+                @Html.TextBox("PermissiblError", Model.PermissiblError, new { @class = "fix_width" })
+            </td>
+            <th>
+                管理部门
+            </th>
+            <td>
+                @Html.TextBox("ManageDepart", Model.ManageDepart, new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                备注
+            </th>
+            <td colspan="3">
+                @Html.TextArea("Remark", Model.Remark, new { @class = "fix_width" })
+            </td>
+        </tr>
+    </table>
+    <div class="submit_btn_div">
+        <input id="btnSave" type="button" class="submit_btn" onclick="fnSaveCraft()"
+            value="保 存" />
+    </div>
+    </form>
+</div>

@@ -1,0 +1,179 @@
+﻿@using ToolsLib.Utility
+@using System.Web.UI.WebControls
+@model Instrument.Common.Models.CraftModel
+@{
+    ViewBag.Title = "工艺过程";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {       
+        if ("@Request["craftId"]" != "0")
+        {
+            $("#CraftCode").attr("readonly","readonly");
+            }
+
+        //表单验证
+        $("#formCraft").validate({
+            rules: {
+                CraftCode: {
+                    required: true,                   
+                    specialCharValidate: true,
+                    maxGBKlength: 500
+                },
+                CraftName: {
+                    required: true,
+                    specialCharValidate: true,
+                    maxGBKlength: 500
+                },
+                InstrumentNo: {
+                    maxGBKlength: 500,
+                    specialCharValidate: true
+                },
+                UsePlace: {
+                    maxGBKlength: 500,
+                    specialCharValidate: true
+                },
+                Required: {
+                    required: true,
+                    maxGBKlength: 500,
+                    specialCharValidate: true
+                },
+                MeasureRange: {
+                    maxGBKlength: 500,
+                    specialCharValidate: true
+                },
+                Precise: {
+                    maxGBKlength: 500,
+                    specialCharValidate: true
+                },
+                DPI: {
+                    maxGBKlength: 500,
+                    specialCharValidate: true
+                },
+                PermissiblError: {
+                    maxGBKlength: 500,
+                    specialCharValidate: true
+                },
+                ManageDepart: {
+                    maxGBKlength: 50,
+                    specialCharValidate: true
+                },
+                Remark: {
+                    specialCharValidate: true,
+                    maxGBKlength: 500
+                }
+            }
+        });
+
+        //提交数据
+        $("#btnSave").click(function () {          
+            if ($("#formCraft").valid()) {
+                $.post("/Craft/Save", $("#formCraft").serialize(), function (data) {
+                    if (data == "OK") {
+                        window.parent.ymPrompt.close();
+                        window.parent.oTable.api().ajax.reload();
+//                        window.parent.document.location.href = window.parent.document.location.href;
+                    }
+                    else ymPrompt.alert(data);
+                });
+            }
+        });
+
+        $("#btnClose").click(function () {
+            window.parent.ymPrompt.close();
+        });
+
+    });
+
+</script>
+<div id="tabs">
+    <div class="submit_btn_div">
+        <input id="btnSave" type="button" class="submit_btn" value="保 存" />&nbsp;&nbsp;&nbsp;
+        <input id="btnClose" type="button" class="submit_btn" value="关闭窗口" />
+    </div>
+    <form id="formCraft" name="formCraft" class="cmxform">
+    @Html.Hidden("CraftId", Model.CraftId)
+    @Html.Hidden("BeforeCraftId", Model.CraftId)
+    <table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+        <tr>
+            <th style="width: 100px;">
+                <span class="ico_must">工艺过程代码</span>
+            </th>
+            <td>
+                <input id="CraftCode" name="CraftCode" type="text" value="@Model.CraftCode" />
+            </td>
+            <th style="width: 100px;">
+                <span class="ico_must">工艺过程名称</span>
+            </th>
+            <td>
+                <input id="CraftName" name="CraftName" type="text" value="@Model.CraftName" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>设备位号</span>
+            </th>
+            <td>
+                <input id="InstrumentNo" name="InstrumentNo" type="text" value="@Model.InstrumentNo" />               
+            </td>
+            <th>
+                使用地点
+            </th>
+            <td>
+                <input id="UsePlace" name="UsePlace" type="text" value="@Model.UsePlace" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span class="ico_must">工艺要求</span>
+            </th>
+            <td>
+                <input id="Required" name="Required" type="text" value="@Model.Required" />
+            </td>
+            <th>
+                测量范围
+            </th>
+            <td>
+                <input id="MeasureRange" name="MeasureRange" type="text" value="@Model.MeasureRange" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                准确度
+            </th>
+            <td>
+                <input id="Precise" name="Precise" type="text" value="@Model.Precise" />
+            </td>
+            <th>
+                分辨率
+            </th>
+            <td>
+                <input id="DPI" name="DPI" type="text" value="@Model.DPI" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                工艺允许误差
+            </th>
+            <td>
+                <input id="PermissiblError" name="PermissiblError" type="text" value="@Model.PermissiblError" />
+            </td>
+            <th>
+                管理部门
+            </th>
+            <td>
+                <input id="ManageDepart" name="ManageDepart" type="text" value="@Model.ManageDepart" />
+                @*               @Html.DropDownListTree("OrgName", ViewBag.OrgList as IList<Global.Common.Models.OrgModel>, "OrgCode", "OrgName", Model.ManageDepart, "OrgId", "ParentOrgId", "0", new { @class = "fix_width" })*@
+            </td>
+        </tr>
+        <tr>
+            <th>
+                备注
+            </th>
+            <td colspan="3">
+                @Html.TextArea("Remark", Model.Remark, new { @cols = "80", @rows = "1" })
+            </td>
+        </tr>
+    </table>
+    </form>
+</div>

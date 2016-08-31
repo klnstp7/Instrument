@@ -1,0 +1,61 @@
+﻿@using System.Web
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>@ViewBag.Title</title>
+    <link href="@Url.Content(string.Format("~/Content/themes/webcss/style.css?v={0}",  HttpContext.Current.Application["JSVersion"]))" rel="styledsheet" type="text/css" />
+    <link href="@Url.Content("~/Content/themes/base/ymPrompt.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content(string.Format("~/Content/themes/base/jquery-ui.css?v={0}", HttpContext.Current.Application["JSVersion"]))" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/themes/base/dhtmlxtree.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content(string.Format("~/Content/themes/base/css_dataTables/screen.css?v={0}", HttpContext.Current.Application["JSVersion"]))" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content(string.Format("~/Content/themes/base/css_validate/screen.css?v={0}", HttpContext.Current.Application["JSVersion"]))" rel="stylesheet" type="text/css" />      
+    <link href="@Url.Content("~/Content/themes/base/chosen/chosen.min.css")" rel="stylesheet" type="text/css" />      
+    <link href="@Url.Content(string.Format("~/Content/themes/webcss/formstyle.css?v={0}", HttpContext.Current.Application["JSVersion"]))" rel="stylesheet" type="text/css" />
+
+    <script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery-ui-1.9.2.custom.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/validate/jquery.validate.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/validate/additional-methods.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content(string.Format("~/Scripts/validate/messages_zh.js?v={0}", HttpContext.Current.Application["JSVersion"]))" type="text/javascript"></script>
+    <script src="@Url.Content(string.Format("~/Scripts/dataTables/jquery.dataTables.min.js?v={0}", HttpContext.Current.Application["JSVersion"]))" type="text/javascript"></script>
+    <script src="@Url.Content(string.Format("~/Scripts/dataTables/jquery.dataTables.common.js?v={0}", HttpContext.Current.Application["JSVersion"]))" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/dhtmlxtree/dhtmlxtree.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/dhtmlxtree/dhtmlxcommon.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/ymPrompt/ymPrompt.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/My97DatePicker/WdatePicker.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/chosen/chosen.jquery.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.blockUI.js")" type="text/javascript"></script>
+    <script src="@Url.Content(string.Format("~/Scripts/CommonUtil.js?v={0}", HttpContext.Current.Application["JSVersion"]))" type="text/javascript"></script>
+    <script type="text/javascript" language="javascript" >
+        $(document).ready(function () {
+            $(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);
+
+        });
+
+        function fnDelete(url) {
+            fnConfirmWithF5("确定要删除吗？", url);
+        }
+
+        function fnErrorWindow() {
+            var msgTitle = "信息提示";
+            ymPrompt.win({ message: "/Login/Error", width: 760, height: 500, title: msgTitle, handler: null, iframe: true, scrollHeight: 1 });
+        }
+
+
+    </script> 
+</head>
+
+<body>
+    <div id="wrapper">
+          <div id="content_wrapper"> 
+
+            @RenderBody()
+
+          </div>
+    <!--content End-->
+    </div>
+    
+</body>
+</html>

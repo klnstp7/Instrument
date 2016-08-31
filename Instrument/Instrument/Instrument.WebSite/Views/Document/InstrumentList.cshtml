@@ -1,0 +1,71 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "关联仪器";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+    queryColInfo.ColNum = 1;
+    queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'InstrumentName', sType: 'string', sTitle: '仪器名称' },
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号' },
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号' },
+            { sName: '', sType: 'string', sTitle: '分类' },
+            { sName: 'Manufacturer', sType: 'string', sTitle: '生产厂家' },
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号' },
+            { sName: 'CreateDate', sType: 'date', sTitle: '出厂日期' },
+            { sName: 'DueStartDate', sType: 'date', sTitle: '检验日期' },
+            { sName: 'DueEndDate', sType: 'date', sTitle: '有效日期' },
+            { sName: '', sType: 'string', sTitle: '所属部门' }
+         ];
+                oTable = GetJsondataFromServ("Instrument", "/Document/GetAllInstrumentJsonData?documentId=" + $("#DocumentId").val(), "1000px", columnInfo, queryColInfo, tableHigth, false, true, true, true);
+    });
+
+    //关联仪器
+    function fnChoose(documentId, instrumentId) {
+        $.post('@Url.Content("/Document/ChooseMoreInstrument")?documentId=' + $("#DocumentId").val() + '&instrumentIds=' + instrumentId, function (data) {
+            if (data.Msg == "OK") {
+                ymPrompt.alert("关联成功");
+                window.opener.location.reload();
+            }
+            else ymPrompt.alert(data.Msg);
+        });
+    }
+    //设置全选、反选
+    function fnSetCheckbox(obj) {
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk', isChecked);
+    }
+    //批量关联
+    function fnAddInstrument() {
+        var InstrumentIds = fnGetAllCheckedValue('chk');
+        if ("" == InstrumentIds) {
+            ymPrompt.alert("请选择要添加的仪器");
+            return;
+        }
+        ymPrompt.confirmInfo({ message: "确定要添加选中的仪器？", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                $.post('@Url.Content("/Document/ChooseMoreInstrument")?documentId=' + $("#DocumentId").val() + '&instrumentIds=' + InstrumentIds, function (data) {
+                    if (data.Msg == "OK") {
+                        ymPrompt.alert("成功关联的有" + data.success + "个,其中有" + data.failure + "个已关联");
+                        window.opener.location.reload();
+                    }
+                    else ymPrompt.alert(data.Msg);
+                });
+            }
+        }
+        });
+    }
+
+</script>
+<div>
+    <input name="DocumentId" id="DocumentId" type="hidden" value="@ViewBag.DocumentId" />
+    <input type="button" id="btnAddInstrument" class="submit_btn" value="批量关联" onclick="fnAddInstrument()" />
+    <table id="Instrument"/>
+</div> 

@@ -1,0 +1,148 @@
+﻿@{
+    ViewBag.Title = "RecordLog";
+}
+<style type="text/css">
+    table tr
+    {
+        text-align: center;
+    }
+    a
+    {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+</style>
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var oTable;
+    $(function () {
+        $("#LogConent").focus();
+        //表单验证
+        $("#formBusinessLog").validate({
+            rules: {
+                LogConent: {
+                    required: true,
+                    maxlength: 2000
+                }
+            }
+        })
+        var FKValue = "@ViewBag.FKValue";
+        var FKType = "@ViewBag.FKType";
+        var params = "FKValue=" + FKValue + "&FKType=" + FKType;
+        oTable = WrapTables4Ajax("tableBusinessLog", "/BusinessLog/GetOrderBusinessLog?FKValue=" + FKValue + "&FKType=" + FKType, "100%", true, "auto");
+    });
+     //提交
+    function fnupload(){             
+         if($("#formBusinessLog").valid()){
+               var options = {
+            success: fnShowResponse,
+            url: "/BusinessLog/SaveBussinessLogFile",
+            data:$("#formBusinessLog").serialize()
+        };
+        $("#formBusinessLog").ajaxSubmit(options)
+        //window.parent.ymPrompt.close();
+     
+         
+    }
+
+    function fnShowResponse(responseText){
+     if (responseText == "OK") {
+                       $("#isClick").val("true");
+                       //清空
+                       $("#LogConent").val("");
+                       ReloadData(); 
+                                                             
+                }
+                else alert(responseText);
+                }
+    }
+
+    function ReloadData() {
+        //清空全选状态
+        $("input[name='checkAll']").attr("checked", false);
+        //刷新
+        var FKValue = "@ViewBag.FKValue";
+        var FKType = "@ViewBag.FKType";
+        var params = "FKValue=" + FKValue + "&FKType=" + FKType;
+        oTable.api().ajax.reload(function () {
+            //获取页面的数据列表记录
+            var obj = $("#tableBusinessLog").find("tr").find("td[class='dataTables_empty']");
+            window.parent.fnChangeImg(FKValue, obj.length);
+        }, false);
+        
+                        
+    }
+
+    //下载
+    function fnDownload(obj){
+        var fileId=$(obj).attr("FileId");
+        var params="fileId="+fileId;
+        var url="/SysManage/Attachment/DownLoad?"+params;
+        fnAjaxDownloadFile(url);
+    }
+
+      //删除
+    function fnDeleteBusinessLog(){
+        var checked=$("input[name='chk']:checked");
+        if(checked.length<=0){
+            ymPrompt.alert("请选择要操作的记录");
+            return;
+        }
+        //获取被选中的记录
+        var logids="";
+         $.each(checked, function (index, key) {
+            logids += $(key).attr("LogId") + ",";
+        });
+        var paramas="LogId=" +logids;
+
+        fnConfirmWithoutF5("确定要执行删除操作？", '/BusinessLog/DeleteBusinessLog?' + paramas, function () {
+            ReloadData();
+        });   
+        return false ;
+
+    }
+   
+     //设置全选、反选
+    function fnSetCheckbox(obj) {
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk', isChecked);
+    }
+ 
+</script>
+<form id="formBusinessLog" name="formBusinessLog" method="post" action="/BusinessLog/SaveBussinessLogFile"
+enctype="multipart/form-data">
+<input  type="hidden" name="FKValue" value="@ViewBag.FKValue"/>
+<input  type="hidden" name="FKType" value="@ViewBag.FKType"/>
+<input type="hidden" name="isClick" id="isClick" value="false" />
+<span class="ico_must">消息：</span><textarea rows="1" cols="20" name="LogConent" id="LogConent"></textarea>
+<input type="file" name="uploadFile" id="uploadFile" />
+<input type="button" onclick="fnupload();" class="submit_btn" value="保存" />
+<!--Authorization operate="/BusinessLog/DeleteBusinessLog"-->
+<input id="DeleteBusinessLog" type="button" onclick="fnDeleteBusinessLog();" class="submit_btn"
+    value="删除" />
+<!--/Authorization-->
+</form>
+<table id="tableBusinessLog">
+    <thead>
+        <tr>
+            <th width="50px">
+                序号
+            </th>
+            <th width="30px">
+                <input type="checkbox"  name="checkAll" onclick="fnSetCheckbox(this)" />
+            </th>
+            <th>
+                姓名
+            </th>
+            <th>
+                时间
+            </th>
+            <th width="200px">
+                消息
+            </th>
+            <th width="150px">
+                附件
+            </th>
+        </tr>
+    </thead>
+</table>

@@ -1,0 +1,84 @@
+﻿@{
+    ViewBag.Title = "新增联络单";
+}
+<script type="text/javascript" language="javascript">
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+    var queryColInfo = {};
+        queryColInfo.ColNum = 1;
+        queryColInfo.IsRLType = true;
+    $(document).ready(function () {
+        columnInfo = [
+            { sName: '', sType: 'string', sTitle: '操作' },
+            { sName: 'CompanyName', sType: 'string', sTitle: '客户名称' },
+            { sName: 'CaseType', sType: 'string', sTitle: '事项分类' ,
+                                searchDataSource: [
+                                   @Html.Raw(ViewBag.CaseType)]
+            },
+            { sName: 'Abstract', sType: 'string', sTitle: '事项摘要' },
+                { sName: 'State', sType: 'string', sTitle: '状态' ,
+                searchDataSource: [
+                    @Html.Raw(ViewBag.State)
+                ]},
+            { sName: 'FeedbackDate', sType: 'date', sTitle: '反馈日期' },
+            { sName: 'Creator', sType: 'string', sTitle: '创建人' },
+            { sName: 'CreatDate', sType: 'date', sTitle: '创建日期' }
+
+        ];
+        oTable = GetJsondataFromServ("contractList", "/Contact/GetAllContactJsonData", "100%", columnInfo, queryColInfo, tableHigth, false, false, true, true);
+
+    });
+
+    function fnAddContract(){
+        fnNewWindow("/Contact/Edit?contactId=0","新增联络单",500,450);
+    }
+
+        function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+    function fnEditContact(obj){
+        var contactId=$(obj).parent().attr("contactId");
+        fnNewWindow("/Contact/Edit?contactId="+contactId,"编辑联络单",500,450);
+    }
+
+    function fnSendContact(obj){
+        var contactId=$(obj).parent().attr("contactId");
+        fnConfirmWithF5WithOTable('确定提交？', '@Url.Content("~/Contact/Send?contactId=")' + contactId, oTable);
+    }
+
+    function fnViewContact(obj){
+        var contactId=$(obj).parent().attr("contactId");
+        fnNewWindow("/Contact/Detail?contactId="+contactId,"联络单",500,350);
+    }
+
+    function fnSynContact(obj){
+        var contactId=$(obj).parent().attr("contactId");
+        $.post("/Contact/SynContact?contactId=" + contactId, function (data) {
+            if (data == "OK") {
+                oTable.api().ajax.reload();
+                ymPrompt.alert("更新成功");
+            }
+            else ymPrompt.alert(data);
+        });
+    }
+    
+    function fnDeleteContact(obj){
+        var contactId=$(obj).parent().attr("contactId");
+        fnConfirmWithF5WithOTable('确定删除该联络单？', '@Url.Content("~/Contact/Delete?contactId=")' + contactId, oTable);
+    }
+    function fnSolveContact(obj){
+        var contactId=$(obj).parent().attr("contactId");
+        fnConfirmWithF5WithOTable('确定把该单设为解决？', '@Url.Content("~/Contact/Solve?contactId=")' + contactId, oTable);
+    }
+    
+</script>
+<div>
+    <!--Authorization operate="新增联络单-新增"-->
+    <input type="button" id="btnAdd" onclick="fnAddContract()" class="submit_btn" value="新增联络单" />
+    <!--/Authorization-->
+    <table id="contractList">
+    </table>
+</div>

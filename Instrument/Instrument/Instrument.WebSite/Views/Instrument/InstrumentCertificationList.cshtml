@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.Title = "周期校准记录";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" language="javascript">
+
+    //初始化
+    var oTableCertification = null;
+    $(document).ready(function () {
+        oTableCertification = WrapTables4Ajax("tableInstrumentCertification",
+            "/Instrument/GetInstrumentCertificationList?instrumentId=@ViewBag.InstrumentId&dataType=@ViewBag.DataType", "100%", true, "auto");
+        if("0" == "@ViewBag.DataType")
+        {
+            $("#btnAddInstrumentCertification")[0].style.display = "none";   //隐藏"新增"按钮
+        }
+    });
+    function fnReload() {
+        if (null != oTableCertification) {
+            oTableCertification.api().ajax.reload();
+        }
+    }
+
+    //新增
+    function fnAddInstrumentCertification() {
+        var url = "/Instrument/EditInstrumentCertification?logId=0&instrumentId=@ViewBag.InstrumentId";
+        ymPrompt.win({ message: url, width: 850, height: 500, title: "周期校准记录",
+            handler: function (data) {
+                if ("OK" == data) {
+                    if (null != oTableCertification) {
+                        oTableCertification.api().ajax.reload();
+                    }
+                }
+            }, iframe: true
+        });
+    }
+
+    //修改
+    function fnUpdateInstrumentCertification(logId) {
+        var url = "/Instrument/EditInstrumentCertification?logId=" + logId + "&instrumentId=@ViewBag.InstrumentId";
+        ymPrompt.win({ message: url, width: 850, height: 500, title: "周期校准记录",
+            handler: function (data) {
+                if ("OK" == data) {
+                    if (null != oTableCertification) {
+                        oTableCertification.api().ajax.reload();
+                    }
+                }
+            }, iframe: true
+        });
+    }
+
+    //删除
+    function fnDeleteInstrumentCertification(logId) {
+        var url = "/Instrument/DeleteInstrumentCertification?logId=" + logId + "&instrumentId=@ViewBag.InstrumentId";
+        
+        ymPrompt.confirmInfo({ message: "是否删除当前周期校准记录", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                $.get(url, function (data) {
+                    if ("OK" == data) {
+                        if (null != oTableCertification) {
+                            oTableCertification.api().ajax.reload();
+                        }
+                    }
+                    else ymPrompt.alert(data);
+                });
+            }
+        } 
+        });
+    }
+
+    //下载
+    function fnDownFile(obj) {
+        var fileId=$(obj).attr("fileId");
+        fnAjaxDownloadFile("/SysManage/Attachment/DownLoad?fileId=" + fileId);
+    }
+
+    //详细
+    function fnDetails(logId) {
+        fnNewWindow("/Certification/GetInstrumentCertificationDetail?logId=" + logId, 750, 300, "详细信息");
+    }
+</script>
+<!--Authorization operate="基础配置管理-标准器具库-编辑-周期校准记录-新增"-->
+<input id="btnAddInstrumentCertification" type="button" onclick="fnAddInstrumentCertification()" class="submit_btn" value="新增" />&nbsp;
+<!--/Authorization-->
+<table id="tableInstrumentCertification">
+    <thead>
+        <tr>
+            <th style="width:100px;">
+                操作
+            </th>
+            <th>
+                状态
+            </th>
+             <th>
+                证书编号
+            </th>
+            <th>
+                费用
+            </th>
+             @* <th>
+                送检单号
+            </th>*@
+            <th>
+                计量机构
+            </th>
+            <th>
+                检测结果
+            </th>
+            <th>
+                误差
+            </th>
+            <th>
+                校准日期
+            </th>
+            <th>
+                到期日期
+            </th>
+           @* <th>
+                送检日期
+            </th>
+            <th>
+                返回日期
+            </th>
+            <th>
+                证书取回日期
+            </th>
+            <th>
+                证书确认日期
+            </th>
+            <th style="width:200px;">
+                备注
+            </th>*@
+        </tr>
+    </thead>
+</table>
+

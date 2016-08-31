@@ -1,0 +1,101 @@
+﻿@model Instrument.Common.Models.InstrumentRepairPlanModel
+@{
+    ViewBag.Title = "维修计划";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+//        $("#tabs").tabs({ cache: true });
+    });
+</script>
+@*<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">基本信息</a></li>
+        <li><a href="#tabs-2">附件</a></li>
+    </ul>
+ <div id="tabs-1">*@
+<table id="tableInstrumentRepairPlan" class="form_table">
+    <tr>
+        <th style="width: 20%;">
+            维修公司
+        </th>
+        <td style="width: 30%;">
+           @Model.RepairCompany
+        </td>
+        <th style="width: 20%;">
+           维修人员
+        </th>
+        <td style="width: 30%;">
+           @Model.Repairer
+        </td>
+    </tr>
+    <tr>
+        <th>
+            联系电话
+        </th>
+        <td>
+            @Model.Mobile
+        </td>
+         <th>
+            维修金额
+        </th>
+        <td>
+           @Model.RepairMoney
+        </td>
+    </tr>
+    <tr>
+        <th>
+            报修人
+        </th>
+        <td>
+           @Model.Leader
+        </td>
+         <th>
+            报告编号
+        </th>
+        <td>
+            @Model.ReportCode
+        </td>
+    </tr>
+    <tr>
+        <th>
+            报修日期
+        </th>
+        <td>
+           @(DateTime.MinValue == Model.DueStartDate ? string.Empty : Model.DueStartDate.ToString("yyyy-MM-dd HH:mm:ss"))
+               
+        </td>
+        <th>
+            修复日期
+        </th>
+        <td>
+            @(DateTime.MinValue == Model.DueEndDate ? string.Empty : Model.DueEndDate.ToString("yyyy-MM-dd HH:mm:ss"))
+        </td>
+    </tr>
+    <tr>
+        <th>
+            故障原因
+        </th>
+         <td>
+           @Model.Reason
+        </td>
+        <th>
+            <span>保修期限
+        </th>
+        <td>
+            @Model.TermService
+        </td>
+    </tr>
+    <tr>
+        <th>
+            故障描述
+        </th>
+        <td colspan="3">
+            @Model.Remark
+        </td>
+    </tr>
+</table>
+ <div id="tabs-2">
+ <li>附件信息</li>
+ @Html.Action("GetAttachments", "Instrument", new { AttachmentBusinessType = Instrument.Common.Constants.AttachmentBusinessType.维修单.GetHashCode(), BusinessId = GRGTCommonUtils.UtilsHelper.Encrypt(Model.PlanId.ToString()) })
+</div>

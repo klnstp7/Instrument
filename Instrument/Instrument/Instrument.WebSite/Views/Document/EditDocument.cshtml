@@ -1,0 +1,110 @@
+﻿@using ToolsLib.Utility
+@using System.Web.UI.WebControls
+@using Instrument.Common.Models;
+@using Global.Common.Models;
+@using GRGTCommonUtils;
+@model Instrument.Common.Models.DocumentModel
+@{
+    ViewBag.Title = "EditDocument";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="@Url.Content("~/Content/themes/webcss/formstyle.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+    //关闭窗口
+        $("#btnClose").click(function () {
+            window.parent.ymPrompt.close();
+        });
+        //上传文件
+//        $("#btnUpload").click(function () {
+//            if ($("#fileXLS").val().length == 0) {
+//                alert("请选择上传文件");
+//                return false;
+//            }
+//            if ($("#form1").valid()) {
+//                $.post("/Document/Save?fileName=" + $("#fileXLS").val(), $("#form1").serialize(), function (data) {
+//                    if (data == "OK") window.parent.document.location.href = window.parent.document.location.href;
+//                    else alert(data);
+//                    //window.parent.ymPrompt.close();
+//                });
+//            }
+//        });
+
+
+
+    });
+
+
+
+    //导入
+    function fnLoad() {
+        var options = {
+            beforeSubmit: fnShowRequest,
+            error: fnShowError,
+            success: fnShowResponse
+        };
+        $('#form1').ajaxSubmit(options);
+    }
+    function fnShowRequest(formData, jqForm, options) {
+        if (formData[0].value == "") {
+            $("#file_info").html("请选择.xls格式的文件");
+            $("#file_info").show();
+            return false;
+        }
+        return true;
+    }
+    function fnShowError(data) {
+        alert(data);
+    }
+    function fnShowResponse(responseText, statusText) {
+        var jsonObj = eval("(" + responseText + ")");
+        if (jsonObj.bError) {
+            alert(jsonObj.sMsg);
+            $("#file_info").html("");
+            $("#file_info").hide();
+            return false;
+        }
+        oTable.reloadData();
+    }
+</script>
+<div id="tabs">
+    <div class="submit_btn_div">
+        <input id="btnUpload" type="button" class="submit_btn" value="上 传" onclick="fnLoad()"  />
+        <input id="btnClose" type="button" class="submit_btn" value="关 闭" />
+    </div>
+    <form id="form1" class="form1">
+    <input name="DocumentId" id="UserId" type="hidden" value="@Model.DocumentId" />
+    <input name="FileId" id="FileId"  type="hidden" value="@Model.FileId" />
+    <div id="tabs-1">
+        <table class="form_table">
+            <tr>
+                <th>
+                    文件名
+                </th>
+                <td >
+                <input id="fileXLS" name="fileXLS" type="file" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    分类
+                </th>
+                <td>
+                           @Html.DropDownList("DocCategory", new SelectList(ViewBag.DocumengTypeList, "Value", "Text", Model.DocCategory),
+                    new { @class = "fix_width", @style = "width: 248px;" })
+                </td>
+            </tr>
+                        <tr>
+                <th>
+                    备注
+                </th>
+                <td>
+                    <input name="Remark" class="fix_width" id="Remark" type="text" required value="@Model.Remark" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    </form>
+
+</div>
+

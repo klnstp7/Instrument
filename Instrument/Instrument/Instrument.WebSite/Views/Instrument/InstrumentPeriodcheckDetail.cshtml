@@ -1,0 +1,60 @@
+﻿@model Instrument.Common.Models.PeriodcheckModel
+@{
+    ViewBag.Title = "期间核查";
+}
+<form id="form1" class="cmxform">
+<table id="tbPeriodcheck" class="form_table">
+    <tr>
+        <th>
+            频次
+        </th>
+        <td>
+            @Model.Frequency
+        </td>
+        <th>
+           负责人
+        </th>
+        <td>
+            @Model.Leader
+        </td>
+    </tr>
+    <tr>
+        <th>
+            计划日期
+        </th>
+        <td>
+              @(null == Model.PlanDate ? string.Empty : Model.PlanDate.Value.ToString("yyyy-MM-dd"))
+        </td>
+        <th>
+            完成日期
+        </th>
+        <td>
+               @(null == Model.CompleteDate ? string.Empty : Model.CompleteDate.Value.ToString("yyyy-MM-dd"))
+        </td>
+    </tr>
+    <tr>
+        <th>
+            结论
+        </th>
+         <td>
+              @ViewBag.Result
+        </td>
+        <th>
+        </th>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            备注
+        </th>
+        <td colspan="3">
+            @Model.Remark
+        </td>
+    </tr>
+</table>
+<div id="tabs-2">
+ <li>附件信息</li>
+ @Html.Action("GetAttachments", "Instrument", new { AttachmentBusinessType = Instrument.Common.Constants.AttachmentBusinessType.期间核查.GetHashCode(), BusinessId = GRGTCommonUtils.UtilsHelper.Encrypt(Model.PeriodcheckId.ToString()) })
+</div>
+</form>

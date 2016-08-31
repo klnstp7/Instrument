@@ -1,0 +1,103 @@
+﻿@using System.Collections;
+@using Measure.LabCommon;
+@using Global.Common.Models;
+@{
+    ViewBag.Title = "关联服务";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    IList<Hashtable> serviceList = ViewBag.ServiceList as IList<Hashtable>;
+    int instrumentId = ViewBag.InstrumentId;
+    IList<ParamItemModel> orgList = ViewBag.OrgList as IList<ParamItemModel>;
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        //添加服务
+        $("#addService").click(function () {
+            var serviceId = $("#serviceId").val();
+            if (serviceId == 0) {
+                alert("未选择服务");
+                return false;
+            }
+            $.post("/Instrument/AddServiceOwnInstrument", $("#form1").serialize(), function (data) {
+                if (data == "OK") {
+                    location.reload();
+                }
+                else alert(data);
+            });
+            //            $("#form1").submit();
+        });
+
+        //删除服务
+        $(".delete").click(function () {
+            var serviceId = $(this).attr("serviceId");
+            var serviceName = $(this).parent().next().text();
+            fnConfirmWithF5('确定要删除与【' + serviceName + '】的关联吗？', '@Url.Content("~/Instrument/DeleteServiceOwnInstrument?serviceId=")' + serviceId + "&instrumentId=" + "@instrumentId");
+            return false;
+        });
+
+        $("#btnClose").click(function () {
+            window.parent.ymPrompt.close();
+            //window.parent.location.href = window.parent.location.href;
+        });
+
+        $("#serviceName").autocomplete({
+            minLength: 1,
+            source: "/Project/SearchParentProjectByName",
+            select: function (event, ui) {
+                $("#serviceId").val(ui.item.value);
+                var arr = ui.item.label.split(",");
+                $("#serviceName").val(arr[0]);
+                return false;
+            }
+        });
+
+    });
+
+</script>
+<form id="form1">
+<input type="hidden" id="instrumentId" name="InstrumentId" value="@instrumentId" />
+<input type="hidden" id="serviceId" name="ServiceId" value="0" />
+<div style="text-align: right; margin: 4px 0px;">
+    <input type="text" id="serviceName" class="long_width" />
+    <input type="button" id="addService" class="submit_btn" value="添加服务" />
+</div>
+</form>
+<table class="form_table">
+    <thead>
+        <tr>
+            <th>
+                操作
+            </th>
+            <th>
+                服务项目
+            </th>
+            <th>
+                规格型号
+            </th>
+            <th>
+                所属科室
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in serviceList)
+        {
+            string serviceId = item["ServiceId"].ToString();
+            string org = ((Constants.LabType)int.Parse(item["BelongOrgCode"].ToString())).ToString();
+            <tr>
+                <td>
+                    <a href="#" serviceId="@serviceId"  class="delete">删除</a>
+                </td>
+                <td>@item["ServiceName"]
+                </td>
+                <td>@item["Specification"]
+                </td>
+                <td>@org
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div style="text-align: center; margin-top: 4px;">
+    <input type="button" id="btnClose" value="关闭" class="submit_btn" />
+</div>

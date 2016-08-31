@@ -1,0 +1,32 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="content2">
+
+<div id="main_container">
+
+
+    <div id="right_info">
+		<div id="system_info" class="error_info">
+        @{
+             <h1>系统错误</h1>
+            if (ViewBag.ErrorMessage == null)
+            {
+		        <p>哎呀，人品爆发，悲剧啦……请返回再次尝试。如果继续悲剧，请拨打电话『<strong>020-38696099-8390</strong>』联系管理员，谢谢。</p>
+            }
+            else
+            {
+		        <p>系统错误信息：@Html.Raw(ViewBag.ErrorMessage)</p>
+                <p>请拨打电话『<strong>020-38696099-8390</strong>』联系管理员，谢谢。</p>
+            }
+		    <p><input name="Submit" type="button" class="submit_btn_gray" value="返回" onclick="history.go(-1);" /></p>
+        }
+        </div>
+	</div>
+
+
+<div class="clear"></div>
+</div>
+</div>

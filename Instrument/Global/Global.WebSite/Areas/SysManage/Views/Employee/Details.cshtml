@@ -1,0 +1,209 @@
+﻿@using ToolsLib.Utility
+@using System.Web.UI.WebControls
+@model Global.Common.Models.UserModel
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="@Url.Content("~/Content/themes/webcss/formstyle.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $("#tabs").tabs({ event: "mouseover" });
+        ////////////////////////
+        //验证姓名
+        $("#UserName").change(function () {
+            if ($(this).val().length == 0) {
+                $("#name_info").text("姓名不能为空");
+                $("#name_info").show();
+            }
+            else {
+                $("#name_info").text("");
+                $("#name_info").hide();
+            }
+
+        });
+
+        //验证工号
+        $("#JobNo").change(function () {
+            if ($(this).val().length == 0) {
+                $("#jobnum_info").text("帐号不能为空")
+                $("#jobnum_info").show();
+            }
+            else {
+                JudgeJobNumb();
+            }
+
+        });
+
+
+        $("#btnSave").click(function () {
+            $("#tabs").tabs("option", "active", 0);
+            if ($("#name_info").html() != "" || $("#jobnum_info").html() != "") {
+                return;
+            }
+            if ($("#UserName").val() == "") {
+                $("#name_info").html("姓名不能为空");
+                $("#name_info").show();
+                return;
+            }
+            if ($("#JobNo").val() == "") {
+                $("#jobnum_info").html("帐号不能为空");
+                $("#jobnum_info").show();
+                return;
+            }
+            //            else {
+            //                JudgeJobNumb();
+            //            }
+
+            if ($("#form1").valid()) {
+                $.post("/Employee/Save", $("#form1").serialize(), function (data) {
+                    if (data == "OK") window.parent.document.location.href = window.parent.document.location.href;
+                    else alert(data);
+                    //window.parent.ymPrompt.close();
+                });
+            }
+        });
+
+        $("#btnClose").click(function () {
+            window.parent.ymPrompt.close();
+        });
+
+        $('input:radio[name="Sex"][value="@(Model.Sex)"]').attr("checked", "checked");
+
+        $('input:radio[name="EmployeeState"][value="@(Model.EmployeeState)"]').attr("checked", "checked");
+
+        ChangeEmployeeState();
+
+        //            $("#DutyId").chosen({ search_contains: true });
+        $("#OrgName").chosen({ search_contains: true });
+        //            $("#EducationID").chosen({ search_contains: true });
+
+        //            部门改变事件
+        //                    $("#OrgName").change(function () {
+        //                        $("#DutyId").chosen("destroy");  //再次赋值时
+        //                        url = '/Employee/GetDutyByChangeDept?orgCode=' + $("#OrgName").val();
+        //                        $.getJSON(url, function (data) {
+        //                            $('#DutyId').html("");
+        //                            $.each(data, function (i, item) {
+        //                                $('#DutyId').append($("<option></option>").val(item.DutyId).html(item.Duty));
+        //                            });
+        //                            $("#DutyId").chosen({ search_contains: true });
+        //                        });
+        //                    });
+    });
+
+    //判断是否存在相同的员工工号
+    function JudgeJobNumb() {
+        $.ajax({
+            type: 'GET',
+            url: '/Employee/JudgeJobNumb?userId=' + $("#UserId").val() + '&jobNo=' + $("#JobNo").val(),
+            success: function (data) {
+                if (data == "True") {
+                    $("#jobnum_info").html("已存在该帐号！");
+                    $("#jobnum_info").show();
+                }
+                else {
+                    $("#jobnum_info").html("");
+                    $("#jobnum_info").hide();
+                }
+            }
+        });
+    }
+
+    //改变员工状态
+    function ChangeEmployeeState() {
+        if (1 == $('input:radio[name="EmployeeState"]:checked').val()) {
+            //启用"离职时间"
+            document.getElementById("DimissionDate").disabled = false;
+        }
+        else {
+            //清空"离职时间"
+            $("#DimissionDate").val("");
+            //禁用"离职时间"
+            document.getElementById("DimissionDate").disabled = true;
+        }
+    }
+
+</script>
+<div id="tabs">
+    @*    <ul>
+        <li><a href="#tabs-1">员工信息</a></li>
+    </ul>*@
+    <form id="form1" class="cmxform">
+    <input name="UserId" id="UserId" type="hidden" value="@Model.UserId" />
+    <input name="OrgId" type="hidden" value="@(Request["orgId"])"/>
+    <div id="tabs-1">
+        <table class="form_table">
+            <tr>
+                <th style="width: 20%;">
+                    <span class="ico_must">姓名</span>
+                </th>
+                <td style="width: 80%;">
+                    <input id="UserName" class="fix_width" name="UserName" type="text" required value="@Model.UserName" />
+                    <span id="name_info" class="info_block" style="display: none; color: Red;"></span>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    性别
+                </th>
+                <td>
+                    <input name="Sex" field="Sex" value="True" type="radio" />男
+                    <input name="Sex" field="Sex" value="False" type="radio" />女
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span class="ico_must">帐号</span>
+                </th>
+                <td>
+                    <input name="JobNo" class="fix_width" id="JobNo" type="text" maxlength="16" required value="@Model.JobNo" />
+                    <span id="jobnum_info" class="info_block" style="display: none; color: Red;"></span>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    所在部门
+                </th>
+                <td>@Html.DropDownListTree("OrgName", ViewBag.OrgList as IList<Global.Common.Models.OrgModel>, "OrgCode", "OrgName", Model.BelongDepart, "OrgId", "ParentOrgId", "0", new { @class = "fix_width" })
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    职位
+                </th>
+                <td>
+                    <input id="Duty" class="fix_width" name="Duty" type="text"  value="@Model.Duty"/>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    员工状态
+                </th>
+                <td>@Html.RadioButtonList("EmployeeState", ViewBag.EmployeeStateList as SelectList, new { @onchange = "ChangeEmployeeState();" })
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    手机号码
+                </th>
+                <td>
+                    <input id="Mobile1" class="fix_width" name="Mobile1" type="text"  value="@Model.Mobile1"/>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    电子邮件
+                </th>
+                <td>
+                    <input name="Email1" class="fix_width" type="text" minlength="4"  maxlength="30"  value="@Model.Email1" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    </form>
+    <div class="submit_btn_div">
+        <input id="btnSave" type="button" class="submit_btn" value=" 保 存 " />
+        <input id="btnClose" type="button" class="submit_btn" value="关闭窗口" />
+    </div>
+</div>

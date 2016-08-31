@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "系统提醒";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style type="text/css">
+ul {margin:0px; padding:0px;}
+    .remind{ margin:10px 0px}
+    .remind ul li{ display:block;padding:4px 10px;}
+    .remindcount{ padding:0px 5px; font-weight:bold; color:Red}
+    .remind ul li a{text-decoration:none}
+</style>
+<div class="remind">
+    <ul>
+       @if (ViewBag.InstrumentRemindCount > 0)
+       {
+        <li>超期仪器数：<a href="#"  onclick="fnShowRemind()"><span class="remindcount">@ViewBag.InstrumentRemindCount</span></a></li>
+       }
+        @if (ViewBag.ExpireDays>0)
+       {
+        <li>软件已过期<span class="remindcount">@ViewBag.ExpireDays</span>天，请联系广电计量</li>
+       }
+    </ul>
+</div>
+<script type="text/javascript">
+    function fnShowRemind() {
+        if (navigator.appName == "Netscape") {
+            //firefox等兼容
+            $(parent.frames["contentFrame"].contentDocument).find("#MiddleFrame").attr("src", "/Instrument/OverTimeAndWarnList");
+        } else {
+            //ie兼容
+            $(parent.frames["contentFrame"].document).find("#MiddleFrame").attr("src", "/Instrument/OverTimeAndWarnList");      
+        }
+         
+    }
+</script>

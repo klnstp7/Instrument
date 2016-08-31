@@ -1,0 +1,75 @@
+﻿@model Global.Common.Models.UserModel
+@{
+    Layout = null;
+    int levelOneCount = ViewBag.LevelOneCount;
+
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-cn">
+<head>
+    <title>TopMenu</title>
+    <link href="@Url.Content("~/Content/themes/webcss/style.css?v=2")" rel="stylesheet" type="text/css" media="all" />
+    <script type="text/javascript" language="javascript">
+        function qiehuan(num,childMenu) {
+            var levelOneCount=@levelOneCount;
+            for (var id = 0; id < levelOneCount; id++) {
+                if (id == num) {
+                    document.getElementById("qh_con" + id).style.display = "block";
+                    document.getElementById("mynav" + id).className = "nav_on";
+                }
+                else {
+                    document.getElementById("qh_con" + id).style.display = "none";
+                    document.getElementById("mynav" + id).className = "";
+                }
+            }
+
+            var flag = false;
+            if(childMenu==0) flag = true;
+
+            return flag;
+        }
+
+        var myTwoMenuClass = "";
+        function fnSelected(myId){
+            if(myTwoMenuClass != "")
+                document.getElementById(myTwoMenuClass).className = "";
+
+            document.getElementById(myId).className = "menu_con_selected";
+            myTwoMenuClass = myId;
+        }
+    </script>
+</head>
+<body>
+<div id="wrapper">
+    <div id="topheader_wrapper">
+        <div class="topHeader">
+            <!--顶部导航 / TopNav-->
+            <div class="topNav">
+                <div class="linkList">
+                    <ul>
+                        <li class="user">当前用户：@Model.UserName,@Model.JobNo,@ViewBag.UserRole</li>
+                        <li><a href="../SysManage/User/EditUserPwd" target="_blank">更改密码</a></li>
+                        <li><a href="/Login/Logout" class="yellow"><span>退出</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <!--头部 / menu-->
+            <div id="menu_out">
+                <div id="menu_in">
+                    <div id="menu">
+                        @Html.Raw(ViewBag.Menu1)
+
+                        @Html.Raw(ViewBag.Menu2)
+
+                        
+                    </div>
+                </div>
+            </div>
+            <!--Header End-->
+        </div>
+    </div>
+    <!--top End-->
+</div>
+</body>
+</html>
+

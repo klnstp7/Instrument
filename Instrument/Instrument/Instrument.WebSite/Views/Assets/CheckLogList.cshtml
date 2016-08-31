@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "盘点";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    var oTable;
+    $(function () {
+        $('#form1').validate({
+            rules: {
+                BarCode: { required: true, maxGBKlength: 50, specialCharValidate: true },
+                CheckResult: { required: true, maxGBKlength: 500, specialCharValidate: true }
+
+            }
+        });
+        oTable = WrapTables4JsArray("checkLisit", []);
+
+    });
+    function fnCheck() {
+        var barCode = $("#BarCode").val();
+        if (!$("#form1").valid())
+            return;
+        $.post("/Assets/CheckAssets?barCode=" + barCode, $("#form1").serialize(), function (data) {
+            if (data == "OK") {
+                oTable.fnDestroy();
+                oTable = WrapTables4Ajax("checkLisit", "/Assets/GetCheckLogList?barCode=" + $("#BarCode").val());
+                $("#BarCode").val("");
+                $("#CheckResult").val("");
+            }
+            else if (data == "Unfind")
+                ymPrompt.alert("查无此条码");
+            else {
+                ymPrompt.alert(data);
+            }
+        })
+
+    }
+
+    function fnCheckOverage() {
+        fnNewWindow("/Assets/AddPlanDetail", "盘盈添加", 500, 350);
+    }
+
+    function fnNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+
+
+</script>
+<form id="form1">
+<table class="form_table">
+    <tr>
+        <th style="width: 80px;">
+            条码：
+        </th>
+        <td>
+            <input type="text" id="BarCode" name="BarCode" />
+            <input style="display: inline" type="button" id="btnCheck" onclick="fnCheck()" class="submit_btn"
+                value="盘点" />
+            <input style="display: inline" type="button" id="btnCheckOverage" onclick="fnCheckOverage()" class="submit_btn"
+                value="盘盈添加" />
+        </td>
+    </tr>
+</table>
+</form>
+<table id="checkLisit">
+    <thead>
+        <tr>
+            <th>
+                名称
+            </th>
+            <th>
+                资产编号
+            </th>
+            <th>
+                仪器型号
+            </th>
+            <th>
+                盘点结果
+            </th>
+            <th>
+                盘点人
+            </th>
+            <th>
+                盘点时间
+            </th>
+        </tr>
+    </thead>
+</table>

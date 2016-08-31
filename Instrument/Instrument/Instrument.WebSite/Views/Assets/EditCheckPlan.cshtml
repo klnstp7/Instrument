@@ -1,0 +1,314 @@
+﻿@using ToolsLib.Utility
+@using Instrument.Common.Models;
+@model Instrument.Common.Models.AssetCheckPlanModel
+@{
+    ViewBag.Title = "盘点计划";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var tbCheckList;
+    var tbUserList;
+    var param = "-1";
+    var oTable;
+    var tableHigth = "auto";
+    var columnInfo = null;
+//    var queryColInfo = {};
+//    queryColInfo.ColNum = 1;
+//    queryColInfo.IsRLType = false;
+    $(function () {
+        $("#tabs").tabs({ cache: true });
+
+       columnInfo = [
+            { sName: '', sType: 'string', sTitle: '<input type="checkbox" id="chk_all" onclick=\'fnSetCheckbox(this)\' />' },
+            { sName: 'InstrumentName', sType: 'string', sTitle: '仪器名称',sWidth:'150px' },
+             { sName: 'Statuse', sType: 'string', sTitle: '状态' ,sWidth:'50px',
+                searchDataSource: [
+                    @Html.Raw(ViewBag.StatusJson)
+                ]},
+            { sName: 'Specification', sType: 'string', sTitle: '仪器型号' },
+            { sName: 'AssetsNo', sType: 'string', sTitle: '资产编号' },
+            { sName: 'BarCode', sType: 'string', sTitle: '条码' },
+            { sName: 'SerialNo', sType: 'string', sTitle: '出厂编号'},
+            { sName: 'ManageNo', sType: 'string', sTitle: '管理编号'},
+            { sName: 'Manufacturer', sType: 'string', sTitle: '生产厂家' },
+            { sName: '', sType: 'string', sTitle: '所属部门' },
+            { sName: 'Checkor', sType: 'string', sTitle: '盘点人' },
+            { sName: 'CheckDate', sType: 'date', sTitle: '盘点时间' }
+        ];
+         
+//        $("#tabs").tabs({ cache: true });
+
+        $('#form1').validate({
+            rules: {
+                PlanName: { required: true, maxGBKlength: 50, specialCharValidate: true },
+                StartDate: { required: true },
+                EndDate: { required: true },
+                Remark: { maxGBKlength: 300, specialCharValidate: true }
+            }
+        });
+
+        $('#form2').validate({
+             rules: {
+                UserName: {
+                    required:true,
+                    ChkAutocomplete: "#ChkUserName"
+                }
+            },
+            messages: {
+                SaleName: {
+                    ChkAutocomplete: "盘点用户有误，请填写正确的名称或从列表中选择!"
+                }
+            }
+        });
+
+            $('#form3').validate({
+            rules: {
+                  ExcelFile: { required:true,extension: "xlsx|xls" }
+            },
+          messages: {
+              ExcelFile:"请上传.xlsx或.xls后缀的文件"
+          }
+        });
+
+        fnShowList();
+
+         $("#UserName").autocomplete({
+            minLength: 1,
+            source: "/Assets/QuickSearchOperatorNameByKeyWord",
+            select: function (event, ui) {
+                $("#UserId").val(ui.item.value);
+                $("#UserName").val(ui.item.label);
+                $("#ChkUserName").val(ui.item.label);
+                return false;
+            }
+        });
+
+
+
+
+    });
+
+    function fnShowList() {
+        var planId = $("#PlanId").val();
+        if (planId != "0") {
+            $("#AssetsList").show();
+            $("#userList").show();
+                tbCheckList = GetJsondataFromServ("checkList", "/Assets/GetPlanAllCheckAssetsJsonData?planId=" + $("#PlanId").val()+"&type=Edit", "1100px", columnInfo, null,"auto");
+                tbUserList = WrapTables4Ajax("operatorList", "/Assets/GetCheckPlanOperatorList?planId=" + $("#PlanId").val()+"&type=Edit", "10px");
+            }
+        }
+
+    function fnSavePlan() {
+        //表单验证(默认)
+        if (!$("#form1").valid()) {
+            return false;
+        }
+        $.post("/Assets/SaveCheckPlan?planId=" + $("#PlanId").val(), $("#form1").serialize(), function (data) {
+            if (data.Msg == "OK") {
+                if($("#PlanId").val()=="0"){
+                    $("#PlanId").val(data.PlanId);
+                    fnShowList();
+                }
+                alert("保存成功");
+                if(window.opener)
+                    window,opener.oTable.api().ajax.reload();
+            }
+            else
+                alert(data.Msg);
+        });
+
+    }
+
+    function fnClose() {
+        window.close();
+    }
+
+    function fnCheckDetail(obj){
+        var PlanDetailId=$(obj).attr("PlanDetailId");
+        var instrumentId=$(obj).attr("instrumentId");
+        
+        window.open("/Assets/AssetsDetail?planDetailId="+PlanDetailId+"&instrumentId="+instrumentId);
+    }
+
+    function fnAddOperator(){
+     //表单验证(默认)
+        if (!$("#form2").valid()) {
+            return false;
+        }
+        $.post("/Assets/AddPlanOperator?planId="+$("#PlanId").val(), $("#form2").serialize(), function (data){
+            if(data=="OK")
+                tbUserList.api().ajax.reload();
+            else
+                alert(data);
+        });
+    
+    }
+
+    function fnBatchDeleteOperator(){
+        var autoIds=fnGetAllCheckedValue('chk_op');
+        if ("" == autoIds) {
+            ymPrompt.alert("请选择要删除的记录");
+            return;
+        }
+          fnConfirmWithF5WithOTable("确定删除所选记录？", "/Assets/BatchDeleteOperatorByIds?autoIds="+autoIds, tbUserList);
+    }
+
+    function fnChkOperate(obj){
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk_op', isChecked);
+    }
+    
+        //设置全选、反选
+    function fnSetCheckbox(obj) {
+        var isChecked = $(obj).is(":checked");
+        fnChkAll('chk', isChecked);
+    }
+
+            
+ function BatchImportAssets(){
+        var options = {
+            success: fnCallback
+        };
+        if ($("#form3").valid()) {
+            $('#form3').ajaxSubmit(options);
+            return false;
+        }
+    }
+
+    function fnCallback(responseText){
+        var jsonObj = eval("(" + responseText + ")");
+        if(jsonObj.sMsg==""){
+            ymPrompt.alert("操作成功,"+jsonObj.Result);
+            }
+            else
+                alert(jsonObj.Result+"\r\n"+jsonObj.sMsg);
+            tbCheckList.api().ajax.reload();
+    }
+
+    function fnBatchDelete(){
+    var detailIds=fnGetAllCheckedValue('chk');
+        if ("" == detailIds) {
+            ymPrompt.alert("请选择要删除的记录");
+            return;
+        }
+          fnConfirmWithF5WithOTable("确定删除所选记录？", "/Assets/BatchDeletePlanDetailByIds?detailIds="+detailIds, tbCheckList);
+    }
+
+    function fnDownloadTemplate(){
+        fnAjaxDownloadFile("/Assets/DownloadTemplate");
+    }
+
+    function fnAddAllInstrument(){
+         fnConfirmWithF5WithOTable("确定添加所有仪器资产？", "/Assets/BatchImportAllInstrument?planId="+$("#PlanId").val(), tbCheckList);
+    }
+
+    function fnAddAllAssets(){
+         fnConfirmWithF5WithOTable("确定添加所有非仪器资产？", "/Assets/BatchImportAllAssets?planId="+$("#PlanId").val(), tbCheckList);
+    }
+
+</script>
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">基本信息</a></li>
+        <li id="userList" style="display: none;"><a href="#tabs-3">操作用户</a></li>
+    </ul>
+    <div id="tabs-1">
+        <div class="submit_btn_div">
+            <input id="btnSave" type="button" class="submit_btn" onclick="fnSavePlan()" value="保 存" />
+            <input id="btnClose" class="submit_btn" type="button" onclick="fnClose()" value="关 闭" />
+        </div>
+        <form id="form1">
+        <table cellpadding="0" cellspacing="0" border="0" class="form_table" width="60%">
+            <tr>
+                <th>
+                    <span class="ico_must">计划名称</span>
+                </th>
+                <td>
+                    @Html.TextBox("PlanName", Model.PlanName, new { @class = "fix_width" })
+                </td>
+                <th style="width: 15%;">
+                    <span class="ico_must">计划类型</span>
+                </th>
+                <td style="width: 35%;">
+                    @Html.DropDownList("PlanType", new SelectList(ViewBag.PlanType, "Value", "Text", Model.PlanType),
+                                 new { @class = "fix_width", @style = "width: 150px;" })
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span class="ico_must">开始日期</span>
+                </th>
+                <td>
+                    <input name="StartDate" id="StartDate" type="text"  value="@(string.Format("{0:yyyy-MM-dd}", Model.StartDate))"  class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'EndDate\',{d:-0})}'})"
+                style="width: 150px;" />
+                </td>
+                <th style="width: 15%;">
+                    <span class="ico_must">结束日期</span>
+                </th>
+                <td style="width: 35%;">
+                    <input name="EndDate" id="EndDate" type="text"  value="@(string.Format("{0:yyyy-MM-dd}", Model.EndDate))"  class="Wdate" onfocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'StartDate\',{d:+0})}'})"
+                style="width: 150px;" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    备注
+                </th>
+                <td colspan="3">
+                    @Html.TextArea("Remark", new { @cols = "50", @rows = "2" })
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div id="AssetsList" style="display: none;">
+            <h3 class="form_module_title">
+                计划盘点资产     @ViewBag.TotalInfo </h3>
+            <div>
+                <form id="form3" method="post" action="/Assets/BatchImportAssetsForCheckPlan" enctype="multipart/form-data">
+                <input type="hidden" id="PlanId" name="PlanId" value="@Model.PlanId" />
+                <input id="btnDownloadTemplate" onclick="fnDownloadTemplate()" type="button" class="submit_btn"
+                    value="下载模板" />
+                <input type="file" id="ExcelFile" name="ExcelFile" />
+                <input type="button" id="btnAdd" onclick="BatchImportAssets()" class="submit_btn"
+                    value="批量新增" />
+                <input type="button" id="btnDelete" onclick="fnBatchDelete()" class="submit_btn"
+                    value="批量删除" />
+                <input type="button" id="btnAddAllInstrument" onclick="fnAddAllInstrument()" class="submit_btn8"
+                    value="添加所有仪器资产" />
+                <input type="button" id="btnAddAllAssets" onclick="fnAddAllAssets()" class="submit_btn8"
+                    value="添加所有非仪器资产" />
+                </form>
+                <table id="checkList">
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="tabs-3">
+        <form id="form2">
+        盘点用户：
+        <input type="text" id="UserName" name="UserName" />
+        <input type="hidden" id="UserId" name="UserId" />
+        <input type="hidden" id="ChkUserName" name="ChkUserName" />
+        <input type="button" id="btnAddOperator" onclick="fnAddOperator()" class="submit_btn"
+            value="添加用户" />
+        <input type="button" id="btnbdOperator" onclick="fnBatchDeleteOperator()" class="submit_btn"
+            value="批量删除" />
+        </form>
+        <table id="operatorList">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" name="chkAll" id="chkAll" onclick="fnChkOperate(this)" />
+                    </th>
+                    <th>
+                        用户名
+                    </th>
+                    <th>
+                        用户工号
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>

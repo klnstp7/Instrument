@@ -1,0 +1,29 @@
+﻿@using Global.Common.Models;
+@model Instrument.Common.Models.InstrumentModel
+@{
+    ViewBag.Title = "详细信息";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+$(function(){    
+    oTable = WrapTables4Ajax("tbCheckLogList", "/Assets/GetCheckLogFlowList?instrumentId=@Request["instrumentId"]&planDetailId=@Request["planDetailId"]", "10px", true, "auto");
+});
+
+</script>
+<div id="tabs">
+        <table id="tbCheckLogList">
+            <thead>
+                <tr>
+                    <th>
+                        盘点结果
+                    </th>
+                    <th>
+                        盘点人
+                    </th>
+                    <th>
+                        盘点时间
+                    </th>
+                </tr>
+            </thead>
+        </table>
+</div>

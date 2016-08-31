@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "维修计划";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" language="javascript">
+
+    //初始化
+    var oTableRepairPlan = null;
+    $(document).ready(function () {
+        oTableRepairPlan = WrapTables4Ajax("tableInstrumentRepairPlan",
+            "/Instrument/GetInstrumentRepairPlanList?instrumentId=@ViewBag.InstrumentId&DataType=@ViewBag.DataType", "100%", true, "auto");
+        if ("0" == "@ViewBag.DataType") {
+            $("#btnAddInstrumentRepairPlan")[0].style.display = "none";   //隐藏"新增"按钮
+        }
+    });
+
+    //新增
+    function fnAddInstrumentRepairPlan() {
+        var url = "/Instrument/EditInstrumentRepairPlan?planId=0&instrumentId=@ViewBag.InstrumentId";
+        ymPrompt.win({ message: url, width: 700, height: 320, title: "维修记录",
+            handler: function (data) {
+                if ("OK" == data) {
+                    if (null != oTableRepairPlan) {
+                        oTableRepairPlan.api().ajax.reload();
+                    }
+                }
+            }, iframe: true
+        });
+    }
+
+    //修改
+    function fnUpdateInstrumentRepairPlan(planId) {
+        var url = "/Instrument/EditInstrumentRepairPlan?planId=" + planId + "&instrumentId=@ViewBag.InstrumentId";
+        ymPrompt.win({ message: url, width: 700, height: 320, title: "维护计划",
+            handler: function (data) {
+                if ("OK" == data) {
+                    if (null != oTableRepairPlan) {
+                        oTableRepairPlan.api().ajax.reload();
+                    }
+                }
+            }, iframe: true
+        });
+    }
+
+    //删除
+    function fnDeleteInstrumentRepairPlan(planId) {
+        var url = "/Instrument/DeleteInstrumentRepairPlan?planId=" + planId;
+        ymPrompt.confirmInfo({ message: "是否删除当前维修计划", title: '确认对话框', handler: function (tp) {
+            if (tp == 'ok') {
+                $.get(url, function (data) {
+                    if ("OK" == data) {
+                        if (null != oTableRepairPlan) {
+                            oTableRepairPlan.api().ajax.reload();
+                        }
+                    }
+                });
+            }
+        }});
+    }
+
+    function fnUploadRepairPlanAttachment(planId) {
+        var url = "/Instrument/InstrumentRepairPlanAttachmentList?planId="+ planId;
+        fnRepairPlanNewWindow(url, "维修附件", 800, 365);
+    }
+    //查看详细
+    function fnGetPlanDetail(PlanId) {
+        fnRepairPlanNewWindow("/Instrument/GetInstrumentRepairPlanDetail?planId=" + PlanId, "详细信息", 750, 400);
+    }
+    function fnRepairPlanNewWindow(url, title, width, height) {
+        ymPrompt.win({ message: url, width: width, height: height, title: title, handler: null, iframe: true });
+    }
+</script>
+<!--Authorization operate="基础配置管理-标准器具库-编辑-维修计划-新增"-->
+<input id="btnAddInstrumentRepairPlan" type="button" onclick="fnAddInstrumentRepairPlan()" class="submit_btn" value="新增" />&nbsp;
+<!--/Authorization-->
+<table id="tableInstrumentRepairPlan">
+    <thead>
+        <tr>
+            <th>
+                操作
+            </th>
+             <th>
+                维修公司
+            </th>
+            <th>
+                维修人员
+            </th>
+            <th>
+                联系电话
+            </th>
+             <th>
+                维修金额
+            </th>
+            <th>
+                报修日期
+            </th>
+            <th>
+                修复日期
+            </th>
+            <th>
+                报修人
+            </th>
+@*            <th>
+                故障描述
+            </th>*@
+        </tr>
+    </thead>
+</table>
+

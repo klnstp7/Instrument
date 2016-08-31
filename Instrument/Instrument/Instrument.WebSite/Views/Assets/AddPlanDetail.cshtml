@@ -1,0 +1,110 @@
+﻿@using ToolsLib.Utility
+@using System.Web.UI.WebControls
+@{
+    ViewBag.Title = "添加盘盈";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    //初始化
+    $(document).ready(function () {
+        //基本信息(表单验证)
+        $('#formInstrument').validate({
+            rules: {
+                InstrumentName: { required: true, maxGBKlength: 160, specialCharValidate: true },  //仪器名称
+                Specification: { required: true, maxGBKlength: 140, specialCharValidate: true },   //仪器型号
+                Manufacturer: { maxGBKlength: 180, specialCharValidate: true },
+                SerialNo: { maxGBKlength: 120, specialCharValidate: true },
+                PlanId: { required: true },
+                Remark: { maxGBKlength: 500, specialCharValidate: true }
+            }
+        });
+
+    });
+
+    //保存(基本信息)
+    function fnSaveInstrument() {
+        //表单验证(默认)
+        if (!$("#formInstrument").valid()) {
+            return false;
+        }
+        $.post("/Assets/SavePlanDetail", $("#formInstrument").serialize(), function (result) {
+            if (result == "OK") {
+                fnClose();
+                window.parent.ymPrompt.alert("保存成功");
+            }
+            else {
+                window.parent.ymPrompt.alert(result);
+            }
+        });
+    }
+
+    //关闭
+    function fnClose() {
+        window.parent.ymPrompt.close();
+    }
+
+
+
+
+</script>
+<div id="tabs-1">
+    <div class="submit_btn_div">
+        <input id="btnSave" type="button" class="submit_btn" onclick="fnSaveInstrument()"
+            value="保 存" />
+        <input id="btnClose" class="submit_btn" type="button" onclick="fnClose()" value="关 闭" />
+    </div>
+    <form id="formInstrument" class="cmxform">
+    <input type="hidden" id="InstrumentId" name="InstrumentId" value="0" />
+    <table cellpadding="0" cellspacing="0" border="0" class="form_table" width="100%">
+        <tr>
+            <th>
+                <span class="ico_must">仪器名称</span>
+            </th>
+            <td>
+                @Html.TextBox("InstrumentName", "", new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span class="ico_must">仪器型号</span>
+            </th>
+            <td>
+                @Html.TextBox("Specification", "", new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                生产厂家
+            </th>
+            <td>
+                @Html.TextBox("Manufacturer", "", new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                出厂编号
+            </th>
+            <td>
+                @Html.TextBox("SerialNo", "", new { @class = "fix_width" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span class="ico_must">盘点计划</span>
+            </th>
+            <td>
+                @Html.DropDownList("PlanId", ViewBag.PlanSelectList as SelectList, new { @class = "fix_width_min", @style = "width: 157px;" })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                备注
+            </th>
+            <td>
+                <textarea id="Remark" name="Remark" rows="2" cols="40"></textarea>
+            </td>
+        </tr>
+    </table>
+    </form>
+</div>

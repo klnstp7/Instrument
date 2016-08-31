@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "选择工艺过程";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    var oTable;
+    $(function () {
+        oTable = WrapTables4Ajax("craftList", "/Instrument/GetCraftJsonData", "100%", true, "auto");
+    });
+
+    function fnChooseCraft(obj) {
+        var craftId = $(obj).attr("id");
+        $.get("/Craft/GetCraftById?craftId=" + craftId, function (data) {
+            window.parent.fnSelect(data);
+            window.parent.ymPrompt.close();
+        })
+    }
+</script>
+<div>
+    <table id="craftList">
+        <thead>
+            <tr>
+                <th>
+                    操作
+                </th>
+                <th>
+                    工艺过程代码
+                </th>
+                <th>
+                    工艺过程名称
+                </th>
+                <th>
+                    设备位号
+                </th>
+                <th>
+                    使用地点
+                </th>
+                <th>
+                    创建人
+                </th>
+                <th>
+                    创建时间
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>

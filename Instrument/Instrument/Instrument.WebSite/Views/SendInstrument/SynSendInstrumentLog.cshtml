@@ -1,0 +1,41 @@
+﻿@using ToolsLib.Utility;
+@{
+    ViewBag.Title = "待送检仪器";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string OrderId = Request["OrderId"];
+}
+<script type="text/javascript" language="javascript">
+    var oTable;
+    $(document).ready(function () {
+     var data = @Html.Raw(ViewBag.RowsData);
+        oTable = WrapTables4JsArray("Instrument",data, "100%", false);
+
+    });
+</script>
+<div>
+    <form id="form1">
+    
+    <span style="font-size:large; font-weight:bold; font-family:黑体; color:Red;">@Html.Raw(ViewBag.TitleInfo)</span>
+    <table id="Instrument">
+        <thead>
+            <tr>
+                <th>
+                    状态
+                </th>
+                <th>
+                    仪器名称
+                </th>
+                <th>
+                    仪器型号
+                </th>
+                <th>
+                    出厂编号
+                </th>
+                <th>
+                    管理编号
+                </th>
+               
+            </tr>
+        </thead>
+    </table>
+</div>
